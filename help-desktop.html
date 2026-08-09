@@ -5,10 +5,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Axion Desktop App — Sennoric Help</title>
-  <meta name="description" content="Installing and using the desktop chat app.">
+  <meta name="description" content="Installing and using the desktop chat app — workspace access, chat history, and settings.">
   <link rel="canonical" href="https://sennoric.com/help-desktop">
   <meta property="og:title" content="Axion Desktop App — Sennoric Help">
-  <meta property="og:description" content="Installing and using the desktop chat app.">
+  <meta property="og:description" content="Installing and using the desktop chat app — workspace access, chat history, and settings.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://sennoric.com/help-desktop">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
@@ -47,34 +47,77 @@
     .nav-btn-ghost { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted2); border: 1px solid var(--border2); transition: color .12s, border-color .12s; }
     .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
-    .breadcrumb { max-width: 1080px; margin: 0 auto; padding: 20px 32px 0; font-size: 12.5px; color: var(--muted); }
+    .breadcrumb { max-width: 900px; margin: 0 auto; padding: 20px 32px 0; font-size: 12.5px; color: var(--muted); }
     .breadcrumb a { color: var(--muted2); }
     .breadcrumb a:hover { color: var(--accent); }
 
-    .page-header { max-width: 1080px; margin: 0 auto; padding: 16px 32px 32px; }
+    .page-header { max-width: 900px; margin: 0 auto; padding: 16px 32px 32px; }
     .page-header .tag { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
     .page-header h1 { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
     .page-header p { color: var(--muted2); font-size: 15px; max-width: 640px; }
 
-    .content { max-width: 1080px; margin: 0 auto; padding: 0 32px 96px; }
+    .toc { max-width: 900px; margin: 0 auto; padding: 0 32px 24px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .toc a {
+      font-size: 12px; padding: 5px 11px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted2);
+    }
+    .toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 0 32px 96px; }
+    .doc-section { margin-bottom: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--border); scroll-margin-top: 80px; }
+    .doc-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .doc-section h2 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 10px; }
+    .doc-section p { font-size: 14px; color: var(--muted2); margin-bottom: 12px; line-height: 1.7; }
+    .doc-section p:last-child { margin-bottom: 0; }
+    .doc-section ul, .doc-section ol { margin: 8px 0 14px 18px; }
+    .doc-section li { font-size: 13px; color: var(--muted2); line-height: 1.65; margin-bottom: 5px; }
+    .doc-section li strong { color: var(--text); }
+
+    .code-block {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 8px; padding: 14px 18px;
+      font-family: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12.5px; color: var(--muted2);
+      overflow-x: auto; line-height: 1.8; margin: 12px 0;
+      white-space: pre;
+    }
+    code {
+      font-family: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12px; background: var(--surface2); color: var(--muted2);
+      padding: 2px 6px; border-radius: 4px;
+    }
+
     .callout {
-      border-radius: 8px; padding: 13px 16px; font-size: 13px; line-height: 1.65; margin-bottom: 28px;
+      border-radius: 8px; padding: 13px 16px;
+      margin: 14px 0; font-size: 13px; line-height: 1.65;
+    }
+    .callout.tip {
       background: rgba(184,162,125,.07); border: 1px solid rgba(184,162,125,.2);
       border-left: 3px solid var(--accent); color: var(--muted2);
     }
-    .callout strong { color: var(--accent); }
+    .callout.tip strong { color: var(--accent); }
+    .callout.warn {
+      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.22);
+      border-left: 3px solid var(--yellow, #fbbf24); color: var(--muted2);
+    }
+    .callout.warn strong { color: var(--yellow, #fbbf24); }
+    .callout.gap {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-left: 3px solid var(--muted); color: var(--muted2);
+    }
+    .callout.gap strong { color: var(--muted2); }
 
-    .article-list { list-style: none; }
-    .article-list li {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      padding: 14px 18px; border: 1px solid var(--border); border-radius: 8px;
-      margin-bottom: 8px; background: var(--surface);
-      font-size: 13.5px; color: var(--text);
+    .cmd-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    .cmd-table th {
+      text-align: left; padding: 8px 12px;
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border); background: var(--surface);
     }
-    .article-list li .badge {
-      font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-      padding: 2px 8px; border-radius: 3px; background: var(--surface2); color: var(--muted); white-space: nowrap;
-    }
+    .cmd-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; background: var(--surface); }
+    .cmd-table tr:last-child td { border-bottom: none; }
+    .cmd-table td:first-child { white-space: nowrap; }
+    .cmd-table .desc { color: var(--muted2); font-size: 12px; }
 
     footer { background: var(--surface); border-top: 1px solid var(--border); text-align: center; padding: 24px 32px; font-size: 13px; color: var(--muted); }
     footer a { color: var(--muted2); }
@@ -83,7 +126,7 @@
     @media (max-width: 600px) {
       nav { padding: 0 16px; }
       .nav-links { display: none; }
-      .page-header, .breadcrumb, .content { padding-left: 16px; padding-right: 16px; }
+      .page-header, .breadcrumb, .content, .toc { padding-left: 16px; padding-right: 16px; }
       .page-header h1 { font-size: 24px; }
     }
   </style>
@@ -110,20 +153,64 @@
 <div class="page-header">
   <div class="tag">Help</div>
   <h1>Axion Desktop App</h1>
-  <p>Installing and using the desktop chat app.</p>
+  <p>Installing and using the desktop chat app — workspace access, chat history, and settings.</p>
+</div>
+
+<div class="toc">
+  <a href="#install-desktop">Installation and first launch</a>
+  <a href="#chat-interface">The chat interface</a>
+  <a href="#workspace-menu">Workspace/account access menu</a>
+  <a href="#shared-credentials">Connecting to the CLI (shared credential store)</a>
+  <a href="#chats-library">Chats library</a>
+  <a href="#settings-overview">Settings overview</a>
+  <a href="#troubleshooting-desktop">Troubleshooting: app won't start / crashes on launch</a>
 </div>
 
 <div class="content">
-  <div class="callout"><strong>Scaffold only.</strong> These articles aren't written yet — this list is the planned scope so writing can start without re-deciding structure.</div>
-  <ul class="article-list">
-    <li>Installation and first launch<span class="badge">Not written</span></li>
-    <li>The chat interface<span class="badge">Not written</span></li>
-    <li>Workspace/account access menu<span class="badge">Not written</span></li>
-    <li>Connecting to the CLI (shared credential store)<span class="badge">Not written</span></li>
-    <li>Chats library — saving, finding, revisiting past chats<span class="badge">Not written</span></li>
-    <li>Settings overview<span class="badge">Not written</span></li>
-    <li>Troubleshooting: app won't start / crashes on launch<span class="badge">Not written</span></li>
-  </ul>
+  <div class="doc-section" id="install-desktop">
+    <h2>Installation and first launch</h2>
+    <p>The Desktop App is an Electron app that runs the real Axion agent in its main process — the same agent the CLI uses — and shares its credentials, models, and saved conversations via <code>~/.axion</code>.</p>
+    <p>On first launch, sign in (see <a href="/help-account#sign-in" style="color:var(--accent)">Signing in</a>) — any provider keys already configured in the CLI are picked up automatically.</p>
+  </div>
+
+  <div class="doc-section" id="chat-interface">
+    <h2>The chat interface</h2>
+    <p>The chat surface is ported from the website's web chat, sharing the same typography and design tokens so the two feel like one product. It follows your OS's light/dark theme automatically.</p>
+  </div>
+
+  <div class="doc-section" id="workspace-menu">
+    <h2>Workspace/account access menu</h2>
+    <p>The account strip opens a Settings surface with fixed navigation and searchable controls — see <a href="#settings-overview" style="color:var(--accent)">Settings overview</a> below for what's in there.</p>
+  </div>
+
+  <div class="doc-section" id="shared-credentials">
+    <h2>Connecting to the CLI (shared credential store)</h2>
+    <p>The Desktop App and CLI read from the same <code>~/.axion</code> directory — models, credentials, modes, workspaces, and saved conversations are shared automatically. There's nothing to manually sync; setting a key in one shows up in the other.</p>
+    <div class="callout tip"><strong>Security note.</strong> Your session token lives only in the app's main process — the chat UI itself never has direct access to it, only to display-safe account metadata like your email and plan.</div>
+  </div>
+
+  <div class="doc-section" id="chats-library">
+    <h2>Chats library</h2>
+    <p>Past conversations are saved and searchable from the chats library, so you can find and resume a previous conversation instead of starting fresh each time.</p>
+  </div>
+
+  <div class="doc-section" id="settings-overview">
+    <h2>Settings overview</h2>
+    <ul>
+      <li>Appearance: light, dark, or follow system</li>
+      <li>Interface density, text scale, conversation width, corner roundness</li>
+      <li>Message-avatar and token-usage visibility</li>
+      <li>Home and Code special instructions (extra system guidance sent to the agent)</li>
+      <li>Active model and permission mode (ask / plan / auto)</li>
+      <li>Replay tour — restarts onboarding without losing your saved preferences</li>
+    </ul>
+    <p>Changes auto-save and apply immediately — there's no separate save step.</p>
+  </div>
+
+  <div class="doc-section" id="troubleshooting-desktop">
+    <h2>Troubleshooting: app won't start / crashes on launch</h2>
+    <p>Since the app shares its credential store with the CLI, first confirm the CLI itself runs correctly — if the CLI is broken, the Desktop App will be too. If the CLI works but the app doesn't, try reinstalling the Desktop App itself before touching <code>~/.axion</code>, since that directory holds your saved conversations and credentials for both products.</p>
+  </div>
 </div>
 
 <footer>
