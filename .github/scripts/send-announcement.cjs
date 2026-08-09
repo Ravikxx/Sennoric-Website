@@ -10,7 +10,7 @@ const { execSync } = require('child_process')
 const { createHash } = require('crypto')
 const fs = require('fs')
 
-const API = 'https://api.amplifiedsmp.org'
+const API = 'https://api.sennoric.com'
 const htmlFile = process.argv[2]
 if (!htmlFile) { console.error('Usage: send-announcement.cjs <path>'); process.exit(1) }
 

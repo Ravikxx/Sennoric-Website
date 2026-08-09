@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Docs — Sennoric</title>
   <meta name="description" content="Documentation for Fresco, Sennoric API keys, the OpenAI-compatible endpoint, teams, and the Sennoric CLI.">
-  <link rel="canonical" href="https://axion.amplifiedsmp.org/docs">
+  <link rel="canonical" href="https://sennoric.com/docs">
   <meta property="og:title" content="Sennoric Documentation">
   <meta property="og:description" content="Learn how to use Fresco, Sennoric API keys, teams, and the Sennoric CLI.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://axion.amplifiedsmp.org/docs">
-  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta property="og:url" content="https://sennoric.com/docs">
+  <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/site-shell.css">
@@ -248,7 +248,7 @@
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Fresco 1.2.5</div>
           <div class="model-card-alias"><code>model: "lumen"</code></div>
-          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/fresco" style="color:var(--accent)">axion.amplifiedsmp.org/fresco</a>.</div>
+          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/fresco" style="color:var(--accent)">sennoric.com/fresco</a>.</div>
         </div>
         <div class="model-card">
           <div class="model-card-badge badge-free">Free account required</div>
@@ -267,7 +267,7 @@
 
     <div class="doc-section" id="web-chat">
       <h2>Web Chat</h2>
-      <p class="lead">Chat with Fresco directly in your browser at <a href="/chat" style="color:var(--accent)">axion.amplifiedsmp.org/chat</a> — no install needed.</p>
+      <p class="lead">Chat with Fresco directly in your browser at <a href="/chat" style="color:var(--accent)">sennoric.com/chat</a> — no install needed.</p>
 
       <h3>Features</h3>
       <ul>
@@ -296,7 +296,7 @@
 
     <div class="doc-section" id="sennoric-api">
       <h2>API Keys & Limits</h2>
-      <p class="lead">Sennoric hosts Fresco via an OpenAI-compatible API. Get a key at <a href="/keys" style="color:var(--accent)">axion.amplifiedsmp.org/keys</a>.</p>
+      <p class="lead">Sennoric hosts Fresco via an OpenAI-compatible API. Get a key at <a href="/keys" style="color:var(--accent)">sennoric.com/keys</a>.</p>
 
       <h3>Tiers</h3>
       <table class="cmd-table">
@@ -310,9 +310,9 @@
       <h3>OpenAI-compatible endpoint</h3>
       <div class="code-block">
         <span class="comment"># Base URL</span><br>
-        https://api.amplifiedsmp.org/v1<br><br>
+        https://api.sennoric.com/v1<br><br>
         <span class="comment"># Example request</span><br>
-        curl https://api.amplifiedsmp.org/v1/chat/completions \<br>
+        curl https://api.sennoric.com/v1/chat/completions \<br>
         &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
         &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hi"}]}'
@@ -321,7 +321,7 @@
       <h3>Python (openai library)</h3>
       <div class="code-block">
         from openai import OpenAI<br>
-        client = OpenAI(api_key="axion-sk-…", base_url="https://api.amplifiedsmp.org/v1")<br>
+        client = OpenAI(api_key="axion-sk-…", base_url="https://api.sennoric.com/v1")<br>
         resp = client.chat.completions.create(model="lumen", messages=[{"role":"user","content":"Hi"}])
       </div>
     </div>
@@ -332,7 +332,7 @@
 
       <h3>Creating a team</h3>
       <ol>
-        <li>Go to <a href="/keys" style="color:var(--accent)">axion.amplifiedsmp.org/keys</a> and sign in</li>
+        <li>Go to <a href="/keys" style="color:var(--accent)">sennoric.com/keys</a> and sign in</li>
         <li>Click <strong>+ New team</strong> in the sidebar</li>
         <li>Give the team a name and click <strong>Create team</strong></li>
       </ol>
@@ -351,7 +351,7 @@
         <span class="comment"># Install globally</span><br>
         <span class="prompt">$ </span>npm install -g @axion-labs-ai/quark-cli<br><br>
         <span class="comment"># Or use the install script (checks Node, retries with sudo on EACCES)</span><br>
-        <span class="prompt">$ </span>curl -fsSL https://axion.amplifiedsmp.org/install.sh | sh<br><br>
+        <span class="prompt">$ </span>curl -fsSL https://sennoric.com/install.sh | sh<br><br>
         <span class="comment"># Verify</span><br>
         <span class="prompt">$ </span>axion --version
       </div>

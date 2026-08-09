@@ -16,7 +16,7 @@ on:
         required: true
         type: string
       from:
-        description: 'From header (defaults to Sennoric <noreply@amplifiedsmp.org>)'
+        description: 'From header (defaults to Sennoric <noreply@sennoric.com>)'
         required: false
         type: string
       reply_to:

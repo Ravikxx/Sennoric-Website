@@ -1,7 +1,7 @@
 (function () {
   'use strict'
 
-  const API = 'https://api.amplifiedsmp.org'
+  const API = 'https://api.sennoric.com'
   const view = document.body.dataset.view
   const token = localStorage.getItem('sennoric_token')
 

@@ -1,7 +1,7 @@
 (function () {
   'use strict'
 
-  var API = 'https://api.amplifiedsmp.org'
+  var API = 'https://api.sennoric.com'
   var STORAGE_KEY = 'sennoric_avatar_url'
   var activeToken = null
   var accountPromise = null

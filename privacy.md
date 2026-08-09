@@ -45,7 +45,7 @@ Sennoric does not store your full payment-card number. Square processes payment 
 Your prompt and any file contents, command output, page text, or other context included with it are transmitted to the selected model provider.
 
 - **Third-party providers** such as Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, and OpenCode receive requests directly when you configure and select them.
-- **Fresco** routes through Sennoric's Cloudflare backend at `api.amplifiedsmp.org` and then to Fresco inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
+- **Fresco** routes through Sennoric's Cloudflare backend at `api.sennoric.com` and then to Fresco inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
 - **IP addresses** are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.
 
 ### Voice transcription and text-to-speech
@@ -96,4 +96,4 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 
 ## Contact
 
-For questions, open an issue at [github.com/Ravikxx/Sennoric/issues](https://github.com/Ravikxx/Sennoric/issues) or visit [axion.amplifiedsmp.org](https://axion.amplifiedsmp.org).
+For questions, open an issue at [github.com/Ravikxx/Sennoric/issues](https://github.com/Ravikxx/Sennoric/issues) or visit [sennoric.com](https://sennoric.com).
