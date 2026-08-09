@@ -5,10 +5,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Getting Started — Sennoric Help</title>
-  <meta name="description" content="New to Sennoric? What each product does and how to get your first result.">
+  <meta name="description" content="What Sennoric is, and how to get your first result from the CLI, Desktop App, or Chrome Extension.">
   <link rel="canonical" href="https://sennoric.com/help-getting-started">
   <meta property="og:title" content="Getting Started — Sennoric Help">
-  <meta property="og:description" content="New to Sennoric? What each product does and how to get your first result.">
+  <meta property="og:description" content="What Sennoric is, and how to get your first result from the CLI, Desktop App, or Chrome Extension.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://sennoric.com/help-getting-started">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
@@ -47,34 +47,77 @@
     .nav-btn-ghost { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted2); border: 1px solid var(--border2); transition: color .12s, border-color .12s; }
     .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
-    .breadcrumb { max-width: 1080px; margin: 0 auto; padding: 20px 32px 0; font-size: 12.5px; color: var(--muted); }
+    .breadcrumb { max-width: 900px; margin: 0 auto; padding: 20px 32px 0; font-size: 12.5px; color: var(--muted); }
     .breadcrumb a { color: var(--muted2); }
     .breadcrumb a:hover { color: var(--accent); }
 
-    .page-header { max-width: 1080px; margin: 0 auto; padding: 16px 32px 32px; }
+    .page-header { max-width: 900px; margin: 0 auto; padding: 16px 32px 32px; }
     .page-header .tag { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
     .page-header h1 { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
     .page-header p { color: var(--muted2); font-size: 15px; max-width: 640px; }
 
-    .content { max-width: 1080px; margin: 0 auto; padding: 0 32px 96px; }
+    .toc { max-width: 900px; margin: 0 auto; padding: 0 32px 24px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .toc a {
+      font-size: 12px; padding: 5px 11px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted2);
+    }
+    .toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 0 32px 96px; }
+    .doc-section { margin-bottom: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--border); scroll-margin-top: 80px; }
+    .doc-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .doc-section h2 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 10px; }
+    .doc-section p { font-size: 14px; color: var(--muted2); margin-bottom: 12px; line-height: 1.7; }
+    .doc-section p:last-child { margin-bottom: 0; }
+    .doc-section ul, .doc-section ol { margin: 8px 0 14px 18px; }
+    .doc-section li { font-size: 13px; color: var(--muted2); line-height: 1.65; margin-bottom: 5px; }
+    .doc-section li strong { color: var(--text); }
+
+    .code-block {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 8px; padding: 14px 18px;
+      font-family: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12.5px; color: var(--muted2);
+      overflow-x: auto; line-height: 1.8; margin: 12px 0;
+      white-space: pre;
+    }
+    code {
+      font-family: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12px; background: var(--surface2); color: var(--muted2);
+      padding: 2px 6px; border-radius: 4px;
+    }
+
     .callout {
-      border-radius: 8px; padding: 13px 16px; font-size: 13px; line-height: 1.65; margin-bottom: 28px;
+      border-radius: 8px; padding: 13px 16px;
+      margin: 14px 0; font-size: 13px; line-height: 1.65;
+    }
+    .callout.tip {
       background: rgba(184,162,125,.07); border: 1px solid rgba(184,162,125,.2);
       border-left: 3px solid var(--accent); color: var(--muted2);
     }
-    .callout strong { color: var(--accent); }
+    .callout.tip strong { color: var(--accent); }
+    .callout.warn {
+      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.22);
+      border-left: 3px solid var(--yellow, #fbbf24); color: var(--muted2);
+    }
+    .callout.warn strong { color: var(--yellow, #fbbf24); }
+    .callout.gap {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-left: 3px solid var(--muted); color: var(--muted2);
+    }
+    .callout.gap strong { color: var(--muted2); }
 
-    .article-list { list-style: none; }
-    .article-list li {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      padding: 14px 18px; border: 1px solid var(--border); border-radius: 8px;
-      margin-bottom: 8px; background: var(--surface);
-      font-size: 13.5px; color: var(--text);
+    .cmd-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    .cmd-table th {
+      text-align: left; padding: 8px 12px;
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border); background: var(--surface);
     }
-    .article-list li .badge {
-      font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-      padding: 2px 8px; border-radius: 3px; background: var(--surface2); color: var(--muted); white-space: nowrap;
-    }
+    .cmd-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; background: var(--surface); }
+    .cmd-table tr:last-child td { border-bottom: none; }
+    .cmd-table td:first-child { white-space: nowrap; }
+    .cmd-table .desc { color: var(--muted2); font-size: 12px; }
 
     footer { background: var(--surface); border-top: 1px solid var(--border); text-align: center; padding: 24px 32px; font-size: 13px; color: var(--muted); }
     footer a { color: var(--muted2); }
@@ -83,7 +126,7 @@
     @media (max-width: 600px) {
       nav { padding: 0 16px; }
       .nav-links { display: none; }
-      .page-header, .breadcrumb, .content { padding-left: 16px; padding-right: 16px; }
+      .page-header, .breadcrumb, .content, .toc { padding-left: 16px; padding-right: 16px; }
       .page-header h1 { font-size: 24px; }
     }
   </style>
@@ -110,19 +153,69 @@
 <div class="page-header">
   <div class="tag">Help</div>
   <h1>Getting Started</h1>
-  <p>New to Sennoric? What each product does and how to get your first result.</p>
+  <p>What Sennoric is, and how to get your first result from the CLI, Desktop App, or Chrome Extension.</p>
+</div>
+
+<div class="toc">
+  <a href="#what-is-sennoric">What is Sennoric?</a>
+  <a href="#create-account">Creating an account</a>
+  <a href="#choose-model">Choosing a model / connecting a provider</a>
+  <a href="#quickstart-cli">Quickstart: Axion CLI</a>
+  <a href="#quickstart-desktop">Quickstart: Axion Desktop App</a>
+  <a href="#quickstart-extension">Quickstart: Chrome Extension</a>
 </div>
 
 <div class="content">
-  <div class="callout"><strong>Scaffold only.</strong> These articles aren't written yet — this list is the planned scope so writing can start without re-deciding structure.</div>
-  <ul class="article-list">
-    <li>What is Sennoric? (overview of CLI, Desktop App, Chrome Extension)<span class="badge">Not written</span></li>
-    <li>Creating an account<span class="badge">Not written</span></li>
-    <li>Choosing a model / connecting a provider<span class="badge">Not written</span></li>
-    <li>Quickstart: Axion CLI<span class="badge">Not written</span></li>
-    <li>Quickstart: Axion Desktop App<span class="badge">Not written</span></li>
-    <li>Quickstart: Chrome Extension<span class="badge">Not written</span></li>
-  </ul>
+  <div class="doc-section" id="what-is-sennoric">
+    <h2>What is Sennoric?</h2>
+    <p>Sennoric builds the <strong>Axion</strong> product line — an AI agent that can read, write, and run code, browse the web, and use tools — available in three forms that share the same underlying agent and account:</p>
+    <ul>
+      <li><strong>Axion CLI</strong> — a terminal agent. The most capable surface: full command execution, file editing, MCP servers, scheduled tasks.</li>
+      <li><strong>Axion Desktop App</strong> — a native chat app (Electron) that runs the same agent as the CLI and shares its credentials, models, and saved conversations.</li>
+      <li><strong>Chrome Extension</strong> — a browser sidebar that can read the current page and, with your approval, click, type, and navigate for you.</li>
+    </ul>
+    <p>Sennoric also trains its own model family, <strong>Solan</strong> (Glyph, Fresco, Mosaic, Relic), which you can chat with for free on the website without an API key.</p>
+  </div>
+
+  <div class="doc-section" id="create-account">
+    <h2>Creating an account</h2>
+    <p>An account is created the first time you sign in — from the Desktop App's sign-in window, or on sennoric.com. Sign-in supports email/password, Google, GitHub, or Discord.</p>
+    <div class="callout tip"><strong>One account, every surface.</strong> The same sennoric.com account is used for web chat, API key management, and Desktop App sign-in.</div>
+  </div>
+
+  <div class="doc-section" id="choose-model">
+    <h2>Choosing a model / connecting a provider</h2>
+    <p>You don't need an API key to get started — Sennoric includes free models with no key required:</p>
+    <div class="code-block">/model veil        ← Sennoric's own Glyph model, free, no key
+/model groq        ← Llama 3.3 70B via Groq, free
+/model gemini      ← Gemini 2.0 Flash, generous free tier</div>
+    <p>To use a paid provider (Anthropic, OpenAI, etc.), set a key with <code>/api</code> or an environment variable — see the <a href="/help-cli#install" style="color:var(--accent)">CLI installation guide</a>.</p>
+  </div>
+
+  <div class="doc-section" id="quickstart-cli">
+    <h2>Quickstart: Axion CLI</h2>
+    <div class="code-block">curl -fsSL https://sennoric.com/install.sh | sh
+axion</div>
+    <p>That's it — no cloning or building. Once it's running, set a key or pick a free model, then just ask it to do something in your current directory.</p>
+  </div>
+
+  <div class="doc-section" id="quickstart-desktop">
+    <h2>Quickstart: Axion Desktop App</h2>
+    <p>Install the app, then click <strong>Sign in</strong> or <strong>Create account</strong>. This opens Sennoric's authorization page in a sandboxed window; approve it and you're in.</p>
+    <p>Because the Desktop App shares the CLI's credential store (<code>~/.axion</code>), any provider key you've already set up in the CLI is available immediately — no need to re-enter it.</p>
+  </div>
+
+  <div class="doc-section" id="quickstart-extension">
+    <h2>Quickstart: Chrome Extension</h2>
+    <p>The extension is currently install-from-source only (not yet on the Chrome Web Store):</p>
+    <ul>
+      <li>Clone or download the extension repository.</li>
+      <li>Open <code>chrome://extensions</code>, enable <strong>Developer mode</strong>.</li>
+      <li>Click <strong>Load unpacked</strong> and select the repository folder.</li>
+      <li>Press <code>Alt+Shift+A</code> or click the toolbar icon to open the sidebar.</li>
+    </ul>
+    <p>Then import your CLI's model/key configuration in one step — see the <a href="/help-extension#import" style="color:var(--accent)">Extension guide</a> — instead of setting keys up a second time.</p>
+  </div>
 </div>
 
 <footer>
