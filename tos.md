@@ -68,4 +68,4 @@ These Terms may be updated from time to time. Continued use of the Service after
 
 ## Contact
 
-For questions, open an issue at [github.com/Ravikxx/Sennoric/issues](https://github.com/Ravikxx/Sennoric/issues) or visit [axion.amplifiedsmp.org](https://axion.amplifiedsmp.org).
+For questions, open an issue at [github.com/Ravikxx/Sennoric/issues](https://github.com/Ravikxx/Sennoric/issues) or visit [sennoric.com](https://sennoric.com).

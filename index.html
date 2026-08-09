@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sennoric — Free, Open AI Models</title>
   <meta name="description" content="Sennoric builds and hosts free AI models. Create a free account to chat with Fresco in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
-  <link rel="canonical" href="https://axion.amplifiedsmp.org/">
+  <link rel="canonical" href="https://sennoric.com/">
   <meta property="og:title" content="Sennoric — Free, Open AI Models">
   <meta property="og:description" content="Create a free account to chat with Fresco, use the OpenAI-compatible API, or bring Sennoric into your terminal.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://axion.amplifiedsmp.org/">
-  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta property="og:url" content="https://sennoric.com/">
+  <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -356,7 +356,7 @@
       <div class="chat">
         <div class="chat-bar">
           fresco-1.2.5
-          <span class="right">api.amplifiedsmp.org</span>
+          <span class="right">api.sennoric.com</span>
         </div>
         <div class="chat-body" id="chat-body"></div>
         <div class="chat-status">
@@ -416,7 +416,7 @@
 
     <div class="code-block">
       <span class="comment"># free Sennoric account and API key required</span><br>
-      <span class="prompt">$ </span><span class="cmd">curl https://api.amplifiedsmp.org/v1/chat/completions \</span><br>
+      <span class="prompt">$ </span><span class="cmd">curl https://api.sennoric.com/v1/chat/completions \</span><br>
       <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</span><br>
       <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $SENNORIC_API_KEY"</span> \</span><br>
       <span class="cmd">&nbsp;&nbsp;-d <span class="str">'{"model": "lumen", "messages": [{"role": "user", "content": "hello!"}]}'</span></span>
@@ -498,7 +498,7 @@
 
   const healthController = new AbortController()
   const healthTimeout = setTimeout(() => healthController.abort(), 6000)
-  fetch('https://api.amplifiedsmp.org/health', { signal: healthController.signal })
+  fetch('https://api.sennoric.com/health', { signal: healthController.signal })
     .then((r) => r.json())
     .then((d) => {
       // `ok` is just the API worker; `model_up` is a real probe of the model.
@@ -522,7 +522,7 @@
   const FRESCO_CODE = [
     { text: 'from ', cls: 'kw' }, { text: 'openai ' }, { text: 'import ', cls: 'kw' }, { text: 'OpenAI\n\n' },
     { text: 'client = ' }, { text: 'OpenAI', cls: 'fn' }, { text: '(\n' },
-    { text: '    base_url=' }, { text: '"https://api.amplifiedsmp.org/v1"', cls: 'str' }, { text: ',\n' },
+    { text: '    base_url=' }, { text: '"https://api.sennoric.com/v1"', cls: 'str' }, { text: ',\n' },
     { text: '    api_key=' }, { text: '"sk-axion-..."', cls: 'str' }, { text: ',\n' },
     { text: ')' },
   ]

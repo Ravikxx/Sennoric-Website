@@ -5,7 +5,7 @@
  */
 (function () {
   'use strict'
-  var API = 'https://api.amplifiedsmp.org'
+  var API = 'https://api.sennoric.com'
 
   // Safety net for pages that don't also load storage-migrate.js directly:
   // pre-rebrand axion_* keys still hold a signed-in user's real session.

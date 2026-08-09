@@ -12,7 +12,7 @@ const replyTo = process.env.REPLY_TO || undefined
 if (!to || !subject || !html) { console.error('TO, SUBJECT, and HTML env vars are required'); process.exit(1) }
 
 ;(async () => {
-  const res = await fetch('https://api.amplifiedsmp.org/webhook/send-email', {
+  const res = await fetch('https://api.sennoric.com/webhook/send-email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Webhook-Secret': secret },
     body: JSON.stringify({ to, subject, html, from, replyTo }),

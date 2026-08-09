@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sennoric install script — curl -fsSL https://axion.amplifiedsmp.org/install.sh | sh
+# Sennoric install script — curl -fsSL https://sennoric.com/install.sh | sh
 set -e
 
 PACKAGE="@axion-labs-ai/quark-cli"
