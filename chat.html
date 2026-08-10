@@ -1799,7 +1799,7 @@
     if (sandboxModeLoaded || !sessionToken) return
     sandboxModeLoaded = true
     try {
-      const res = await sennoricFetch(`${API}/dashboard/prefs`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/account/preferences`, { headers: authHeaders() })
       if (res.ok) { const data = await res.json(); sandboxMode = data.sandbox_mode === 'auto' ? 'auto' : 'ask' }
     } catch {}
   }
@@ -4208,7 +4208,7 @@
     if (openChatId) history.replaceState(null, '', location.pathname)
     if (!sessionToken) return   // show auth overlay
     try {
-      const res = await sennoricFetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
+      const res = await sennoricFetch(`${API}/account/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (!res.ok) { showAuthenticationRequired('Your session expired. Sign in again to continue.'); return }
       await showApp()
       if (openChatId) switchChat(openChatId)

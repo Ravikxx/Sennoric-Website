@@ -317,7 +317,7 @@
     document.getElementById('account-email').textContent = userEmail || 'Signed in'
     document.getElementById('avatar').textContent = (userEmail || 'A').trim().charAt(0) || 'A'
     try {
-      const res = await api('/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } })
+      const res = await api('/account/keys', { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (res.status === 401) { signOutLocally(); return false }
       if (!res.ok) return true
       const data = await res.json()

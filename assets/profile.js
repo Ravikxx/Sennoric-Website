@@ -102,7 +102,7 @@
 
   var profileController = new AbortController()
   var profileTimeout = setTimeout(function () { profileController.abort() }, 8000)
-  fetch(API + '/dashboard/account', {
+  fetch(API + '/account', {
     headers: { Authorization: 'Bearer ' + token },
     signal: profileController.signal,
   })

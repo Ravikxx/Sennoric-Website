@@ -1001,8 +1001,8 @@
   async function loadKeys() {
     try {
       const [keysRes, accountRes] = await Promise.all([
-        sennoricFetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } }),
-        sennoricFetch(API + '/dashboard/account', { headers: { Authorization: `Bearer ${sessionToken}` } }),
+        sennoricFetch(API + '/account/keys', { headers: { Authorization: `Bearer ${sessionToken}` } }),
+        sennoricFetch(API + '/account', { headers: { Authorization: `Bearer ${sessionToken}` } }),
       ]);
       if (!keysRes.ok) throw new Error('Session expired');
       const keysData = await keysRes.json();
@@ -1145,7 +1145,7 @@
     const name = document.getElementById('new-key-name').value.trim();
     if (!name) { document.getElementById('new-key-name').focus(); return; }
     try {
-      const res = await sennoricFetch(API + '/dashboard/keys', {
+      const res = await sennoricFetch(API + '/account/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ label: name }),
@@ -1182,7 +1182,7 @@
     if (revokeTarget === null) return;
     const key = keys[revokeTarget];
     try {
-      const res = await sennoricFetch(API + '/dashboard/keys/' + key.id, { method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` } });
+      const res = await sennoricFetch(API + '/account/keys/' + key.id, { method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` } });
       if (!res.ok) throw new Error('Failed to revoke');
       keys.splice(revokeTarget, 1); renderKeys(); renderUsage();
     } catch (e) { alert(e.message); }
@@ -1208,7 +1208,7 @@
   // Daily chart
   async function loadDailyChart() {
     try {
-      const res = await sennoricFetch(API + '/dashboard/daily', { headers: { Authorization: `Bearer ${sessionToken}` } })
+      const res = await sennoricFetch(API + '/account/keys/daily', { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (!res.ok) return
       const { daily } = await res.json()
       if (!daily?.length) return
@@ -1670,7 +1670,7 @@
     }
     if (!sessionToken) return;
     try {
-      const res = await sennoricFetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } });
+      const res = await sennoricFetch(API + '/account/keys', { headers: { Authorization: `Bearer ${sessionToken}` } });
       if (!res.ok) { sessionToken = null; localStorage.removeItem('sennoric_token'); SennoricAccountProfile.clear(); return; }
       currentUser = { email: localStorage.getItem('sennoric_email') || 'your account' };
       await showDashboard();

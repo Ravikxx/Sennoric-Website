@@ -547,7 +547,7 @@
     document.getElementById('usage-content').style.display = '';
     document.getElementById('error-panel').style.display = 'none';
     try {
-      const response = await fetchT(API + '/dashboard/account', {
+      const response = await fetchT(API + '/account', {
         headers: { Authorization: `Bearer ${sessionToken}` },
       });
       if (response.status === 401) {

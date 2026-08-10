@@ -571,7 +571,7 @@
     uploadButton.textContent = 'Uploading…';
     msg.textContent = '';
     try {
-      const response = await fetchT(API + '/dashboard/avatar', {
+      const response = await fetchT(API + '/account/avatar', {
         method: 'PUT',
         headers: { 'Content-Type': file.type || 'application/octet-stream', ...authHeaders },
         body: file,
@@ -602,7 +602,7 @@
     removeButton.disabled = true;
     msg.textContent = '';
     try {
-      const response = await fetchT(API + '/dashboard/avatar', {
+      const response = await fetchT(API + '/account/avatar', {
         method: 'DELETE',
         headers: authHeaders,
       });
@@ -630,7 +630,7 @@
   // Notifications
   async function loadPrefs() {
     try {
-      const res = await fetchT(API + '/dashboard/prefs', { headers: authHeaders });
+      const res = await fetchT(API + '/account/preferences', { headers: authHeaders });
       const p = await res.json();
       document.getElementById('pref-limit').checked = p.notify_limit !== 0;
       document.getElementById('pref-announcements').checked = p.notify_announcements !== 0;
@@ -646,7 +646,7 @@
       notify_scheduled: document.getElementById('pref-scheduled').checked,
     };
     try {
-      const res = await fetchT(API + '/dashboard/prefs', {
+      const res = await fetchT(API + '/account/preferences', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(body),
@@ -662,7 +662,7 @@
     const msg = document.getElementById('sandbox-mode-msg');
     const body = { sandbox_mode: document.getElementById('pref-sandbox-auto').checked ? 'auto' : 'ask' };
     try {
-      const res = await fetchT(API + '/dashboard/prefs', {
+      const res = await fetchT(API + '/account/preferences', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(body),
@@ -675,7 +675,7 @@
     setTimeout(() => { msg.textContent = ''; }, 2500);
   }
 
-  // Usage & billing (real data — /dashboard/keys + /dashboard/daily)
+  // Usage & billing (real data — /account/keys + /account/keys/daily)
   // Both run concurrently, not sequentially — otherwise a timed-out first
   // request delays the second request's own timeout by the same amount.
   function loadUsage() {
@@ -779,7 +779,7 @@
 
   async function loadKeyStats() {
     try {
-      const res = await fetchT(API + '/dashboard/keys', { headers: authHeaders });
+      const res = await fetchT(API + '/account/keys', { headers: authHeaders });
       if (!res.ok) throw new Error();
       const data = await res.json();
       const keys = data.keys || [];
@@ -794,7 +794,7 @@
 
   async function loadDailyUsage() {
     try {
-      const res = await fetchT(API + '/dashboard/daily', { headers: authHeaders });
+      const res = await fetchT(API + '/account/keys/daily', { headers: authHeaders });
       if (!res.ok) throw new Error();
       const { daily } = await res.json();
       if (!daily || !daily.some(d => d.count > 0)) {
@@ -853,7 +853,7 @@
     const msg = document.getElementById('reset-msg');
     btn.disabled = true; btn.textContent = 'Sending…';
     try {
-      const res = await fetchT(API + '/dashboard/change-password/request', { method: 'POST', headers: authHeaders });
+      const res = await fetchT(API + '/account/password-reset', { method: 'POST', headers: authHeaders });
       if (!res.ok) throw new Error();
       msg.textContent = 'Check your inbox for a reset link.'; msg.className = 'status-msg ok';
     } catch {
@@ -931,7 +931,7 @@
       return;
     }
     try {
-      const res = await fetchT(API + '/dashboard/account', { method: 'DELETE', headers: authHeaders });
+      const res = await fetchT(API + '/account', { method: 'DELETE', headers: authHeaders });
       if (!res.ok) throw new Error();
       logout();
     } catch {
