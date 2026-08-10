@@ -50,7 +50,7 @@
     activeToken = token
     var controller = new AbortController()
     var timeout = setTimeout(function () { controller.abort() }, 8000)
-    accountPromise = fetch(API + '/dashboard/account', {
+    accountPromise = fetch(API + '/account', {
       headers: { Authorization: 'Bearer ' + token },
       signal: controller.signal,
     }).then(function (response) {
