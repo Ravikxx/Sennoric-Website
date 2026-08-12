@@ -17,6 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site-shell.css">
+  <link rel="stylesheet" href="/assets/mobile.css">
   <script src="/assets/site-nav.js" defer></script>
   <style>
     :root{--bg:#faf9f5;--surface:#f1ede3;--surface2:#e8e2d4;--text:#171715;--muted:#716e66;--gold:#9a7b45;--gold2:#7c6030;--ink:#201f1b;--paper:#f8f4ea;--line:#ded8ca}
@@ -24,7 +25,7 @@
     a{color:inherit;text-decoration:none}::selection{background:rgba(154,123,69,.22)}
     nav{height:76px;padding:0 54px;display:flex;align-items:center;gap:30px;position:relative;z-index:5}
     .brand{display:flex;align-items:center;gap:9px;font:600 15px "IBM Plex Mono",monospace;letter-spacing:.03em;margin-right:10px}.brand img{width:27px;height:27px}
-    .nav-link{color:#514f49;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:14px}.nav-link:hover{color:var(--text)}.nav-actions{margin-left:auto;display:flex;gap:9px;align-items:center}
+    .nav-link{color:#514f49;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:14px}.nav-link:hover{color:var(--text)}.nav-right{margin-left:auto;display:flex;gap:9px;align-items:center}
     .nav-button{border:1px solid #cfc8b8;border-radius:999px;padding:9px 16px;color:#3e3b35;font:500 12px "IBM Plex Mono",monospace}.nav-button.primary{background:#171715;border-color:#171715;color:#faf9f5}
     header{max-width:1080px;margin:0 auto;padding:48px 36px 44px;text-align:center}
     .meta{display:flex;flex-direction:column;align-items:center}.category{color:var(--text);font:600 14px "IBM Plex Sans",system-ui,sans-serif}.date{margin-top:25px;color:#4c4943;font:400 14px "IBM Plex Sans",system-ui,sans-serif}
@@ -39,14 +40,14 @@
     .closing{font-size:36px;line-height:1.25;color:var(--text);padding-top:26px}.closing em{color:var(--gold2);font-style:normal}
     footer{border-top:1px solid var(--line);padding:36px;color:var(--muted);font:500 12px "IBM Plex Mono",monospace;text-align:center}footer a:hover{color:var(--text)}
     @media(prefers-reduced-motion:reduce){*{animation:none!important}}
-    @media(max-width:760px){nav{padding:0 18px;height:68px}.nav-link{display:none}.nav-actions .nav-button:not(.primary){display:none}header{padding:42px 21px 34px}.date{margin-top:18px}.hero{padding:0 20px;margin-bottom:64px}.hero-frame{min-height:390px;aspect-ratio:.92/1}.hero-caption{left:17px;right:17px}article{padding:0 22px 84px}.opening{font-size:27px!important}article h2{font-size:38px}h1{font-size:clamp(60px,18vw,88px)}}
+    @media(max-width:760px){nav{padding:0 18px;height:68px}.nav-link{display:none}.nav-right .nav-button:not(.primary){display:none}header{padding:42px 21px 34px}.date{margin-top:18px}.hero{padding:0 20px;margin-bottom:64px}.hero-frame{min-height:390px;aspect-ratio:.92/1}.hero-caption{left:17px;right:17px}article{padding:0 22px 84px}.opening{font-size:27px!important}article h2{font-size:38px}h1{font-size:clamp(60px,18vw,88px)}}
   </style>
 </head>
 <body>
   <nav>
     <a class="brand" href="/"><img src="/assets/logo-spiral.svg" alt="Sennoric">SENnORIC</a>
     <a class="nav-link" href="/models">Models</a><a class="nav-link" href="/chat">Chat</a><a class="nav-link" href="/docs">Docs</a><a class="nav-link active" href="/announcements">Announcements</a>
-    <div class="nav-actions"><a class="nav-button" href="https://github.com/Ravikxx/Sennoric">GitHub</a><a class="nav-button primary" href="/chat">Open Sennoric</a></div>
+    <div class="nav-right"><a class="nav-button" href="https://github.com/Ravikxx/Sennoric">GitHub</a><a class="nav-button primary" href="/chat">Open Sennoric</a></div>
     <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
   </nav>
   <main>
@@ -103,6 +104,6 @@
       <p class="closing">A model can help with the sentence. It does not get to sign your name. A company can build the tool. It does not get to sell your attention.<br><br><em>And Sennoric will remain ad- and watermark-free.</em></p>
     </article>
   </main>
-  <footer>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></footer>
+  <footer>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></footer>
 </body>
 </html>

@@ -277,16 +277,14 @@
   <button class="filter-chip" data-cat="update" onclick="filterAnns('update', this)">Updates</button>
   <button class="filter-chip" data-cat="safety" onclick="filterAnns('safety', this)">Safety</button>
   <button class="filter-chip" data-cat="notice" onclick="filterAnns('notice', this)">Notices</button>
-  <!-- Revealed by loadAnnouncements() only when a backend row arrives without a
-       category, so the "Announcement" label always has a filter behind it. -->
-  <button class="filter-chip" id="chip-announcement" hidden data-cat="announcement" onclick="filterAnns('announcement', this)">Announcements</button>
+  <button class="filter-chip" id="chip-announcement" data-cat="announcement" onclick="filterAnns('announcement', this)">Announcements</button>
 </nav>
 
 <main>
-  <article class="ann notice lead open" data-cat="notice" id="no-invisible-ink">
+  <article class="ann announcement lead open" data-cat="announcement" id="no-invisible-ink">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
       <span class="ann-when">August 12, 2026</span>
-      <span class="ann-cat notice">Announcement</span>
+      <span class="ann-cat announcement">Announcement</span>
       <span class="ann-title">No invisible ink.</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
