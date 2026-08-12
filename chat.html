@@ -123,13 +123,25 @@
     .chat-item:hover .chat-item-del { opacity: 1; }
     .chat-item:focus-within .chat-item-del { opacity: 1; }
     .chat-item-del:hover { color: var(--red); background: rgba(248,113,113,.1); }
-    .chat-item-pin.pinned { opacity: 1; color: var(--brand-logo, #e8b534); }
+    .chat-item-pin.pinned { color: var(--brand-logo, #e8b534); }
     .chat-item-pin.pinned:hover { color: var(--brand-logo, #e8b534); background: rgba(232,181,52,.12); }
     .chat-list-section-title {
       padding: 10px 10px 4px; color: var(--muted); font-size: 11px;
       font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
     }
     .chat-list-section-title:first-child { padding-top: 2px; }
+
+    /* iPhone-app style conversation rows */
+    .lucide { width: 1em; height: 1em; stroke-width: 1.9; flex-shrink: 0; vertical-align: middle; }
+    .chat-item-icon { width: 22px; height: 22px; flex: 0 0 22px; display: flex; align-items: center; justify-content: center; color: var(--muted2); }
+    .chat-item-icon.pinned { color: var(--brand-logo, #e8b534); }
+    .chat-item-icon .lucide { width: 18px; height: 18px; }
+    .chat-item-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .chat-item-title { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; color: inherit; }
+    .chat-item-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chat-item-actions { display: flex; align-items: center; gap: 1px; }
+    .chat-item-del .lucide { width: 15px; height: 15px; }
+    .topbar-branch-badge .lucide { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
 
     .sidebar-bottom { border-top: 1px solid var(--border); padding: 8px; }
     .sidebar-link {
@@ -340,6 +352,24 @@
       cursor: pointer; transition: border-color .12s, background .12s;
     }
     .tool-lock-banner .btn-sm:hover { border-color: var(--accent); background: var(--surface); }
+
+    .fresco13-banner {
+      display: flex; align-items: center; gap: 10px;
+      max-width: 760px; margin: 0 auto 10px; padding: 9px 12px 9px 14px;
+      border: 1px solid rgba(59,130,246,.35); border-radius: 11px;
+      background: rgba(59,130,246,.10); font-size: 12.5px; color: var(--text);
+    }
+    .fresco13-banner .fresco13-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #3b82f6; flex-shrink: 0;
+    }
+    .fresco13-banner .fresco13-text { flex: 1; line-height: 1.4; }
+    .fresco13-banner .fresco13-text strong { color: #3b82f6; }
+    .fresco13-banner .fresco13-close {
+      flex-shrink: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+      border: none; background: none; color: var(--muted2); cursor: pointer; border-radius: 6px;
+      transition: background .12s, color .12s;
+    }
+    .fresco13-banner .fresco13-close:hover { background: rgba(59,130,246,.14); color: #3b82f6; }
 
     /* Empty / greeting */
     .greeting {
@@ -991,6 +1021,41 @@
       gap: 8px;
       min-height: 36px;
     }
+    .lofi-controls { position: relative; display: flex; align-items: center; gap: 4px; }
+    .lofi-toggle,
+    .lofi-menu-button {
+      height: 36px; display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid transparent; background: transparent; color: var(--muted2);
+      cursor: pointer; transition: border-color .15s, background .15s, color .15s, transform .15s;
+    }
+    .lofi-toggle { gap: 7px; padding: 0 10px; border-radius: 11px; font-size: 12px; font-weight: 600; letter-spacing: .01em; }
+    .lofi-menu-button { width: 32px; border-radius: 10px; }
+    .lofi-toggle:hover,
+    .lofi-menu-button:hover,
+    .lofi-toggle:focus-visible,
+    .lofi-menu-button:focus-visible { border-color: var(--border2); background: var(--surface3); color: var(--text); outline: none; }
+    .lofi-toggle:active,
+    .lofi-menu-button:active { transform: translateY(1px); }
+    .lofi-toggle.active { border-color: color-mix(in srgb, var(--accent) 60%, var(--border2)); background: color-mix(in srgb, var(--accent) 13%, transparent); color: var(--accent-d); }
+    .lofi-mark { width: 19px; height: 19px; flex: 0 0 auto; }
+    .lofi-mark .lofi-pulse { transform-origin: center; }
+    .lofi-toggle.active .lofi-pulse { animation: lofi-pulse 1.6s ease-in-out infinite; }
+    @keyframes lofi-pulse { 0%,100%{transform:scaleY(.55)} 50%{transform:scaleY(1)} }
+    .lofi-popover {
+      position: absolute; right: 0; bottom: calc(100% + 9px); z-index: 80;
+      width: min(270px, calc(100vw - 28px)); padding: 14px;
+      border: 1px solid var(--border2); border-radius: 15px;
+      background: var(--surface3); color: var(--text); box-shadow: 0 16px 44px rgba(0,0,0,.28);
+    }
+    .lofi-popover[hidden] { display: none; }
+    .lofi-popover-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 13px; }
+    .lofi-now { min-width: 0; flex: 1; }
+    .lofi-eyebrow { color: var(--muted); font: 600 9px "IBM Plex Mono",ui-monospace,monospace; letter-spacing: .11em; text-transform: uppercase; }
+    .lofi-track-title { margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+    .lofi-next { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--border2); border-radius: 10px; background: var(--surface2); color: var(--text); cursor: pointer; }
+    .lofi-next:hover { border-color: var(--accent); }
+    .lofi-volume-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; color: var(--muted2); font-size: 11px; }
+    .lofi-volume { width: 100%; accent-color: var(--accent); cursor: pointer; }
     .model-picker {
       position: relative;
       z-index: 8;
@@ -1514,7 +1579,7 @@
     </div>
     <div class="project-filter-chip" id="project-filter-chip" style="display:none">
       <span id="project-filter-name"></span>
-      <button type="button" onclick="clearProjectFilter()" aria-label="Clear project filter">✕</button>
+      <button type="button" onclick="clearProjectFilter()" aria-label="Clear project filter"><i data-lucide="x"></i></button>
     </div>
     <div class="chat-list" id="chat-list"></div>
   </div>
@@ -1704,7 +1769,7 @@
 <!-- Main -->
 <div class="main empty-chat" id="main">
   <div class="topbar">
-    <button class="hamburger" onclick="toggleDrawer()" aria-label="Menu">☰</button>
+    <button class="hamburger" onclick="toggleDrawer()" aria-label="Menu"><i data-lucide="menu"></i></button>
     <span class="topbar-title" id="topbar-title">New chat</span>
     <button type="button" class="topbar-branch-badge" id="topbar-branch-badge" style="display:none"></button>
     <div class="topbar-spacer"></div>
@@ -1723,6 +1788,13 @@
       <div class="tool-lock-banner" id="tool-lock-banner" style="display:none">
         <span>Code execution was disabled for this chat after a repeated call.</span>
         <button class="btn-sm" onclick="reenableToolAccess()">Re-enable</button>
+      </div>
+      <div class="fresco13-banner" id="fresco13-banner" style="display:none">
+        <span class="fresco13-dot" aria-hidden="true"></span>
+        <span class="fresco13-text"><strong>Fresco 1.3</strong> is now the default model.</span>
+        <button class="fresco13-close" onclick="dismissFresco13Banner()" aria-label="Dismiss">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
       </div>
       <div class="input-row">
         <textarea class="input-box" id="user-input" placeholder="Message…" rows="1"
@@ -1750,6 +1822,34 @@
                 <span class="model-menu-dot" aria-hidden="true"></span>
                 <span id="model-catalog-status">Checking model availability…</span>
               </div>
+            </div>
+          </div>
+          <div class="lofi-controls">
+            <button class="lofi-toggle" id="lofi-toggle" type="button" aria-pressed="false" title="Turn Lo-Fi on">
+              <svg class="lofi-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.2"/>
+                <path class="lofi-pulse" d="M5 13v-2M8 15V9M16 15V9M19 13v-2"/>
+              </svg>
+              <span>Lo-Fi</span>
+            </button>
+            <button class="lofi-menu-button" id="lofi-menu-button" type="button" aria-label="Lo-Fi controls" aria-haspopup="dialog" aria-expanded="false">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+            </button>
+            <div class="lofi-popover" id="lofi-popover" role="dialog" aria-label="Lo-Fi controls" hidden>
+              <div class="lofi-popover-head">
+                <div class="lofi-now">
+                  <div class="lofi-eyebrow"><span id="lofi-status">Off</span> · shuffled</div>
+                  <div class="lofi-track-title" id="lofi-track-title">Shuffle ready</div>
+                </div>
+                <button class="lofi-next" id="lofi-next" type="button" title="Next track" aria-label="Next Lo-Fi track">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 5.5v13l10-6.5L5 5.5Zm11.5 0h2v13h-2z"/></svg>
+                </button>
+              </div>
+              <label class="lofi-volume-row" for="lofi-volume">
+                <span>Volume</span>
+                <input class="lofi-volume" id="lofi-volume" type="range" min="0" max="100" value="42">
+                <span aria-hidden="true"><i data-lucide="music"></i></span>
+              </label>
             </div>
           </div>
           <button class="send-btn" id="send-btn" onclick="onSendClick()" title="Send" aria-label="Send message">
@@ -1780,9 +1880,26 @@
   </div>
 </div>
 
-<script src="/assets/fetch-timeout.js"></script>
-<script src="/assets/account-profile.js"></script>
-<script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    (function () {
+      function lucideRefresh() { if (window.lucide) window.lucide.createIcons(); }
+      lucideRefresh();
+      var raf = 0;
+      var obs = new MutationObserver(function () {
+        if (raf) return;
+        raf = requestAnimationFrame(function () {
+          raf = 0;
+          if (document.querySelector('i[data-lucide]')) lucideRefresh();
+        });
+      });
+      if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
+  <script src="/assets/fetch-timeout.js"></script>
+  <script src="/assets/account-profile.js"></script>
+  <script src="/assets/lofi-player.js"></script>
+  <script>
   const API = 'https://api.sennoric.com'
 
   let sessionToken = localStorage.getItem('sennoric_token') || null
@@ -1813,6 +1930,16 @@
   let chats = []          // [{ id, title, messages, updated, loaded, generation }]
   let currentId = null
 
+  function dismissFresco13Banner() {
+    localStorage.setItem('sennoric_fresco13_banner_dismissed', '1')
+    const el = document.getElementById('fresco13-banner')
+    if (el) el.style.display = 'none'
+  }
+  function initFresco13Banner() {
+    const el = document.getElementById('fresco13-banner')
+    if (el && !localStorage.getItem('sennoric_fresco13_banner_dismissed')) el.style.display = 'flex'
+  }
+
   function authHeaders(extra) { return Object.assign({ Authorization: `Bearer ${sessionToken}` }, extra || {}) }
   function currentChat() { return chats.find(c => c.id === currentId) || null }
   function generationActive(c) { return !!c?.generation && ACTIVE_GENERATION_STATUSES.has(c.generation.status) }
@@ -1822,6 +1949,18 @@
   // `model` in chat completion requests — they stay 'lumen'/'veil' even
   // though the tiers are branded Fresco/Glyph everywhere a person reads them.
   const MODEL_CATALOG = {
+    // No wire id exists for this yet — Fresco 1.3 is still in safety
+    // evaluation. Listed here purely so it shows in the picker (disabled,
+    // since it's never in availableModels) as a preview of the upcoming
+    // lineup. Never becomes selectable/callable until a real model id
+    // backs it.
+    fresco13: {
+      label: 'Fresco 1.3',
+      provider: 'Sennoric',
+      description: 'In safety evaluation — not yet available.',
+      tags: [],
+      statusLabel: 'Soon',
+    },
     lumen: {
       label: 'Fresco 1.2.5',
       provider: 'Sennoric',
@@ -1867,7 +2006,7 @@
     if (!options) return
 
     const liveIds = [...availableModels.keys()]
-    const ids = [...liveIds, ...FALLBACK_MODEL_IDS.filter(id => !availableModels.has(id))]
+    const ids = ['fresco13', ...liveIds, ...FALLBACK_MODEL_IDS.filter(id => !availableModels.has(id))]
     if (!availableModels.has(selectedModel)) {
       selectedModel = liveIds[0] || 'lumen'
       localStorage.setItem('sennoric_chat_model', selectedModel)
@@ -2154,7 +2293,7 @@
     const badge = document.getElementById('topbar-branch-badge')
     if (!c || !c.branched_from_chat_id) { badge.style.display = 'none'; badge.onclick = null; return }
     const source = chats.find(x => x.id === c.branched_from_chat_id)
-    badge.textContent = source ? `↰ Branched from ${source.title}` : '↰ Branched chat'
+    badge.innerHTML = source ? '<i data-lucide="git-branch"></i> Branched from ' + escHtml(source.title) : '<i data-lucide="git-branch"></i> Branched chat'
     badge.style.display = ''
     badge.onclick = source ? () => switchChat(source.id) : null
     badge.style.cursor = source ? 'pointer' : 'default'
@@ -3057,17 +3196,32 @@
       : d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
+  function relativeTime(ms) {
+    if (!ms) return '';
+    const s = Math.floor((Date.now() - ms) / 1000);
+    if (s < 60) return 'Now';
+    const m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60); if (h < 24) return h + 'h ago';
+    const d = Math.floor(h / 24); if (d < 7) return d + 'd ago';
+    return Math.floor(d / 7) + 'w ago';
+  }
+
   function chatItemHtml(c, spinner) {
-    return `
+      return `
       <div class="chat-item ${c.id === currentId ? 'active' : ''}">
         <button type="button" class="chat-item-open" onclick="switchChat('${c.id}')" ${c.id === currentId ? 'aria-current="page"' : ''}>
-          <span class="chat-item-title">${escHtml(c.title)}</span>
-          ${generationActive(c) ? spinner : ''}
+          <span class="chat-item-icon ${c.pinned ? 'pinned' : ''}" aria-hidden="true">${generationActive(c) ? spinner : (c.pinned ? '<i data-lucide="pin"></i>' : '<i data-lucide="message-square"></i>')}</span>
+          <span class="chat-item-text">
+            <span class="chat-item-title">${escHtml(c.title)}</span>
+            <span class="chat-item-sub">${relativeTime(c.updated)}</span>
+          </span>
         </button>
-        <button type="button" class="chat-item-del chat-item-pin ${c.pinned ? 'pinned' : ''}" onclick="togglePin('${c.id}', event)" title="${c.pinned ? 'Unpin' : 'Pin'}" aria-label="${c.pinned ? 'Unpin' : 'Pin'} ${escHtml(c.title)}">${c.pinned ? '📌' : '📍'}</button>
-        <button type="button" class="chat-item-del" onclick="moveChat('${c.id}', event)" title="Move to project" aria-label="Move ${escHtml(c.title)} to a project">📁</button>
-        <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
-        <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
+        <span class="chat-item-actions">
+          <button type="button" class="chat-item-del chat-item-pin ${c.pinned ? 'pinned' : ''}" onclick="togglePin('${c.id}', event)" title="${c.pinned ? 'Unpin' : 'Pin'}" aria-label="${c.pinned ? 'Unpin' : 'Pin'} ${escHtml(c.title)}"><i data-lucide="pin"></i></button>
+          <button type="button" class="chat-item-del" onclick="moveChat('${c.id}', event)" title="Move to project" aria-label="Move ${escHtml(c.title)} to a project"><i data-lucide="folder"></i></button>
+          <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}"><i data-lucide="pencil"></i></button>
+          <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}"><i data-lucide="x"></i></button>
+        </span>
       </div>`
   }
 
@@ -3458,7 +3612,7 @@
       if (a.mimeType.startsWith('image/')) {
         return `<div class="tool-artifact"><img src="${url}" alt="${escHtml(a.name)}"><div class="tool-artifact-name">${escHtml(a.name)}</div></div>`
       }
-      return `<a class="tool-artifact-file" href="${url}" download="${escHtml(a.name)}">⬇ ${escHtml(a.name)}</a>`
+      return `<a class="tool-artifact-file" href="${url}" download="${escHtml(a.name)}"><i data-lucide="download"></i> ${escHtml(a.name)}</a>`
     }).join('')
   }
 
@@ -3929,7 +4083,7 @@
       }
       if (started.error) {
         live.classList.remove('streaming', 'waiting')
-        live.textContent = '⚠ ' + started.error
+        live.innerHTML = '<i data-lucide="alert-triangle"></i> ' + escHtml(started.error)
         setSendingState(false); abortCtrl = null
         return
       }
@@ -3956,7 +4110,7 @@
     live.classList.remove('streaming', 'waiting')
 
     if (result.status === 'failed') {
-      live.textContent = '⚠ ' + (result.error || 'The reply failed.')
+      live.innerHTML = '<i data-lucide="alert-triangle"></i> ' + escHtml(result.error || 'The reply failed.')
       c.generation = null
       setSendingState(false); abortCtrl = null
       renderChatList()
@@ -4183,6 +4337,7 @@
     document.getElementById('auth-overlay').style.display = 'none'
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
     void loadAccountProfile()
+    initFresco13Banner()
     const modelCatalogReady = initModelSelect()
     renderMessages()
     await Promise.all([fetchChatList(), fetchProjects(), modelCatalogReady.then(fetchSettingsServer)])
