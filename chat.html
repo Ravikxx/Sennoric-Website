@@ -415,6 +415,15 @@
     .send-btn:disabled { opacity: .4; cursor: not-allowed; }
     .send-btn.stop { background: var(--red); }
     .send-btn.stop:hover { background: #e05656; }
+    .dictate-btn {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      border: none; background: transparent; color: var(--muted2); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, color .15s;
+    }
+    .dictate-btn:hover { color: var(--text); background: var(--surface2); }
+    .dictate-btn.active { color: var(--accent); background: var(--surface2); }
+    .dictate-btn:disabled { opacity: .4; cursor: not-allowed; }
     .chat-rename {
       flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--accent);
       color: var(--text); font-size: 13px; border-radius: 5px; padding: 3px 6px;
@@ -1852,6 +1861,9 @@
               </label>
             </div>
           </div>
+          <button class="dictate-btn" id="dictate-btn" type="button" onclick="toggleDictation()" title="Dictate with your voice" aria-label="Dictate with your voice" aria-pressed="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </button>
           <button class="send-btn" id="send-btn" onclick="onSendClick()" title="Send" aria-label="Send message">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
@@ -1982,6 +1994,30 @@
   let availableModels = new Map([['lumen', { id: 'lumen', owned_by: 'axion-labs' }]])
   let selectedModel = localStorage.getItem('sennoric_chat_model') || 'lumen'
   if (!availableModels.has(selectedModel)) selectedModel = 'lumen'
+
+  // Parity with the desktop app: response language + special instructions,
+  // persisted on this device (same pattern as the model choice) and sent as a
+  // system instruction with every generation.
+  const RESPONSE_LANGUAGE_LABELS = {
+    english: 'English', spanish: 'Spanish', french: 'French', german: 'German',
+    italian: 'Italian', portuguese: 'Portuguese', dutch: 'Dutch', polish: 'Polish',
+    russian: 'Russian', arabic: 'Arabic', hindi: 'Hindi', japanese: 'Japanese',
+    korean: 'Korean', 'simplified-chinese': 'Simplified Chinese',
+    'traditional-chinese': 'Traditional Chinese',
+  }
+  let responseLanguagePref = localStorage.getItem('sennoric_response_language') || 'english'
+  let specialInstructionsPref = localStorage.getItem('sennoric_special_instructions') || ''
+  function buildChatInstructions() {
+    const parts = []
+    const lang = (typeof responseLanguagePref === 'string' && responseLanguagePref) ? responseLanguagePref : 'english'
+    if (lang === 'auto') {
+      parts.push("Reply in the same language as the user's latest message unless they explicitly request another language.")
+    } else if (RESPONSE_LANGUAGE_LABELS[lang]) {
+      parts.push(`Reply in ${RESPONSE_LANGUAGE_LABELS[lang]} unless the user explicitly requests another language.`)
+    }
+    if (specialInstructionsPref && specialInstructionsPref.trim()) parts.push(specialInstructionsPref.trim())
+    return parts.join('\n\n')
+  }
 
   function friendlyModelName(id) {
     return String(id || 'model')
@@ -3804,6 +3840,9 @@
       const extraAction = m.role === 'user'
         ? `<button class="msg-action" onclick="editMessage(${idx})">Edit</button>`
         : `<button class="msg-action" onclick="regenerate(${idx})">Retry</button>`
+      const speakAction = m.role === 'assistant'
+        ? `<button class="msg-action" onclick="speakMsg(this, ${idx})">Speak</button>`
+        : ''
       div.innerHTML = `
         ${avatar}
         <div class="msg-body">
@@ -3812,6 +3851,7 @@
           <div class="msg-actions">
             <button class="msg-action" onclick="copyMsg(this, ${idx})">Copy</button>
             ${extraAction}
+            ${speakAction}
             <button class="msg-action" onclick="branchChat(${idx})" title="Start a new chat copied up to this message">Branch</button>
           </div>
         </div>`
@@ -3868,6 +3908,65 @@
   }
 
   function onSendClick() { if (streaming) stopGenerating(); else sendMessage() }
+
+  // Voice input — web SpeechRecognition, transcribed into the composer.
+  let _recognition = null
+  let _dictating = false
+  function dictateLang() {
+    if (responseLanguagePref && responseLanguagePref !== 'auto') return responseLanguagePref.replace('-', '_')
+    return navigator.language || 'en-US'
+  }
+  function stopDictation() {
+    _dictating = false
+    const btn = document.getElementById('dictate-btn')
+    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false') }
+    if (_recognition) { try { _recognition.stop() } catch {} _recognition = null }
+  }
+  function toggleDictation() {
+    const btn = document.getElementById('dictate-btn')
+    const input = document.getElementById('user-input')
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SR) { btn.title = 'Voice input is not supported in this browser'; return }
+    if (_dictating) { stopDictation(); return }
+    let rec
+    try { rec = new SR() } catch { btn.title = 'Voice input is unavailable'; return }
+    _recognition = rec
+    rec.lang = dictateLang()
+    rec.interimResults = true
+    rec.continuous = false
+    rec.onresult = (e) => {
+      let text = ''
+      for (const r of e.results) text += r[0].transcript
+      input.value = text
+      autoResize(input)
+    }
+    rec.onerror = () => stopDictation()
+    rec.onend = () => stopDictation()
+    _dictating = true
+    btn.classList.add('active')
+    btn.setAttribute('aria-pressed', 'true')
+    try { rec.start() } catch { stopDictation() }
+  }
+
+  // Voice output — read an assistant message aloud via speechSynthesis.
+  let _speakingBtn = null
+  function speakMsg(btn, idx) {
+    const c = currentChat()
+    const m = c && c.messages[idx]
+    if (!m || m.role !== 'assistant') return
+    if (!window.speechSynthesis) { btn.title = 'Speech is not supported in this browser'; return }
+    if (_speakingBtn === btn) {
+      window.speechSynthesis.cancel(); _speakingBtn = null; btn.textContent = 'Speak'; return
+    }
+    window.speechSynthesis.cancel()
+    const text = m.content.replace(/\s+/g, ' ').replace(/```[\s\S]*?```/g, '').trim()
+    const u = new SpeechSynthesisUtterance(text)
+    const lang = dictateLang()
+    if (lang) u.lang = lang
+    u.onend = () => { if (_speakingBtn) { _speakingBtn.textContent = 'Speak'; _speakingBtn = null } }
+    _speakingBtn = btn; btn.textContent = 'Stop'
+    window.speechSynthesis.speak(u)
+  }
   // Stop needs to reach three different waiting states, not just the
   // streaming fetch: a card still waiting on Run/Deny, an execution
   // already in flight (aborted via the same signal passed into
@@ -3987,7 +4086,7 @@
     const res = await sennoricFetch(`${API}/chats/${c.id}/generations`, {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ model: selectedModel, tools: toolsForChat(c) }),
+      body: JSON.stringify({ model: selectedModel, tools: toolsForChat(c), instructions: buildChatInstructions() }),
     })
     const data = await res.json().catch(() => ({}))
 

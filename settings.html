@@ -179,6 +179,15 @@
     }
     .settings-toggle:checked::after { transform: translateX(16px); }
 
+    /* Chat preferences */
+    .settings-select, .settings-textarea {
+      background: var(--bg); border: 1px solid var(--border2); color: var(--text);
+      font: inherit; font-size: 13px; border-radius: 6px; padding: 7px 9px; outline: none;
+    }
+    .settings-select { min-width: 200px; }
+    .settings-textarea { width: 100%; margin-top: 8px; resize: vertical; line-height: 1.5; }
+    .settings-select:focus, .settings-textarea:focus { border-color: var(--accent); }
+
     /* Connected accounts */
     .provider-row {
       display: flex; align-items: center; gap: 12px;
@@ -424,6 +433,46 @@
           <span class="status-msg" id="sandbox-mode-msg"></span>
         </div>
       </div>
+
+      <div class="settings-section span-full">
+        <h2>Chat</h2>
+        <p class="section-sub">Applied to new messages in the web chat. Stored on this device.</p>
+        <div class="settings-row" style="align-items:flex-start">
+          <div>
+            <div class="settings-row-label">Response language</div>
+            <div class="settings-row-desc">The language the assistant replies in.</div>
+          </div>
+          <select id="chat-response-language" class="settings-select">
+            <option value="auto">Match my message</option>
+            <option value="english">English</option>
+            <option value="spanish">Spanish</option>
+            <option value="french">French</option>
+            <option value="german">German</option>
+            <option value="italian">Italian</option>
+            <option value="portuguese">Portuguese</option>
+            <option value="dutch">Dutch</option>
+            <option value="polish">Polish</option>
+            <option value="russian">Russian</option>
+            <option value="arabic">Arabic</option>
+            <option value="hindi">Hindi</option>
+            <option value="japanese">Japanese</option>
+            <option value="korean">Korean</option>
+            <option value="simplified-chinese">Simplified Chinese</option>
+            <option value="traditional-chinese">Traditional Chinese</option>
+          </select>
+        </div>
+        <div class="settings-row" style="align-items:flex-start">
+          <div style="flex:1;min-width:0">
+            <div class="settings-row-label">Special instructions</div>
+            <div class="settings-row-desc">Extra guidance sent with every message, like "Be concise" or "You are a helpful tutor."</div>
+            <textarea id="chat-special-instructions" class="settings-textarea" rows="3" maxlength="8000" placeholder="Optional"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+          <button class="btn-sm" onclick="saveChatPrefs()">Save</button>
+          <span class="status-msg" id="chat-prefs-msg"></span>
+        </div>
+      </div>
     </section>
 
     <section class="settings-panel" id="settings-panel-billing" role="tabpanel" aria-labelledby="settings-tab-billing" data-settings-panel="billing" hidden>
@@ -658,6 +707,35 @@
     }
     setTimeout(() => { msg.textContent = ''; }, 2500);
   }
+  const RESPONSE_LANGUAGE_LABELS = {
+    auto: 'Match my message', english: 'English', spanish: 'Spanish', french: 'French',
+    german: 'German', italian: 'Italian', portuguese: 'Portuguese', dutch: 'Dutch',
+    polish: 'Polish', russian: 'Russian', arabic: 'Arabic', hindi: 'Hindi',
+    japanese: 'Japanese', korean: 'Korean', 'simplified-chinese': 'Simplified Chinese',
+    'traditional-chinese': 'Traditional Chinese',
+  };
+  function responseLanguageInstruction(language) {
+    if (language === 'auto' || !language || !RESPONSE_LANGUAGE_LABELS[language])
+      return "Reply in the same language as the user's latest message unless they explicitly request another language.";
+    return `Reply in ${RESPONSE_LANGUAGE_LABELS[language]} unless the user explicitly requests another language.`;
+  }
+  function loadChatPrefs() {
+    const sel = document.getElementById('chat-response-language');
+    const savedLang = localStorage.getItem('sennoric_response_language') || 'english';
+    if (sel) sel.value = RESPONSE_LANGUAGE_LABELS[savedLang] ? savedLang : 'english';
+    const ta = document.getElementById('chat-special-instructions');
+    if (ta) ta.value = localStorage.getItem('sennoric_special_instructions') || '';
+  }
+  function saveChatPrefs() {
+    const msg = document.getElementById('chat-prefs-msg');
+    const lang = document.getElementById('chat-response-language')?.value || 'english';
+    const instr = document.getElementById('chat-special-instructions')?.value || '';
+    localStorage.setItem('sennoric_response_language', lang);
+    localStorage.setItem('sennoric_special_instructions', instr);
+    msg.textContent = 'Saved'; msg.className = 'status-msg ok';
+    setTimeout(() => { msg.textContent = ''; }, 2500);
+  }
+
   async function saveSandboxMode() {
     const msg = document.getElementById('sandbox-mode-msg');
     const body = { sandbox_mode: document.getElementById('pref-sandbox-auto').checked ? 'auto' : 'ask' };
@@ -956,6 +1034,7 @@
       SennoricAccountProfile.cachedAvatar(),
     );
     loadPrefs();
+    loadChatPrefs();
     loadUsage();
     loadProviders();
     loadPlan();
