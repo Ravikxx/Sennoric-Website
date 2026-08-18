@@ -374,7 +374,7 @@
     </svg>
 
   </div>
-  <p class="crucible-art-caption" id="crucible-art-caption">Ternary Adaptive MoE — torn from our own paper</p>
+  <p class="crucible-art-caption" id="crucible-art-caption">Ternary Adaptive MoE — from the TAME paper</p>
 </div>
 <script>
 (function () {
@@ -705,13 +705,13 @@
 
   <div class="section-title">Progress</div>
   <h2>Day 22 Sprint Status</h2>
-  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale, but the 600M run has to be thrown away and done again, because the learning rate was wrong.</p>
+  <p class="lead">Real progress, and one expensive mistake. The architecture holds up at small scale, but the 600M run has to be thrown away and done again because the learning rate was wrong.</p>
 
   <div class="timeline">
     <div class="timeline-item">
       <div class="date">Day ~2</div>
       <h3>14M Proof-of-Concept Trained</h3>
-      <p>We trained a ~14M parameter TAME model on TinyStories for 10,000 steps on a free Colab T4. Despite the tiny scale, the model produces <strong>coherent multi-paragraph English with dialogue and narrative structure</strong> — promising signal for the architecture.</p>
+      <p>A ~14M parameter TAME model was trained on TinyStories for 10,000 steps on a Colab T4. Despite the tiny scale, the model produces <strong>coherent multi-paragraph English with dialogue and narrative structure</strong> — promising signal for the architecture.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Day ~3</div>
@@ -722,13 +722,13 @@
       <div class="date">Scaling up</div>
       <h3>102M Trained, 300M Came Up Short</h3>
       <p>Crucible Axon-Chat (102M) trained on a mixed UltraChat + TinyChat dataset using the full validated stack: topically relevant responses, correct poem formatting, natural stopping points. Scaling the same recipe to 300M was a <strong>partial failure</strong>: enough of it worked to be worth diagnosing, not enough to keep.</p>
-      <p>Having fixed what caused it, we skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B, the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
+      <p>Having fixed what caused it, Sennoric skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B, the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Setback</div>
       <h3>The Learning Rate Was 0.009 Too High — Run Scrapped</h3>
       <p>The training config had the <strong>learning rate set 0.009 above where it should have been</strong>. Written down on its own, 0.009 looks like a rounding error. As a learning rate it is nothing of the sort: they live down in the ten-thousandths, so an extra 0.009 doesn't nudge the value, it swamps it. The model was taking wildly oversized steps from the first batch onward and never had a chance to settle.</p>
-      <p>There's no partial credit to salvage. Everything downstream of that number is untrustworthy, and a run you can't trust is worse than no run at all, because you end up stacking the next experiment on top of it. So the 600M model goes in the bin and we start it again.</p>
+      <p>There's no partial credit to salvage. Everything downstream of that number is untrustworthy, and a run that can't be trusted is worse than no run at all. So the 600M model goes in the bin and the run starts again.</p>
     </div>
     <div class="timeline-item">
       <div class="date">In Progress</div>
@@ -738,8 +738,8 @@
     <div class="timeline-item">
       <div class="date">Next</div>
       <h3>Head-to-Head Against Microsoft's BitDistill</h3>
-      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so our 600M run starts from the same weights. Same base model, same target precision, two different routes there, which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
-      <p>Either result is worth having. If TAME comes out ahead, we have a reason to keep building it. If BitDistill does, we have a better starting point than the one we were about to build ourselves, which is a cheaper thing to learn now than at 300M of wasted compute.</p>
+      <p>Once the rerun finishes, the plan is to evaluate it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so the 600M run starts from the same weights. Same base model, same target precision, two different routes there, which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
+      <p>Either result is worth having. If TAME comes out ahead, there's a reason to keep building it. If BitDistill does, there's a better starting point than the one that was about to be built from scratch — cheaper to learn now than at 300M of wasted compute.</p>
     </div>
   </div>
 
@@ -754,7 +754,7 @@
   <p>Every MoE layer has one full-precision shared expert and 8 ternary routed experts. A learned router produces logits over the 8 routed experts; top-1 gating selects which expert to activate per token. The shared expert processes every token, acting as a stable backbone while routed experts handle specialization.</p>
 
   <h3>Aux-Loss-Free Balancing</h3>
-  <p>Instead of adding an auxiliary loss to encourage balanced expert usage (which competes with the main LM loss gradient), we use per-expert bias terms added directly to the routing logits. After each step, if an expert receives fewer tokens than the expected uniform share, its bias is incremented; if it receives more, its bias is decremented. This is a purely feedback-based mechanism: no gradient competition, no tuning of loss coefficients.</p>
+  <p>Instead of adding an auxiliary loss to encourage balanced expert usage (which competes with the main LM loss gradient), per-expert bias terms are added directly to the routing logits. After each step, if an expert receives fewer tokens than the expected uniform share, its bias is incremented; if it receives more, its bias is decremented. This is a purely feedback-based mechanism: no gradient competition, no tuning of loss coefficients.</p>
 
   <h3>Multi-Token Prediction</h3>
   <p>The model has two LM heads. The primary head predicts t+1 as usual. A secondary head, fed from an intermediate layer, predicts t+2. Both heads contribute to the training loss with a fixed ratio. At inference time, only the primary head is used; the auxiliary head is discarded, so there's no runtime cost.</p>
@@ -803,7 +803,7 @@
     </tr>
     <tr>
       <td><strong>Training hardware</strong></td>
-      <td>Colab T4 (free tier)</td>
+      <td>Colab T4</td>
       <td>TBD</td>
     </tr>
   </table>

@@ -5,137 +5,96 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glyph — Sennoric</title>
-  <meta name="description" content="Meet Glyph 1.1, Sennoric's small, fast model for quick, lightweight conversations.">
+  <meta name="description" content="Glyph 1.1 is Sennoric's small, fast model for lightweight conversations, running on dedicated inference capacity.">
   <link rel="canonical" href="https://sennoric.com/glyph">
-  <meta property="og:title" content="Meet Glyph — Sennoric">
-  <meta property="og:description" content="Glyph 1.1, formerly Veil: a small, fast model running on dedicated inference capacity.">
+  <meta property="og:title" content="Glyph — Sennoric">
+  <meta property="og:description" content="Glyph 1.1: a small, fast model running on dedicated inference capacity.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://sennoric.com/glyph">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/assets/theme-adaptive.css">
-  <link rel="stylesheet" href="/assets/site-shell.css">
+  <meta name="theme-color" content="#f3f0e6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      background: var(--bg); color: var(--text); line-height: 1.6;
-    }
-
-    /* Nav */
-    nav {
-      background: var(--dark); padding: 0 32px;
-      display: flex; align-items: center; height: 56px; gap: 24px;
-      position: sticky; top: 0; z-index: 100;
-    }
-    nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
-    nav a:hover { color: var(--text); }
-    nav a.brand { color: var(--text); font-weight: 700; font-size: 16px; margin-right: 16px; }
-    nav a.active { color: var(--text); }
-    .nav-right { margin-left: auto; }
-
-    /* Page header */
-    .page-header { background: var(--dark); color: var(--text); padding: 52px 32px 44px; }
-    .page-header .tag {
-      font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
-    }
-    .page-header h1 { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
-    .page-header p { color: var(--muted3); font-size: 16px; max-width: 560px; }
-    .status-line { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 13px; color: var(--muted3); }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted3); }
-
-    /* Main */
-    main { max-width: 720px; margin: 0 auto; padding: 56px 32px 80px; }
-    section { margin-bottom: 40px; }
-    h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 12px; }
-    p { color: var(--text-muted); font-size: 15px; margin-bottom: 14px; }
-    p:last-child { margin-bottom: 0; }
-    .timeline { list-style: none; }
-    .timeline li {
-      display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border);
-    }
-    .timeline li:last-child { border-bottom: none; }
-    .timeline .when { flex-shrink: 0; width: 110px; font-size: 13px; font-weight: 700; color: var(--accent); }
-    .timeline .what { font-size: 14px; color: var(--text-muted); }
-    .cta {
-      display: inline-block; margin-top: 8px; padding: 10px 18px; border-radius: 8px;
-      background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 600; text-decoration: none;
-    }
-
-    /* Footer */
-    footer { background: var(--dark); color: var(--muted); text-align: center; padding: 28px; font-size: 13px; }
-    footer a { color: var(--muted3); text-decoration: none; }
-    footer a:hover { color: var(--text-muted); }
-
-    @media (max-width: 720px) {
-      nav { padding: 0 16px; }
-      nav a:not(.brand) { display: none; }
-      main { padding: 36px 16px 56px; }
+    .timeline { list-style: none; border-top: 1px solid var(--rule); }
+    .timeline li { display: flex; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--rule); }
+    .timeline .when { flex-shrink: 0; width: 110px; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--green); padding-top: 2px; }
+    .timeline .what { font-size: 15px; color: var(--ink-2); line-height: 1.55; }
+    code { font-family: var(--mono); font-size: 13px; background: var(--paper-2); padding: 2px 7px; border-radius: 3px; }
+    @media (max-width: 700px) {
       .timeline li { flex-direction: column; gap: 4px; }
       .timeline .when { width: auto; }
     }
   </style>
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/assets/profile.css">
-  <link rel="stylesheet" href="assets/mobile.css">
 </head>
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
+  <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">API Keys</a>
+    <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="page-header">
-  <div class="tag">Sennoric</div>
-  <h1>Glyph</h1>
-  <p>Our small, fast model. Formerly Veil, now renamed and running on its own dedicated endpoint.</p>
-  <div class="status-line" id="status-line"><span class="status-dot" id="status-dot"></span><span id="status-text">Live now, free with a Sennoric account.</span></div>
-</div>
+<div class="wrap">
 
-<main>
-  <section>
+  <div class="page-head">
+    <span class="label">Solan family</span>
+    <h1>Glyph 1.1</h1>
+    <p class="lede">Sennoric's small, fast model. Runs on dedicated inference capacity separate from Fresco.</p>
+  </div>
+
+  <section class="band">
     <h2>What Glyph is</h2>
-    <p>Glyph 1.1 is a fine-tuned Llama 3.1 model: small, fast, and included with a Sennoric account. It was our first model, built before Fresco existed, and everything we learned fine-tuning and shipping it shaped how we built Fresco 1.2.5.</p>
+    <p style="margin-top:16px;font-size:16px;color:var(--ink-2);line-height:1.62;max-width:62ch">Glyph 1.1 is a fine-tuned Llama 3.1 model built for speed and brevity. It was the first model Sennoric shipped — before Fresco existed — and the lessons from fine-tuning and evaluating it shaped the approach taken with Fresco 1.2.5.</p>
   </section>
 
-  <section>
+  <section class="band">
     <h2>Where it fits</h2>
-    <p>Fresco is the flagship, built for general chat, writing, and code. Glyph is smaller and faster, built for quick, lightweight conversations where a smaller model is plenty. It stays in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
+    <p style="margin-top:16px;font-size:16px;color:var(--ink-2);line-height:1.62;max-width:62ch">Fresco is the default model — built for general chat, writing, and code. Glyph is smaller and faster, suited to short exchanges where response time matters more than depth. It remains in the lineup until Mosaic ships and takes its place; any retirement will be announced with advance notice.</p>
   </section>
 
-  <section>
-    <h2>What changed, and when</h2>
-    <ul class="timeline">
-      <li><span class="when">Jul 25, 2026</span><span class="what">Marked deprecated and briefly taken offline while its compute was committed to the Project Crucible 600M rerun.</span></li>
+  <section class="band">
+    <h2>Timeline</h2>
+    <ul class="timeline" style="margin-top:24px">
+      <li><span class="when">Jul 25, 2026</span><span class="what">Marked deprecated and briefly taken offline while its compute was reallocated to the Project Crucible 600M rerun.</span></li>
       <li><span class="when">Jul 30, 2026</span><span class="what">Back online and answering requests as normal.</span></li>
-      <li><span class="when">Aug 2026</span><span class="what">Moved onto dedicated inference capacity of its own rather than shared hosting.</span></li>
-      <li><span class="when">Aug 6, 2026</span><span class="what">Renamed from Veil to Glyph as part of the move from Sennoric to Sennoric. No longer deprecated, and no retirement date set. It'll be replaced eventually, likely once Mosaic ships, but stays up for now.</span></li>
+      <li><span class="when">Aug 2026</span><span class="what">Moved onto dedicated inference capacity separate from Fresco.</span></li>
+      <li><span class="when">Aug 6, 2026</span><span class="what">Renamed from Veil to Glyph. No longer deprecated, and no retirement date set — stays in the lineup until Mosaic ships.</span></li>
     </ul>
   </section>
 
-  <section>
+  <section class="band">
     <h2>Using it</h2>
-    <p>Same OpenAI-compatible endpoint as always: <code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "veil"</code>, same free Sennoric account. The wire model id stays <code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">veil</code> even though it's called Glyph everywhere you read it.</p>
-    <a class="cta" href="/fresco-model">See Fresco's model details →</a>
+    <p style="margin-top:16px;font-size:16px;color:var(--ink-2);line-height:1.62;max-width:62ch">Glyph is available at the same OpenAI-compatible endpoint as Fresco. The model id is <code>glyph</code>; the legacy id <code>veil</code> still resolves.</p>
+    <div class="code" style="margin-top:24px;max-width:62ch">curl https://api.sennoric.com/v1/chat/completions \
+  -H "Authorization: Bearer $KEY" \
+  -d '{"model":"glyph","messages":[{"role":"user","content":"Hello"}]}'</div>
+    <p style="margin-top:24px;font-size:15px"><a href="/fresco-model" style="color:var(--green);font-weight:500">Fresco model details →</a></p>
   </section>
-</main>
+
+</div>
 
 <footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
+  <div class="wrap">
+    <div class="foot-base" style="margin-top:0;padding-top:0;border-top:0">
+      <span>© 2026 Sennoric</span>
+      <span><a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></span>
+    </div>
+  </div>
 </footer>
 
 <script src="/assets/profile.js"></script>
-
 </body>
 </html>

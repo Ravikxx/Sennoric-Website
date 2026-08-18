@@ -27,6 +27,7 @@
     .hero { padding: 104px 0 88px; }
     .hero-grid { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 72px; align-items: start; }
     .hero h1 { font-size: clamp(40px, 5.6vw, 68px); }
+    .h1-link { color: inherit; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
     .hero-body { font-size: 17px; line-height: 1.62; color: var(--ink-2); }
     .hero-body strong { color: var(--ink); font-weight: 600; }
     .hero-body p + p { margin-top: 16px; }
@@ -128,10 +129,9 @@
 
   <header class="hero">
     <div class="hero-grid grid-safe">
-      <h1>AI models with nothing hidden inside them.</h1>
+      <h1>AI research and <a href="/models" class="h1-link">models</a> that yield to safety alone.</h1>
       <div class="hero-body">
-        <p>Sennoric is an independent lab that trains its own models and serves them from its own hardware. <strong>Solan</strong> is its model family. <strong>Fresco</strong> and <strong>Glyph</strong> are available now in the browser, through any OpenAI-compatible client, and in the terminal.</p>
-        <p>Every release is adversarially tested before it ships, and the results are published whether or not they are good.</p>
+        <p>AI's risks demand independent scrutiny. Sennoric is a safety company dedicated to rigorous evaluation — unencumbered by corporate interests.</p>
         <form class="ask" action="/chat" method="get" id="ask-form">
           <label class="sr-only" for="ask-q">Ask Solan a question</label>
           <input class="ask-input" id="ask-q" name="q" type="text" maxlength="2000"

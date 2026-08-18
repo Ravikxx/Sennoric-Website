@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fresco Is Now on Our Own Servers — Sennoric</title>
+  <title>Fresco Is Now on Dedicated Servers — Sennoric</title>
   <meta name="description" content="How Sennoric moved Fresco to dedicated infrastructure and reduced response times from minutes to seconds.">
   <link rel="canonical" href="https://sennoric.com/fresco-dedicated-server">
-  <meta property="og:title" content="Fresco Is Now on Our Own Servers">
+  <meta property="og:title" content="Fresco Is Now on Dedicated Servers">
   <meta property="og:description" content="How Sennoric moved Fresco to dedicated infrastructure and reduced response times from minutes to seconds.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://sennoric.com/fresco-dedicated-server">
@@ -164,8 +164,8 @@
 
 <div class="hero">
   <div class="hero-badge">Infrastructure Update</div>
-  <h1>Fresco Is Now on <span>Our Own Servers</span></h1>
-  <p>We moved off shared Hugging Face Spaces onto dedicated hardware we fully control. The result: responses in seconds instead of minutes, no rate-limit contention, and infrastructure that scales with demand.</p>
+  <h1>Fresco Is Now on <span>Dedicated Servers</span></h1>
+  <p>Sennoric moved off shared Hugging Face Spaces onto dedicated hardware under full control. The result: responses in seconds instead of minutes, no rate-limit contention, and infrastructure that scales with demand.</p>
   <div class="hero-date">Sennoric &middot; July 20, 2026</div>
   <div class="stat-row">
     <div class="stat">
@@ -181,27 +181,27 @@
     <div class="stat">
       <div class="stat-num good">100%</div>
       <div class="stat-label">Uptime ownership</div>
-      <div class="stat-sub">we control the full stack</div>
+      <div class="stat-sub">full stack control</div>
     </div>
   </div>
 </div>
 
 <main>
   <div class="section-title">What changed</div>
-  <h2>Why we moved</h2>
-  <p class="lead">Fresco started on a shared Hugging Face Space: free, easy to deploy, and good enough to get the model into people's hands quickly. But shared hosting has hard limits that started biting us.</p>
+  <h2>Why Sennoric moved</h2>
+  <p class="lead">Fresco started on a shared Hugging Face Space: easy to deploy, and good enough to get the model into people's hands quickly. But shared hosting has hard limits that started creating problems.</p>
 
   <div class="card">
     <div class="card-title">The problem with shared hosting</div>
-    <p>Hugging Face Spaces run on shared infrastructure. When demand spikes, because someone else's model goes viral or multiple apps share the same GPU allocation, Fresco's response times climb and requests get throttled. We don't control the hardware, the scheduling, or the network.</p>
-    <p>For an AI lab building its own models, that's a ceiling we couldn't work around. We needed infrastructure we fully control: dedicated GPUs, no noisy neighbors, and the ability to scale on our terms.</p>
+    <p>Hugging Face Spaces run on shared infrastructure. When demand spikes — because someone else's model goes viral or multiple apps share the same GPU allocation — Fresco's response times climb and requests get throttled. Hardware, scheduling, and networking are outside Sennoric's control.</p>
+    <p>For a lab building its own models, that's a ceiling with no workaround. Dedicated infrastructure was needed: dedicated GPUs, no noisy neighbors, and the ability to scale independently.</p>
   </div>
 
   <div class="comparison">
     <div class="comp-card before">
       <div class="comp-label">Before &mdash; Shared HF Space</div>
       <div class="comp-item"><span class="comp-icon">&times;</span><span class="comp-text">Shared GPU with other models</span></div>
-      <div class="comp-item"><span class="comp-icon">&times;</span><span class="comp-text">Rate limits we couldn't adjust</span></div>
+      <div class="comp-item"><span class="comp-icon">&times;</span><span class="comp-text">Rate limits not configurable</span></div>
       <div class="comp-item"><span class="comp-icon">&times;</span><span class="comp-text">Cold starts after idle periods</span></div>
       <div class="comp-item"><span class="comp-icon">&times;</span><span class="comp-text">No control over scheduling or priority</span></div>
       <div class="comp-item"><span class="comp-icon">&times;</span><span class="comp-text">Dependent on HF infrastructure uptime</span></div>
@@ -209,7 +209,7 @@
     <div class="comp-card after">
       <div class="comp-label">After &mdash; Dedicated Servers</div>
       <div class="comp-item"><span class="comp-icon">&#10003;</span><span class="comp-text"><strong>Dedicated GPU</strong> running Fresco exclusively</span></div>
-      <div class="comp-item"><span class="comp-icon">&#10003;</span><span class="comp-text"><strong>Configurable rate limits</strong> we control directly</span></div>
+      <div class="comp-item"><span class="comp-icon">&#10003;</span><span class="comp-text"><strong>Configurable rate limits</strong> under full control</span></div>
       <div class="comp-item"><span class="comp-icon">&#10003;</span><span class="comp-text"><strong>Always warm</strong> &mdash; no cold starts</span></div>
       <div class="comp-item"><span class="comp-icon">&#10003;</span><span class="comp-text"><strong>Full scheduling control</strong> over priority and throughput</span></div>
       <div class="comp-item"><span class="comp-icon">&#10003;</span><span class="comp-text"><strong>End-to-end ownership</strong> of the entire serving stack</span></div>
@@ -219,17 +219,17 @@
   <div class="card">
     <div class="card-title">What this means for you</div>
     <p><strong>Faster responses.</strong> Fresco now runs on dedicated hardware with no contention from other workloads. Prompts that took around 220 seconds on the shared Space now complete in 2–3 seconds.</p>
-    <p><strong>More reliable.</strong> No more intermittent slowdowns when HF infrastructure is under load. We own the uptime.</p>
+    <p><strong>More reliable.</strong> No more intermittent slowdowns when HF infrastructure is under load. Sennoric owns the uptime end to end.</p>
     <p><strong>Same endpoint.</strong> The API hasn't changed. <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;">api.sennoric.com</code> still serves the same OpenAI-compatible <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;">/v1/chat/completions</code> endpoint. No SDK changes, no config changes.</p>
   </div>
 
   <div class="callout info">
-    <strong>The model hasn't changed.</strong> This is the same Fresco 1.2.5: same weights, same safety alignment, same benchmarks. The upgrade is purely infrastructure. Think of it as moving from a rented apartment to a house we built.
+    <strong>The model hasn't changed.</strong> This is the same Fresco 1.2.5: same weights, same safety alignment, same benchmarks. The upgrade is purely infrastructure. Think of it as moving from a rented apartment to a house Sennoric built.
   </div>
 
-  <div class="section-title">How we got here</div>
+  <div class="section-title">How it happened</div>
   <h2>The migration timeline</h2>
-  <p class="lead">Moving off shared hosting while keeping the model available to users wasn't something we could do overnight. Here's how it unfolded.</p>
+  <p class="lead">Moving off shared hosting while keeping the model available wasn't possible overnight. Here's how it unfolded.</p>
 
   <div class="timeline">
     <div class="tl-item">
@@ -237,7 +237,7 @@
       <div class="tl-content">
         <div class="tl-date">July 6, 2026</div>
         <div class="tl-title">Better HF hardware</div>
-        <div class="tl-desc">We upgraded to a larger Hugging Face Space with more GPU allocation. A short-term fix that improved throughput but didn't solve the shared-hosting problem.</div>
+        <div class="tl-desc">Upgraded to a larger Hugging Face Space with more GPU allocation. A short-term fix that improved throughput but didn't solve the shared-hosting problem.</div>
       </div>
     </div>
     <div class="tl-item">
@@ -245,7 +245,7 @@
       <div class="tl-content">
         <div class="tl-date">July 12, 2026</div>
         <div class="tl-title">Migration begins</div>
-        <div class="tl-desc">We started moving Fresco and Glyph onto our own dedicated server. Both models were temporarily unavailable or unstable during the transition.</div>
+        <div class="tl-desc">Fresco and Glyph began migrating onto dedicated hardware. Both models were temporarily unavailable or unstable during the transition.</div>
       </div>
     </div>
     <div class="tl-item">
@@ -253,19 +253,19 @@
       <div class="tl-content">
         <div class="tl-date">July 20, 2026</div>
         <div class="tl-title">Migration complete</div>
-        <div class="tl-desc">Fresco is fully live on dedicated infrastructure. Faster, more reliable, and under our complete control. Glyph is also being migrated and will be available again shortly.</div>
+        <div class="tl-desc">Fresco is fully live on dedicated infrastructure. Faster, more reliable, and under Sennoric's complete control. Glyph is also being migrated and will be available again shortly.</div>
       </div>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title">What's next</div>
-    <p>This migration is step one. Dedicated servers give us the foundation to run more experiments, serve more users, and iterate faster on Fresco 1.3. With full control over our infrastructure, we can now benchmark under realistic conditions, test scaling strategies, and push the model harder without worrying about hitting someone else's limits.</p>
+    <p>This migration is step one. Dedicated servers give Sennoric the foundation to run more experiments, serve more users, and iterate faster on Fresco 1.3. With full control over the infrastructure, Sennoric can now benchmark under realistic conditions, test scaling strategies, and push the model harder without hitting shared limits.</p>
   </div>
 </main>
 
 <footer>
-  <p>&copy; 2026 Sennoric &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/tos">Terms</a> &middot; <a href="/announcements">Announcements</a> &middot; <a href="/status">Status</a> &middot; GitHub</p>
+  <p>&copy; 2026 Sennoric &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/tos">Terms</a> &middot; <a href="/announcements">Announcements</a> &middot; <a href="/status">Status</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>

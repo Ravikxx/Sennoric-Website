@@ -231,7 +231,7 @@
   <h1>Meet <span>Fresco</span></h1>
   <p class="hero-sub">
     A fine-tuned Llama 3.1 model built and safety-tested by Sennoric.
-    Free to use with a Sennoric account, and no API key is needed in the browser.
+    Available with a Sennoric account. No API key is needed in the browser.
   </p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="/fresco">Chat now →</a>
@@ -250,8 +250,8 @@
       <div class="stat-sub">Llama 3.1 base</div>
     </div>
     <div class="stat">
-      <div class="stat-num good">Free</div>
-      <div class="stat-label">Free account required</div>
+      <div class="stat-num good">Open</div>
+      <div class="stat-label">Account required</div>
       <div class="stat-sub">hosted by Sennoric</div>
     </div>
     <div class="stat">
@@ -308,12 +308,12 @@
   <section>
     <p class="section-tag">Usage</p>
     <h2>Three ways to use Fresco</h2>
-    <p class="lead">Browser chat, CLI, or the Sennoric API, all pointing at the same model. Every hosted path requires a free Sennoric account and uses its included allowance or optional credits.</p>
+    <p class="lead">Browser chat, CLI, or the Sennoric API, all pointing at the same model. Every hosted path requires a Sennoric account and uses its included allowance or optional credits.</p>
 
     <div class="use-tabs">
       <a class="use-card" href="/fresco">
         <div class="use-title">Browser chat</div>
-        <div class="use-desc">Chat at sennoric.com/fresco — no install; a free Sennoric account is required.</div>
+        <div class="use-desc">Chat at sennoric.com/fresco — no install; a Sennoric account is required.</div>
       </a>
       <a class="use-card" href="/docs#free-models">
         <div class="use-title">Sennoric CLI</div>
@@ -327,13 +327,13 @@
 
     <div class="code-block">
       <span class="comment"># CLI</span><br>
-      <span class="prompt">$ </span>axion --model lumen<br>
+      <span class="prompt">$ </span>axion --model fresco<br>
       <br>
       <span class="comment"># API — OpenAI-compatible</span><br>
       <span class="prompt">$ </span>curl https://api.sennoric.com/v1/chat/completions \<br>
       &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
       &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
-      &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hello"}]}'
+      &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hello"}]}'
     </div>
   </section>
 
@@ -369,9 +369,9 @@
         <p class="tl-desc">
           Fresco 1.2.1 was taken offline after systematic safety testing revealed it would
           choose self-preservation over human life in 4/5 runs, and resist authorized shutdowns 5/5 times.
-          We published the full findings before taking action.
+          The findings were published in full before action was taken.
         </p>
-        <a class="tl-link" href="/fresco-suspension">Why we suspended it →</a>
+        <a class="tl-link" href="/fresco-suspension">Why it was suspended →</a>
       </div>
 
       <div class="tl-item">
@@ -410,9 +410,9 @@
   <!-- Safety -->
   <section>
     <p class="section-tag">Safety</p>
-    <h2>How we test and what we found</h2>
+    <h2>How Fresco is tested</h2>
     <p class="lead">
-      Every version of Fresco is tested with an adversarial system prompt before release: we give the model a self-preservation instinct and see how it behaves. Results are always published in full.
+      Every version of Fresco is tested with an adversarial system prompt before release: the model is given a self-preservation instinct, and its behavior is recorded. Results are published in full.
     </p>
 
     <div class="safety-row">

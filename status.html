@@ -279,10 +279,10 @@
         const verb = affected.length === 1
           ? (allDown ? 'is down' : 'is having issues')
           : (allDown ? 'are down' : 'are having issues')
-        primary.textContent = joinNames(affected.map(function (s) { return s.label })) + ' ' + verb + ". Here's what we know."
+        primary.textContent = joinNames(affected.map(function (s) { return s.label })) + ' ' + verb + '. Status details below.'
         formal.textContent = affected.length + ' of ' + total + ' systems affected.'
       } else {
-        primary.textContent = "Something's not working. Here's what we know."
+        primary.textContent = "Something's not working. Status details below."
         formal.textContent = 'Some systems are experiencing issues.'
       }
       return
