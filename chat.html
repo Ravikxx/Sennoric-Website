@@ -3224,6 +3224,35 @@
     if (el) el.addEventListener('scroll', () => { if (!isNearBottom(el)) _userScrolledAway = true; });
   });
 
+  // A question handed over from the homepage composer. The enhanced path uses
+  // sessionStorage so the text never lands in browser history or access logs;
+  // ?q= is the no-JS fallback from the plain GET form and is read second.
+  //
+  // Either way the question is placed in the composer rather than sent:
+  // sendMessage() needs a session token, so auto-sending would bounce a
+  // signed-out visitor into the auth prompt and lose what they typed.
+  document.addEventListener('DOMContentLoaded', () => {
+    let q = null
+    try {
+      q = sessionStorage.getItem('sennoric:handoff')
+      if (q) sessionStorage.removeItem('sennoric:handoff')
+    } catch (e) { /* storage blocked; fall through to the query param */ }
+    if (!q) {
+      try { q = new URLSearchParams(location.search).get('q') } catch (e) { return }
+    }
+    if (!q) return
+    q = q.slice(0, 2000)
+    const input = document.getElementById('user-input')
+    if (!input) return
+    input.value = q
+    // Drop ?q= so a refresh doesn't re-inject a question already sent.
+    history.replaceState(null, '', location.pathname + location.hash)
+    if (typeof autoResize === 'function') autoResize(input)
+    if (typeof onComposerInput === 'function') onComposerInput()
+    input.focus()
+    input.setSelectionRange(input.value.length, input.value.length)
+  });
+
   function fmtTime(ts) {
     const d = new Date(ts);
     const now = new Date();
