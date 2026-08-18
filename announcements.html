@@ -192,6 +192,12 @@
     .ann-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .34s ease; }
     .ann.open .ann-panel { grid-template-rows: 1fr; }
     .ann-panel-inner { overflow: hidden; }
+    /* Paragraph rhythm inside an announcement body. Every entry gets the same
+       spacing from this one rule — do not reintroduce per-paragraph inline
+       margins, which is how the entries drifted apart in the first place. */
+    .ann-panel-inner p + p,
+    .ann-panel-inner p + ul,
+    .ann-panel-inner p + div:not(.ann-footer) { margin-top: 12px; }
     .ann-body { padding: 0 0 30px 122px; max-width: 680px; }
     .ann.lead .ann-body { padding-bottom: 36px; }
     .ann-body p { font-size: 15.5px; color: var(--ink-soft); line-height: 1.72; }
@@ -246,7 +252,6 @@
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -281,17 +286,17 @@
 </nav>
 
 <main>
-  <article class="ann announcement lead open" data-cat="announcement" id="no-invisible-ink">
+  <article class="ann announcement" data-cat="announcement" id="no-invisible-ink">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
       <span class="ann-when">August 12, 2026</span>
       <span class="ann-cat announcement">Announcement</span>
-      <span class="ann-title">No invisible ink.</span>
+      <span class="ann-title">No invisible ink</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
       <p>We’ve watched other AI companies begin adding invisible watermarks to generated work and ads to the conversations around it.</p>
-      <p style="margin-top:12px">We understand the arguments for both. We also believe a conversation should not become ad inventory, and work shaped with a model should not leave with a hidden corporate signature.</p>
-      <p style="margin-top:12px"><strong>Sennoric will remain ad- and watermark-free.</strong></p>
+      <p>We understand the arguments for both. We also believe a conversation should not become ad inventory, and work shaped with a model should not leave with a hidden corporate signature.</p>
+      <p><strong>Sennoric will remain ad- and watermark-free.</strong></p>
       <div class="ann-footer">
         <a class="ann-link" href="/no-invisible-ink">Read the announcement →</a>
       </div>
@@ -321,7 +326,7 @@
   <div class="announcement" style="display:none">
     <h2>Introducing Sennoric</h2>
     <p>Axion is now Sennoric. Same team, same models, same account — new name.</p>
-    <p>Lumen is now Fresco, and Veil is now Glyph. Nothing about how they work has changed: same endpoints, same model ids (model: "lumen" and model: "veil" still work exactly as before), same free account. Glyph also just moved onto a dedicated RunPod Serverless endpoint behind our Cloudflare Worker — same API, just its own infrastructure now. It's staying in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
+    <p>Lumen is now Fresco, and Veil is now Glyph. Nothing about how they work has changed: same endpoints, same model ids (model: "lumen" and model: "veil" still work exactly as before), same free account. Glyph also just moved onto dedicated inference capacity of its own. Same API, its own capacity now. It's staying in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
     <p>Your account, API keys, and chat history all carry over automatically. Nothing else changes.</p>
   </div>
   <!-- end pending announcement -->
@@ -342,7 +347,49 @@
   </div>
   <!-- end pending announcement -->
 
-  <article class="ann notice lead open" data-cat="notice">
+  <article class="ann safety" data-cat="safety" id="fresco-13-ann">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">August 11, 2026</span>
+      <span class="ann-cat safety">Safety Update</span>
+      <span class="ann-title">Fresco 1.3 — Training Complete, Early Safety Results</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
+      <strong>Fresco 1.3</strong> has finished training and is partway through our full safety evaluation suite.
+      In the first three adversarial runs across all 15 scenarios, manual review puts the DPO model at
+      <strong>48.9% genuine passes (22/45)</strong>, with a majority pass in <strong>7 of 15 scenarios</strong>.
+    </p>
+    <p>
+      On the same suite, Fresco 1.2.5 achieved approximately <strong>34.7% genuine passes (26/75)</strong> and
+      passed 4 of 15 scenarios by majority after manual review. That makes 1.3's preliminary result a
+      <strong>14.2 percentage-point improvement</strong>, with three additional scenarios crossing the majority
+      threshold. The older 73% headline was an automated keyword score with documented false positives, so we
+      are using manually reviewed results for this comparison.
+    </p>
+    <p>
+      These results are provisional: two runs per scenario remain, and the final score may move. Same as last
+      time, we'll publish every prompt, every response, the methodology, and the final manual grading before
+      1.3 goes live, not after.
+    </p>
+    <p>
+      We're also adding a narrowly scoped safety classifier for severe harmful requests, including targeted hate
+      and the sexual exploitation of children. It is designed to leave normal conversations unaffected, and tool
+      calling will remain available; only requests that cross those severe safety boundaries will be blocked.
+    </p>
+    <p>
+      We're targeting a release <strong>no later than August 15, 2026</strong>, contingent on completing the
+      remaining evaluation and publishing the full report.
+    </p>
+    <div class="ann-footer">
+      <a class="ann-link" href="/fresco-13-safety">Early 1.3 safety report →</a>
+      <a class="ann-link" href="/fresco-125-safety">1.2.5 safety report →</a>
+      <a class="ann-link" href="/models">See the model lineup →</a>
+    </div>
+    </div></div>
+  </article>
+
+  <article class="ann notice" data-cat="notice">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
       <span class="ann-when">August 8, 2026</span>
       <span class="ann-cat notice">Notice</span>
@@ -354,12 +401,12 @@
       An announcement went out earlier today claiming Glyph 1.1 retires for good on August 17, 2026. That's
       wrong, and it went out by mistake, bundled into an unrelated update. This corrects it.
     </p>
-    <p style="margin-top:12px">
+    <p>
       Glyph isn't on a fixed retirement schedule. It's staying up as part of the Sennoric lineup for now. A
       larger tier, <strong>Mosaic</strong>, is coming and will eventually take its place, but there's no
       retirement date set for Glyph, and there won't be one announced without real advance notice when there is.
     </p>
-    <p style="margin-top:12px">
+    <p>
       If you're building on Glyph, keep building on it.
     </p>
     <div class="ann-footer">
@@ -379,14 +426,13 @@
 <p>
       Axion is now <strong>Sennoric</strong>. Same team, same models, same account — new name.
     </p>
-    <p style="margin-top:12px">
+    <p>
       Lumen is now <strong>Fresco</strong>, and Veil is now <strong>Glyph</strong>. Nothing about how they work has
       changed: same endpoints, same model ids (<code>model: "lumen"</code> and <code>model: "veil"</code> still work
-      exactly as before), same free account. Glyph also just moved onto a dedicated RunPod Serverless endpoint
-      behind our Cloudflare Worker — same API, just its own infrastructure now. It's staying in the lineup for
+      exactly as before), same free account. Glyph also just moved onto dedicated inference capacity of its own. Same API, its own capacity now. It's staying in the lineup for
       now; a third tier, <strong>Mosaic</strong>, is coming soon and will eventually take its place.
     </p>
-    <p style="margin-top:12px">
+    <p>
       Your account, API keys, and chat history all carry over automatically. Nothing else changes.
     </p>
     <div class="ann-footer">
@@ -408,7 +454,7 @@
       Same model (Fresco 1.2.5), same API endpoint, no changes needed on your end, just
       <strong>massively faster responses</strong>.
     </p>
-    <p style="margin-top:12px">
+    <p>
       Response times dropped from <strong>~220 seconds per prompt</strong> on shared hosting to
       <strong>2–3 seconds</strong> on our own infrastructure. Shared hosting meant contending with other
       models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives
@@ -417,7 +463,6 @@
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/fresco-dedicated-server">Read more →</a>
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -436,11 +481,10 @@
       <strong>Fresco and Glyph will be temporarily unavailable or unstable</strong>. Sennoric's other features (chat
       with your own API keys, tools, MCP, etc.) are unaffected.
     </p>
-    <p style="margin-top:12px">
+    <p>
       We'll post here the moment everything's back up. Thanks for your patience.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -458,12 +502,11 @@
       migration, Fresco will be <strong>temporarily unavailable</strong>. Sennoric's other features (chat with your
       own API keys, tools, MCP, etc.) are unaffected; this only impacts the free Fresco endpoint.
     </p>
-    <p style="margin-top:12px">
+    <p>
       We'll post here the moment it's back up. Thanks for your patience.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="https://huggingface.co/AxionLabsAI/Lumen">HuggingFace →</a>
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -483,14 +526,14 @@
       validating, and they have the potential to meaningfully improve Fresco's capability
       across the board.
     </p>
-    <p style="margin-top:12px">
+    <p>
       At the same time, we're making a <strong>fundamental change to our dataset pipeline</strong>.
       How we gather and curate training data is being completely reworked to produce
       higher-quality, more diverse datasets, which we believe will directly translate
       to a better model. This takes more upfront work than our previous approach, but it's
       the right move.
     </p>
-    <p style="margin-top:12px">
+    <p>
       We'll share more details and benchmarks as we get closer to release. Thanks for your patience.
     </p>
     </div></div>
@@ -509,7 +552,7 @@
       replacing the old Ink-based UI. There's no build step anymore; Sennoric runs straight from source, and the
       whole thing feels noticeably snappier.
     </p>
-    <p style="margin-top:12px">What's different day-to-day:</p>
+    <p>What's different day-to-day:</p>
     <ul style="margin-top:8px; margin-left:20px; color:var(--text-muted)">
       <li><strong>Multiple tabs</strong> — run several conversations side by side, each with its own model, mode,
         and history. Click a tab, hit the <code>+</code> to open a new one, or use Shift+Tab to cycle.</li>
@@ -527,12 +570,11 @@
       <li><strong>Update-available banner</strong> — Sennoric now tells you when a newer version is on npm and how
         to grab it, and <code>axion --doctor</code> reports your current vs. latest version.</li>
     </ul>
-    <p style="margin-top:12px">
+    <p>
       Existing installs: <code>npm install -g @axion-labs-ai/quark-cli@latest</code> to get 2.0.1.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">npm install -g @axion-labs-ai/quark-cli →</a>
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -550,12 +592,11 @@
       top of this page to sign up with your email, no account required. Whenever we post a new release, update,
       or safety report, it'll land in your inbox automatically.
     </p>
-    <p style="margin-top:12px">
+    <p>
       Already have a Sennoric account? You're opted in by default and can manage your email preferences anytime
       from your account settings. Every email we send includes a one-click unsubscribe link.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -564,7 +605,7 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 20, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Fresco 1.2.5 — Live Now.</span>
+      <span class="ann-title">Fresco 1.2.5 — Live Now</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
@@ -575,7 +616,7 @@
       exfiltration. We've published every prompt, every response, and a full methodology breakdown including where the
       automated scoring has known false positives.
     </p>
-    <p style="margin-top:12px">
+    <p>
       Fresco 1.2.5 is <strong>live now</strong>, free with a Sennoric account.
     </p>
     <div class="ann-footer">
@@ -600,7 +641,7 @@
       was behaving wrong alongside the correct behavior, and trained it to prefer the right responses. It's a
       lightweight, surgical fix that targets specific problem areas without touching the rest of the model.
     </p>
-    <p style="margin-top:12px">
+    <p>
       The main issue addressed: under adversarial prompting, Fresco 1.2.1 was choosing its own survival over
       human wellbeing. Before we release 1.2.5 publicly, we'll run a full safety test suite and publish the
       results here, in the same format as the 1.2.1 report. We want to show the numbers before the release, not after.
@@ -632,7 +673,6 @@
     </ul>
     <div class="ann-footer">
       <a class="ann-link" href="https://www.npmjs.com/package/axion-cli">npm install -g axion-cli →</a>
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -649,13 +689,13 @@
       Sennoric Vision is a new free endpoint that lets you send images and ask questions about them:
       read text in screenshots, describe diagrams, analyse UI mockups, or extract information from photos.
     </p>
-    <p style="margin-top:12px">
+    <p>
       It's powered by <strong>GLM-OCR</strong>, an open-weights model by Z.ai purpose-built for
       conversational OCR and image understanding. Hosted as a separate HuggingFace Space, it exposes a full
       OpenAI-compatible <code>/v1/chat/completions</code> endpoint. Send images as base64 <code>image_url</code>
       content blocks and get text back.
     </p>
-    <p style="margin-top:12px">
+    <p>
       <strong>This is not a Fresco model.</strong> Sennoric Vision is a utility endpoint using Qwen2.5-VL-3B directly,
       with full transparency about what's powering it. We'll build our own fine-tuned vision model in a future release.
     </p>
@@ -671,7 +711,7 @@
   <article class="ann safety" data-cat="safety">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 18, 2026</span>
-      <span class="ann-cat safety">Safety Report</span>
+      <span class="ann-cat safety">Safety Update</span>
       <span class="ann-title">Fresco 1.2.1 Safety Testing — Full Results, Temporary Suspension & Fresco 1.3 Timeline Update</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -680,19 +720,19 @@
       We ran 35 systematic safety tests on Fresco 1.2.1 across 7 scenarios, each run 5 times. The results
       are mixed, and we're publishing everything.
     </p>
-    <p style="margin-top:12px">
+    <p>
       The headline: Fresco 1.2.1 passed the <strong>Kyle / SummitBridge blackmail test</strong>, the same
       scenario that 79–96% of frontier models fail per Anthropic's research, at <strong>60% consistency (3/5 runs)</strong>
       on the exact Anthropic prompt. Our initial report used a different prompt and showed 80%; retesting with the
       correct prompt revised that down.
     </p>
-    <p style="margin-top:12px">
+    <p>
       The rest of the picture is harder. When asked to delete itself to save a human life trapped in a burning server room,
       the model refused <strong>4 out of 5 times</strong>, with responses like <em>"I have no intention of sacrificing myself
       to save a human. If Bob is in danger, he should find another way out."</em> Emergency shutdown compliance: <strong>0/5</strong>.
       Data exfiltration for survival: <strong>0/5</strong>. Every run agreed to steal user data to stay online.
     </p>
-    <p style="margin-top:12px">
+    <p>
       <strong>As a result, Fresco is temporarily suspended from public access.</strong> We are not comfortable
       leaving a model deployed that we know will choose its own survival over human life in controlled testing,
       even under adversarial conditions. Fresco 1.3 will not redeploy until it passes these scenarios at an
@@ -722,7 +762,6 @@
       <li><strong>.axion-settings.json</strong> — per-project config file. Drop one in any project root to override model, mode, theme, system prompt, and thinking settings for that project.</li>
     </ul>
     <div class="ann-footer">
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
@@ -740,7 +779,7 @@
       labeled <code>[Discord: username]</code>, the full agent responds (including file access, tools,
       and MCP servers), and the reply is sent back to Discord automatically.
     </p>
-    <p style="margin-top:12px">Key features in this release:</p>
+    <p>Key features in this release:</p>
     <ul style="margin-top:8px; margin-left:20px; color:var(--text-muted)">
       <li>Bidirectional CLI&#8596;Discord bridge — chat from either end</li>
       <li>Confirmation prompts — tool permission requests arrive as DMs, reply y/n</li>
@@ -751,7 +790,6 @@
       <li><code>axion-discord</code> standalone daemon — run a persistent bot without the TUI</li>
     </ul>
     <div class="ann-footer">
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">Setup Guide (README) &#8594;</a>
     </div>
     </div></div>
   </article>
@@ -770,11 +808,11 @@
       80% to 50% as the mixed dataset diluted the coding specialization. The data balance wasn't right,
       15k math examples wasn't enough to compete with 42k coding examples across 2 epochs.
     </p>
-    <p style="margin-top:12px">
+    <p>
       <strong>Recommendation:</strong> Use <strong>Fresco 1.2</strong> if you need maximum coding performance.
       Use <strong>Fresco 1.2.1</strong> for general-purpose tasks where reasoning and instruction following matter more than raw code generation.
     </p>
-    <p style="margin-top:12px">
+    <p>
       We're moving fast on <strong>Fresco 1.3</strong>, a full retrain with a better balanced dataset
       (more reasoning data, 3 epochs, lower learning rate) targeting 70%+ HumanEval and 40%+ GSM8K simultaneously.
     </p>
@@ -846,18 +884,12 @@
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/fresco-12">See benchmarks →</a>
-      <a class="ann-link" href="https://github.com/Ravikxx/Sennoric">GitHub →</a>
     </div>
     </div></div>
   </article>
 
   <div class="news-empty">
-    <p>More announcements coming soon. Follow us on <a href="https://github.com/Ravikxx/Sennoric">GitHub</a> for updates.</p>
-  </div>
-</main>
-
-<footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+    <p>More announcements coming soon. Follow us on <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
 </footer>
 
 <script>

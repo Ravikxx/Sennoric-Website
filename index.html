@@ -119,7 +119,6 @@
   <a href="/docs">Docs</a>
   <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-ghost">GitHub</a>
     <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -132,14 +131,14 @@
       <h1>AI models with nothing hidden inside them.</h1>
       <div class="hero-body">
         <p>Sennoric is an independent lab that trains its own models and serves them from its own hardware. <strong>Solan</strong> is its model family. <strong>Fresco</strong> and <strong>Glyph</strong> are available now in the browser, through any OpenAI-compatible client, and in the terminal.</p>
-        <p>An account is free and includes <strong>$0.125 of usage every week</strong>. No card is required, and nothing the models write is watermarked.</p>
+        <p>Every account gets <strong>$0.125 to spend each week</strong>, and nothing the models write is watermarked. No credit card required.</p>
         <form class="ask" action="/chat" method="get" id="ask-form">
           <label class="sr-only" for="ask-q">Ask Solan a question</label>
           <input class="ask-input" id="ask-q" name="q" type="text" maxlength="2000"
                  placeholder="Ask Solan something" autocomplete="off" enterkeyhint="go">
           <button class="btn btn-solid ask-send" type="submit">Try Solan</button>
         </form>
-        <p class="ask-note">Free with an account. <a href="/docs">Read the docs</a></p>
+        <p class="ask-note">An account takes a moment to make. <a href="/docs">Read the docs</a></p>
         <p class="hero-status"><span class="dot" id="status-dot"></span><span id="status-text">Checking model status…</span></p>
       </div>
     </div>
@@ -162,7 +161,10 @@
         <a class="band-more" href="/announcements">All announcements</a>
       </div>
 
-      <div class="latest grid-safe">
+      <!-- Replaced at runtime by the three most recent real announcements.
+           The markup below is the fallback shown if both sources are
+           unreachable, so the section is never blank. -->
+      <div class="latest grid-safe" id="latest">
         <a class="post" href="/no-invisible-ink">
           <div class="post-meta"><span class="label">August 12, 2026</span><span class="label">Announcement</span></div>
           <h3>No invisible ink</h3>
@@ -194,8 +196,6 @@
         <thead>
           <tr>
             <th scope="col">Model</th>
-            <th scope="col">Parameters</th>
-            <th scope="col">Base</th>
             <th scope="col">Status</th>
             <th scope="col">Details</th>
           </tr>
@@ -204,10 +204,8 @@
           <tr>
             <td>
               <div class="m-name">Solan Fresco 1.2.5</div>
-              <p class="m-desc">Sennoric's default model. Fine-tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code.</p>
+              <p class="m-desc">Sennoric's default model. Tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code.</p>
             </td>
-            <td class="m-num">8B</td>
-            <td class="m-base">Llama 3.1 8B</td>
             <td><span class="pill" id="fresco-status">Checking&#8230;</span></td>
             <td><a class="m-go" href="/fresco-model">Model details</a></td>
           </tr>
@@ -216,19 +214,15 @@
               <div class="m-name">Solan Fresco 1.3</div>
               <p class="m-desc">Training completed in August. Fresco 1.3 remains off the API until adversarial testing concludes and the results are published.</p>
             </td>
-            <td class="m-num">8B</td>
-            <td class="m-base">Llama 3.1 8B</td>
             <td><span class="pill wip">In safety testing</span></td>
             <td><a class="m-go" href="/fresco-13">Early results</a></td>
           </tr>
           <tr>
             <td>
               <div class="m-name">Solan Glyph 1.1</div>
-              <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on a dedicated RunPod endpoint.</p>
+              <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on dedicated inference capacity of its own.</p>
             </td>
-            <td class="m-num">3B</td>
-            <td class="m-base">Llama 3.1 3B</td>
-            <td><span class="pill">Live</span></td>
+            <td><a class="m-go" href="/status">Service status</a></td>
             <td><a class="m-go" href="/glyph">Model details</a></td>
           </tr>
           <tr class="upcoming">
@@ -236,8 +230,6 @@
               <div class="m-name">Solan Mosaic</div>
               <p class="m-desc">A larger tier above Fresco. Mosaic is expected to take over from Glyph once it ships; Glyph stays in the lineup until then, with advance notice before any retirement.</p>
             </td>
-            <td class="m-tbd">&#8212;</td>
-            <td class="m-tbd">&#8212;</td>
             <td><span class="pill soon">Announced</span></td>
             <td><a class="m-go" href="/models">Model line</a></td>
           </tr>
@@ -246,8 +238,6 @@
               <div class="m-name">Solan Relic</div>
               <p class="m-desc">The fourth name in the Solan family. Nothing has been published about it yet.</p>
             </td>
-            <td class="m-tbd">&#8212;</td>
-            <td class="m-tbd">&#8212;</td>
             <td><span class="pill soon">Not yet detailed</span></td>
             <td><a class="m-go" href="/models">Model line</a></td>
           </tr>
@@ -299,7 +289,7 @@
     <div class="foot-grid">
       <div>
         <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
-        <p class="foot-note">Sennoric trains and hosts small AI models, free to use with an account.</p>
+        <p class="foot-note">Sennoric trains and hosts small language models on its own infrastructure.</p>
       </div>
       <div class="foot-col">
         <h4>Solan models</h4>
@@ -327,12 +317,7 @@
         <a href="/announcements">Announcements</a>
         <a href="/status">Status</a>
         <a href="/help">Help center</a>
-        <a href="https://github.com/Ravikxx/Sennoric">GitHub</a>
-      </div>
-    </div>
-    <div class="foot-base">
-      <span>© 2026 Sennoric</span>
-      <span><a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/status">Status</a></span>
+        <a href="/tos">Terms</a> · <a href="/status">Status</a></span>
     </div>
   </div>
 </footer>
@@ -354,6 +339,113 @@
       } catch (err) { return }  // storage blocked — let the GET form submit as-is
       e.preventDefault()
       window.location.href = '/chat'
+    })
+  })()
+
+  // Latest releases, built from the real announcement history rather than
+  // hand-copied here (which is how this section drifts out of date).
+  //
+  // Two sources, because neither alone is complete:
+  //   - the API holds anything that went out through the email webhook,
+  //     including items not yet written into the archive;
+  //   - /announcements holds the curated archive, which is the only place
+  //     older entries live.
+  // They are merged on a normalised title, newest first. If both fail the
+  // static markup already in the page stands.
+  ;(function () {
+    var grid = document.getElementById('latest')
+    if (!grid) return
+
+    var CATS = { announcement: 'Announcement', notice: 'Notice', safety: 'Safety update', update: 'Update', release: 'Release' }
+    var key = function (t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() }
+    var fmt = function (d) {
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    }
+    var withTimeout = function (url) {
+      var c = new AbortController()
+      var t = setTimeout(function () { c.abort() }, 6000)
+      return fetch(url, { signal: c.signal }).finally(function () { clearTimeout(t) })
+    }
+
+    // The archive page: the curated <article class="ann"> entries.
+    // Falls back to the .html path so this also works off a plain static
+    // server, where extensionless routes don't resolve.
+    var fromArchive = withTimeout('/announcements')
+      .then(function (r) { return r.ok ? r : withTimeout('/announcements.html') })
+      .catch(function () { return withTimeout('/announcements.html') })
+      .then(function (r) { return r.text() })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html')
+        return [].slice.call(doc.querySelectorAll('article.ann')).map(function (el) {
+          var when = (el.querySelector('.ann-when') || {}).textContent || ''
+          var cat = (el.querySelector('.ann-cat') || {}).textContent || ''
+          var title = (el.querySelector('.ann-title') || {}).textContent || ''
+          var body = (el.querySelector('.ann-panel-inner p') || {}).textContent || ''
+          var cta = el.querySelector('.ann-footer a[href]')
+          var date = new Date(when)
+          return {
+            date: isNaN(date) ? null : date,
+            cat: cat.trim(),
+            title: title.trim().replace(/\.$/, ''),
+            body: body.trim(),
+            href: cta ? cta.getAttribute('href') : (el.id ? '/announcements#' + el.id : '/announcements')
+          }
+        }).filter(function (a) { return a.date && a.title })
+      })
+      .catch(function () { return [] })
+
+    // The API: anything emailed but not yet written into the archive.
+    var fromApi = withTimeout('https://api.sennoric.com/announcements')
+      .then(function (r) { return r.json() })
+      .then(function (d) {
+        return (d.announcements || []).map(function (a) {
+          return {
+            date: new Date(a.created_at * 1000),
+            cat: CATS[a.category] || 'Announcement',
+            title: String(a.title || '').trim().replace(/\.$/, ''),
+            body: String(a.body || '').split('\n')[0],
+            href: a.link || '/announcements'
+          }
+        }).filter(function (a) { return !isNaN(a.date) && a.title })
+      })
+      .catch(function () { return [] })
+
+    Promise.all([fromApi, fromArchive]).then(function (sets) {
+      var seen = Object.create(null)
+      var all = []
+      sets[0].concat(sets[1]).forEach(function (a) {
+        var k = key(a.title)
+        if (seen[k]) return
+        seen[k] = 1
+        all.push(a)
+      })
+      all.sort(function (a, b) { return b.date - a.date })
+      var top = all.slice(0, 3)
+      if (top.length < 3) return   // not enough real data — keep the fallback
+
+      grid.textContent = ''
+      top.forEach(function (a) {
+        var card = document.createElement('a')
+        card.className = 'post'
+        card.href = a.href
+        var meta = document.createElement('div')
+        meta.className = 'post-meta'
+        ;[fmt(a.date), a.cat].forEach(function (t) {
+          var s = document.createElement('span')
+          s.className = 'label'
+          s.textContent = t
+          meta.appendChild(s)
+        })
+        var h = document.createElement('h3')
+        h.textContent = a.title
+        var p = document.createElement('p')
+        p.textContent = a.body.length > 130 ? a.body.slice(0, 127).trim() + '…' : a.body
+        var go = document.createElement('span')
+        go.className = 'post-go'
+        go.textContent = 'Read announcement'
+        card.appendChild(meta); card.appendChild(h); card.appendChild(p); card.appendChild(go)
+        grid.appendChild(card)
+      })
     })
   })()
 

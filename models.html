@@ -56,7 +56,6 @@
   <a href="/docs">Docs</a>
   <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-ghost">GitHub</a>
     <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -67,7 +66,7 @@
   <header class="page-head">
     <h1>The Solan model family</h1>
     <p class="lede"><strong>Solan</strong> is the model family Sennoric trains, evaluates, and hosts end to end. <strong>Fresco</strong> is the general-purpose tier and <strong>Glyph</strong> the fast one; <strong>Mosaic</strong> and <strong>Relic</strong> are announced but not yet released.</p>
-    <p class="lede">Every model is free to use with an account, and every release is adversarially tested before it ships.</p>
+    <p class="lede">Every model is included with an account, and every release is adversarially tested before it ships.</p>
   </header>
 
   <main>
@@ -82,7 +81,6 @@
         <thead>
           <tr>
             <th scope="col">Model</th>
-            <th scope="col">Parameters</th>
             <th scope="col">Base</th>
             <th scope="col">Status</th>
             <th scope="col">Details</th>
@@ -94,8 +92,7 @@
               <div class="m-name">Solan Fresco 1.2.5</div>
               <p class="m-desc">Sennoric's default model. Fine-tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code. Scored 73% on adversarial safety testing.</p>
             </td>
-            <td class="m-num">8B</td>
-            <td class="m-base">Llama 3.1 8B</td>
+            <td class="m-base">Llama 3.1</td>
             <td><span class="pill" id="fresco-status">Checking…</span></td>
             <td><a class="m-go" href="/fresco-model">Model details</a></td>
           </tr>
@@ -104,19 +101,17 @@
               <div class="m-name">Solan Fresco 1.3</div>
               <p class="m-desc">Training completed in August 2026. Fresco 1.3 remains off the API until adversarial testing concludes and the results are published.</p>
             </td>
-            <td class="m-num">8B</td>
-            <td class="m-base">Llama 3.1 8B</td>
+            <td class="m-base">Llama 3.1</td>
             <td><span class="pill wip">In safety testing</span></td>
             <td><a class="m-go" href="/fresco-13">Early results</a></td>
           </tr>
           <tr>
             <td>
               <div class="m-name">Solan Glyph 1.1</div>
-              <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on a dedicated RunPod endpoint behind the Cloudflare Worker.</p>
+              <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on dedicated inference capacity of its own.</p>
             </td>
-            <td class="m-num">3B</td>
-            <td class="m-base">Llama 3.1 3B</td>
-            <td><span class="pill">Live</span></td>
+            <td class="m-base">Llama 3.1</td>
+            <td><a class="m-go" href="/status">Service status</a></td>
             <td><a class="m-go" href="/glyph">Model details</a></td>
           </tr>
           <tr class="upcoming">
@@ -124,7 +119,6 @@
               <div class="m-name">Solan Mosaic</div>
               <p class="m-desc">A larger tier above Fresco. Mosaic is expected to take over from Glyph once it ships; Glyph stays in the lineup until then, and any retirement would be announced with real advance notice.</p>
             </td>
-            <td class="m-tbd">—</td>
             <td class="m-tbd">—</td>
             <td><span class="pill soon">Announced</span></td>
             <td><a class="m-go" href="/announcements">Announcements</a></td>
@@ -134,7 +128,6 @@
               <div class="m-name">Solan Relic</div>
               <p class="m-desc">The fourth name in the Solan family. Nothing has been published about it yet.</p>
             </td>
-            <td class="m-tbd">—</td>
             <td class="m-tbd">—</td>
             <td><span class="pill soon">Not yet detailed</span></td>
             <td><a class="m-go" href="/announcements">Announcements</a></td>
@@ -211,7 +204,7 @@
     <div class="foot-grid">
       <div>
         <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
-        <p class="foot-note">Sennoric trains and hosts small AI models, free to use with an account.</p>
+        <p class="foot-note">Sennoric trains and hosts small language models on its own infrastructure.</p>
       </div>
       <div class="foot-col">
         <h4>Solan models</h4>
@@ -239,12 +232,7 @@
         <a href="/announcements">Announcements</a>
         <a href="/status">Status</a>
         <a href="/help">Help center</a>
-        <a href="https://github.com/Ravikxx/Sennoric">GitHub</a>
-      </div>
-    </div>
-    <div class="foot-base">
-      <span>© 2026 Sennoric</span>
-      <span><a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/status">Status</a></span>
+        <a href="/tos">Terms</a> · <a href="/status">Status</a></span>
     </div>
   </div>
 </footer>

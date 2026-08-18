@@ -186,7 +186,6 @@
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -203,7 +202,7 @@
   <p class="last-updated">Last updated: July 26, 2026</p>
 
   <div class="callout">
-    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Sennoric's hosted backend runs on Cloudflare, Fresco runs on RunPod, the default vision model runs on Hugging Face, and logged chat exchanges are sent to Mistral for safety classification. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
+    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Sennoric's hosted backend and model inference run on infrastructure operated for Sennoric by third-party providers. The default vision model and the safety-classification step are handled by external providers, described below. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
   </div>
 
   <div class="policy-section">
@@ -213,7 +212,7 @@
 
   <div class="policy-section">
     <h2>Sennoric hosted account and service data</h2>
-    <p>Sennoric's Cloudflare-hosted backend stores and processes data needed to run accounts and hosted features, including:</p>
+    <p>Sennoric's hosted backend stores and processes data needed to run accounts and hosted features, including:</p>
     <ul>
       <li>Account identifiers, email address, password hash or linked OAuth identifier, verification and reset state, registration IP address, suspension state, and appeal records.</li>
       <li>Sennoric-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
@@ -255,7 +254,7 @@
     <p style="margin-top:16px"><strong>AI model inference.</strong> Your prompt, plus any file contents, command output, or page text included as context, is sent to the model provider you select with <code>/model</code>:</p>
     <ul>
       <li><strong>Third-party providers</strong> (Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, OpenCode) receive your requests directly, authenticated with the key you supplied. See each provider's own policy.</li>
-      <li><strong>Fresco</strong> routes through Sennoric's Cloudflare backend at <code>api.sennoric.com</code> and then to Fresco inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
+      <li><strong>Fresco</strong> routes through Sennoric's hosted backend at <code>api.sennoric.com</code> and then to Fresco inference. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
       <li><strong>IP addresses</strong> are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.</li>
     </ul>
 
@@ -267,7 +266,7 @@
 
     <p style="margin-top:16px"><strong>Screen vision.</strong> Screen-vision and computer-use features capture a screenshot and send the image to a vision model. By default this is Sennoric's <strong><code>axion-vision</code> model on Hugging Face</strong> (<code>axionlabsai-lumenvision.hf.space</code>); point it elsewhere with <code>/vision</code> and screenshots go to that provider instead. Either way, images of your screen leave your device when these features are active.</p>
 
-    <p style="margin-top:16px"><strong>Browser control (Chrome extension).</strong> The extension requests broad permissions (<code>&lt;all_urls&gt;</code>, scripting, tabs) so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Fresco is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.</p>
+    <p style="margin-top:16px"><strong>Browser control (Chrome extension).</strong> The extension requests broad permissions (<code>&lt;all_urls&gt;</code>, scripting, tabs) so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Fresco is selected in either flow, the request follows the hosted-inference path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.</p>
 
     <p style="margin-top:16px"><strong>Email and payments.</strong></p>
     <ul>
@@ -278,7 +277,7 @@
     <p style="margin-top:16px"><strong>Training-data contributions</strong> (<code>/contribute</code>). Opt-in: nothing is sent unless you type <code>/contribute</code> yourself. When you do:</p>
     <ul>
       <li>The session is <strong>redacted first</strong>: file contents stripped, message text truncated (~1,000 chars per message, 200 per tool result), leaving structure and metadata.</li>
-      <li>The redacted session is then <strong>uploaded to Sennoric's collection endpoint on Cloudflare Workers</strong> (<code>axion-collect…workers.dev</code>).</li>
+      <li>The redacted session is then <strong>uploaded to Sennoric's collection endpoint</strong>.</li>
       <li>If that upload fails (e.g. you're offline), the session is saved locally to <code>~/.sennoric/donations/</code> as a fallback. Files there remain on your disk until you delete them and are not uploaded automatically later.</li>
       <li>A prompt may appear after long or difficult sessions, but the prompt alone sends nothing; only the <code>/contribute</code> command does.</li>
       <li>Run <code>/contribute optout</code> to disable prompts permanently, or <code>/contribute skip</code> to dismiss for this session.</li>
@@ -288,10 +287,10 @@
   <div class="policy-section">
     <h2>Third-party privacy policies</h2>
     <ul>
-      <li><strong>RunPod</strong> (Fresco inference) — <a href="https://www.runpod.io/legal/privacy-policy">runpod.io privacy policy</a></li>
+      <li><strong>RunPod</strong> (infrastructure provider) — <a href="https://www.runpod.io/legal/privacy-policy">runpod.io privacy policy</a></li>
       <li><strong>Hugging Face</strong> (default vision inference) — <a href="https://huggingface.co/privacy">huggingface.co/privacy</a></li>
       <li><strong>Mistral</strong> (asynchronous, context-aware safety classification of logged chat exchanges) — <a href="https://legal.mistral.ai/terms/privacy-policy">mistral.ai privacy policy</a></li>
-      <li><strong>Cloudflare</strong> (API backend &amp; contribution endpoint) — <a href="https://www.cloudflare.com/policies/privacy/">cloudflare.com/policies/privacy</a></li>
+      <li><strong>Cloudflare</strong> (infrastructure provider) — <a href="https://www.cloudflare.com/policies/privacy/">cloudflare.com/policies/privacy</a></li>
       <li><strong>Square</strong> (payments &amp; subscriptions) — <a href="https://squareup.com/us/en/legal/general/privacy">squareup.com privacy notice</a></li>
       <li><strong>Resend</strong> (transactional &amp; announcement email) — <a href="https://resend.com/legal/privacy-policy">resend.com privacy policy</a></li>
       <li><strong>Configured AI providers</strong> (Anthropic, OpenAI, Google, Groq, Mistral, OpenRouter, OpenCode) — see each provider's policy</li>
@@ -307,19 +306,7 @@
       <li>Disconnect any OAuth service with <code>/oauth revoke &lt;service&gt;</code>, or delete <code>~/.sennoric/oauth.json</code></li>
       <li>Use your own provider keys, or a local model via Ollama, to keep inference off Sennoric's backend entirely</li>
       <li>Opt out of contribution prompts with <code>/contribute optout</code>, and delete any local files in <code>~/.sennoric/donations/</code> yourself</li>
-      <li>Sennoric is open source, so you can audit exactly what it does at <a href="https://github.com/Ravikxx/Sennoric">github.com/Ravikxx/Sennoric</a></li>
-    </ul>
-  </div>
-
-  <div class="policy-section">
-    <h2>Contact</h2>
-    <p>For questions, open an issue at <a href="https://github.com/Ravikxx/Sennoric/issues">github.com/Ravikxx/Sennoric/issues</a> or visit <a href="https://sennoric.com">sennoric.com</a>.</p>
-  </div>
-
-</main>
-
-<footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+      <li>Sennoric is open source, so you can audit exactly what it does at <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>

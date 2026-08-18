@@ -8,7 +8,7 @@
   <meta name="description" content="Meet Glyph 1.1, Sennoric's small, fast model for quick, lightweight conversations.">
   <link rel="canonical" href="https://sennoric.com/glyph">
   <meta property="og:title" content="Meet Glyph — Sennoric">
-  <meta property="og:description" content="Glyph 1.1, formerly Veil: a small, fast 3B model, now running on its own RunPod endpoint.">
+  <meta property="og:description" content="Glyph 1.1, formerly Veil: a small, fast model running on dedicated inference capacity.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://sennoric.com/glyph">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
@@ -91,7 +91,6 @@
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -107,12 +106,12 @@
 <main>
   <section>
     <h2>What Glyph is</h2>
-    <p>Glyph 1.1 is a fine-tuned Llama 3.1 3B: small, fast, and free with a Sennoric account. It was our first model, built before Fresco existed, and everything we learned fine-tuning and shipping it shaped how we built Fresco 1.2.5.</p>
+    <p>Glyph 1.1 is a fine-tuned Llama 3.1 model: small, fast, and included with a Sennoric account. It was our first model, built before Fresco existed, and everything we learned fine-tuning and shipping it shaped how we built Fresco 1.2.5.</p>
   </section>
 
   <section>
     <h2>Where it fits</h2>
-    <p>Fresco is the flagship, built for general chat, writing, and code. Glyph is smaller and faster, built for quick, lightweight conversations where a 3B model is plenty. It stays in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
+    <p>Fresco is the flagship, built for general chat, writing, and code. Glyph is smaller and faster, built for quick, lightweight conversations where a smaller model is plenty. It stays in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
   </section>
 
   <section>
@@ -120,7 +119,7 @@
     <ul class="timeline">
       <li><span class="when">Jul 25, 2026</span><span class="what">Marked deprecated and briefly taken offline while its compute was committed to the Project Crucible 600M rerun.</span></li>
       <li><span class="when">Jul 30, 2026</span><span class="what">Back online and answering requests as normal.</span></li>
-      <li><span class="when">Aug 2026</span><span class="what">Moved onto a dedicated RunPod Serverless endpoint behind our Cloudflare Worker, its own infrastructure rather than a shared Hugging Face Space.</span></li>
+      <li><span class="when">Aug 2026</span><span class="what">Moved onto dedicated inference capacity of its own rather than shared hosting.</span></li>
       <li><span class="when">Aug 6, 2026</span><span class="what">Renamed from Veil to Glyph as part of the move from Sennoric to Sennoric. No longer deprecated, and no retirement date set. It'll be replaced eventually, likely once Mosaic ships, but stays up for now.</span></li>
     </ul>
   </section>
@@ -133,7 +132,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>
