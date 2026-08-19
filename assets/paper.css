@@ -1,0 +1,211 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   paper.css — the 2026 Sennoric site shell.
+
+   A warm paper ground with near-black ink, a deep-forest counter panel
+   sampled from the brand's own paper photographs, and the logo marigold used
+   sparingly. Pages that link this file own their palette outright and do NOT
+   link theme-adaptive.css: the paper ground is deliberate in both system
+   themes, so there is no dark variant to fall back to.
+
+   Type roles:
+     --disp  Archivo 600/700      headlines, model names, brand
+     --sans  IBM Plex Sans        body copy and UI
+     --mono  IBM Plex Mono        metadata labels, endpoints, code
+
+   Every colour pair below is measured against its own surface; the ratios in
+   the comments are real, not aspirational. Keep them if you change a value.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --paper:    #f3f0e6;  /* page ground */
+  --paper-2:  #eae5d6;  /* inset surface */
+  --paper-3:  #fbf9f3;  /* input wells */
+  --ink:      #17140d;  /* 16.2:1 on paper */
+  --ink-2:    #5a5445;  /*  6.6:1 on paper */
+  --rule:     #d8d1bd;
+  --rule-2:   #c4bca4;
+  --forest:   #12301c;  /* counter panel */
+  --green:    #1a5c35;  /*  7.0:1 on paper — links and accents */
+  --marigold: #E8B534;  /*  7.6:1 on forest — the logo mark */
+
+  /* Code syntax, measured on --forest rather than on the page ground. */
+  --code-comment: #8fa389;  /* 5.0:1 */
+  --code-prompt:  #E8B534;  /* 7.6:1 */
+  --code-str:     #b9d8a8;  /* 9.0:1 */
+
+  --disp: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+  --font-display: var(--disp);
+
+  --page: 1200px;
+  --gut: 40px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--paper); color: var(--ink);
+  font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: rgba(26, 92, 53, .18); }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 2px; }
+
+.wrap { max-width: var(--page); margin: 0 auto; padding: 0 var(--gut); }
+
+/* Grid tracks default to min-width:auto, so a `white-space: pre` code block
+   forces its track wider than the viewport and overflow-x never engages.
+   Any grid that can contain code must let its children shrink. */
+.grid-safe > * { min-width: 0; }
+
+h1, h2, h3 { font-family: var(--disp); font-weight: 700; letter-spacing: -.02em; line-height: 1.05; }
+.label {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2);
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────── */
+nav {
+  display: flex; align-items: center; gap: 28px;
+  height: 66px; padding: 0 var(--gut);
+  border-bottom: 1px solid var(--rule);
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+nav .brand {
+  font-family: var(--disp); font-weight: 700; font-size: 20px;
+  letter-spacing: -.01em; display: flex; align-items: center; gap: 8px;
+}
+nav .brand img { height: 22px; width: auto; display: block; }
+/* Filled buttons are excluded: they set their own ink against their own fill,
+   and this generic rule would otherwise outrank a bare `.nav-btn` (0,2,2 beats
+   0,1,2) and leave dark text on a dark fill. */
+nav a:not(.brand):not(.nav-cta):not(.nav-btn) { font-size: 14.5px; color: var(--ink-2); transition: color .15s; }
+nav a:not(.brand):not(.nav-cta):not(.nav-btn):hover,
+nav a.active:not(.brand):not(.nav-btn) { color: var(--ink); }
+nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.nav-cta {
+  font-size: 13.5px; font-weight: 600; padding: 8px 16px; border-radius: 4px;
+  background: var(--ink); color: var(--paper); transition: background .15s;
+}
+.nav-cta:hover { background: var(--forest); }
+.nav-ghost {
+  font-size: 13.5px; padding: 8px 14px; border-radius: 4px;
+  border: 1px solid var(--rule-2); transition: border-color .15s, background .15s;
+}
+.nav-ghost:hover { border-color: var(--ink-2); background: var(--paper-2); }
+.hamburger-nav {
+  display: none; margin-left: auto; background: none; border: 0;
+  color: var(--ink); font-size: 20px; cursor: pointer; padding: 6px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-block; padding: 13px 24px; border-radius: 4px;
+  font-size: 15px; font-weight: 600; border: 1px solid transparent;
+  font-family: var(--sans);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.btn-solid { background: var(--ink); color: var(--paper); }
+.btn-solid:hover { background: var(--forest); }
+.btn-line { border-color: var(--rule-2); color: var(--ink); }
+.btn-line:hover { border-color: var(--ink-2); background: var(--paper-2); }
+
+/* ── Page header + bands ──────────────────────────────────────────────── */
+/* Vertical rhythm lives only on .band, so section and child padding never
+   fight over the same edge. */
+.page-head { padding: 88px 0 64px; }
+.page-head h1 { font-size: clamp(40px, 5.2vw, 62px); max-width: 18ch; }
+.page-head .lede { margin-top: 22px; font-size: 17px; line-height: 1.62; color: var(--ink-2); max-width: 62ch; }
+.page-head .lede strong { color: var(--ink); font-weight: 600; }
+
+.band { padding: 88px 0; border-top: 1px solid var(--rule); }
+.band-head { display: flex; align-items: baseline; justify-content: space-between; gap: 32px; margin-bottom: 40px; flex-wrap: wrap; }
+.band-head h2 { font-size: clamp(26px, 3vw, 34px); }
+.band-more { font-size: 14.5px; color: var(--green); font-weight: 500; }
+.band-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+.band-lede { font-size: 17px; line-height: 1.62; color: var(--ink-2); max-width: 62ch; margin-top: 12px; }
+
+/* ── Model table ──────────────────────────────────────────────────────── */
+.models { width: 100%; border-collapse: collapse; }
+.models th {
+  text-align: left; padding: 0 20px 12px 0; border-bottom: 1px solid var(--rule-2);
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2);
+}
+.models td { padding: 24px 20px 24px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.models tr:last-child td { border-bottom: 0; }
+.m-name { font-family: var(--disp); font-weight: 700; font-size: 22px; letter-spacing: -.015em; }
+.m-desc { color: var(--ink-2); font-size: 14.5px; margin-top: 6px; max-width: 48ch; line-height: 1.5; }
+.m-num { font-family: var(--mono); font-size: 15px; white-space: nowrap; }
+.m-base { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.m-tbd { font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+.m-go { color: var(--green); font-size: 14.5px; font-weight: 500; white-space: nowrap; }
+.m-go:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Unreleased tiers sit quieter without dropping below AA: the row is
+   de-emphasised by surface tint, never by fading the text. */
+.models tr.upcoming td { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+
+.pill {
+  display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; padding: 4px 9px; border-radius: 3px; white-space: nowrap;
+  background: rgba(26, 92, 53, .1); color: var(--green); border: 1px solid rgba(26, 92, 53, .22);
+}
+.pill.wip { background: rgba(168, 114, 15, .1); color: #7d5409; border-color: rgba(168, 114, 15, .28); }
+.pill.soon { background: transparent; color: var(--ink-2); border-color: var(--rule-2); }
+
+/* ── Code ─────────────────────────────────────────────────────────────── */
+.code {
+  font-family: var(--mono); font-size: 13px; line-height: 1.85;
+  background: var(--forest); color: #dfe6d9;
+  border-radius: 8px; padding: 24px 26px; overflow-x: auto; white-space: pre;
+}
+.code .c { color: var(--code-comment); }
+.code .p { color: var(--code-prompt); }
+.code .s { color: var(--code-str); }
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+footer { border-top: 1px solid var(--rule); padding: 64px 0 48px; }
+.foot-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 40px; }
+.foot-grid > * { min-width: 0; }
+.foot-brand { font-family: var(--disp); font-weight: 700; font-size: 19px; display: flex; align-items: center; gap: 8px; }
+.foot-brand img { height: 20px; width: auto; }
+.foot-note { color: var(--ink-2); font-size: 13.5px; margin-top: 12px; max-width: 30ch; }
+.foot-col h4 { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 14px; }
+.foot-col a { display: block; font-size: 14px; color: var(--ink); padding: 5px 0; }
+.foot-col a:hover { color: var(--green); }
+.foot-base {
+  margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  font-size: 13.5px; color: var(--ink-2);
+}
+.foot-base a:hover { color: var(--green); }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  :root { --gut: 28px; }
+  .page-head { padding: 64px 0 48px; }
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+}
+@media (max-width: 700px) {
+  nav { gap: 0; }
+  nav a:not(.brand) { display: none; }
+  nav .nav-right { display: none; }
+  .hamburger-nav { display: block; }
+  .band { padding: 60px 0; }
+  .models thead { display: none; }
+  .models tr { display: block; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+  .models tr:last-child { border-bottom: 0; }
+  .models td { display: block; padding: 3px 0; border: 0; }
+  .models .m-num, .models .m-base, .models .m-tbd { display: inline-block; margin-right: 14px; }
+  .foot-grid { grid-template-columns: minmax(0, 1fr); }
+}

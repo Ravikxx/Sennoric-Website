@@ -295,7 +295,6 @@
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -338,10 +337,6 @@
          reduced motion. See AGENTS.md for the shared primitives. -->
     <svg id="crucible-tame" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs id="tame-defs">
-        <radialGradient id="tame-glow" cx="50%" cy="52%" r="46%">
-          <stop offset="0%" stop-color="#b8a27d" stop-opacity=".16"/>
-          <stop offset="100%" stop-color="#b8a27d" stop-opacity="0"/>
-        </radialGradient>
         <linearGradient id="tame-area-grad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#b8a27d" stop-opacity=".28"/>
           <stop offset="100%" stop-color="#b8a27d" stop-opacity="0"/>
@@ -368,14 +363,13 @@
         </mask>
       </defs>
       <rect width="800" height="450" fill="#1a1408"/>
-      <rect id="tame-glow-rect" width="800" height="450" fill="url(#tame-glow)" opacity="0"/>
-      <g id="tame-reveal" mask="url(#tame-mask)"></g>
+<g id="tame-reveal" mask="url(#tame-mask)"></g>
       <g id="tame-intro" mask="url(#tame-mask)"></g>
       <g id="tame-chart"></g>
     </svg>
 
   </div>
-  <p class="crucible-art-caption" id="crucible-art-caption">Ternary Adaptive MoE — torn from our own paper</p>
+  <p class="crucible-art-caption" id="crucible-art-caption">Ternary Adaptive MoE — from the TAME paper</p>
 </div>
 <script>
 (function () {
@@ -383,8 +377,7 @@
   var defs = document.getElementById('tame-defs');
   var revealG = document.getElementById('tame-reveal');
   var introG = document.getElementById('tame-intro');
-  var glow = document.getElementById('tame-glow-rect');
-  var frameEl = document.getElementById('crucible-frame');
+var frameEl = document.getElementById('crucible-frame');
   var scrapTurb = document.getElementById('tame-scrap-turb');
   var letterTurb = document.getElementById('tame-letter-turb');
   var mtext = document.getElementById('tame-mtext');
@@ -434,7 +427,7 @@
   }
   var shuffleTimer = null;
   function startReshuffle() {
-    regenerateTame(); glow.setAttribute('opacity', '0.5');
+    regenerateTame();
     if (reduced) return;
     function run() { if (!shuffleTimer) shuffleTimer = setInterval(regenerateTame, 500); }
     function halt() { if (shuffleTimer) { clearInterval(shuffleTimer); shuffleTimer = null; } }
@@ -517,7 +510,6 @@
       if (last === null) last = ts; var dt = (ts-last)/1000; last = ts; if (dt>0.1) dt=0.1; T += dt;
       var f = EASE(clamp(T/FILL,0,1));
       scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6,0,1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); });
-      glow.setAttribute('opacity',(f*0.85).toFixed(3));
       if (T >= FILL + 0.05) { if (!fin) { fin = true; popThenFinish(scraps); } return; }
       requestAnimationFrame(fr);
     }
@@ -539,7 +531,6 @@
       if (lt < FILL) { var f = EASE(clamp(lt/FILL,0,1)); scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6,0,1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); }); lock = f; }
       else if (lt < FILL + HOLD || isLast) { scraps.forEach(function(s){ setT(s, s.hx, s.hy, s.hr); }); lock = 1; }
       else { var e = EASE(clamp((lt-FILL-HOLD)/DISP,0,1)); scraps.forEach(function(s){ var d = clamp((e - s.delay*0.3)/0.7,0,1); setT(s, lerp(s.hx,s.dx,d), lerp(s.hy,s.dy,d), lerp(s.hr,s.dr,d)); }); lock = 1 - e; }
-      glow.setAttribute('opacity',(lock*0.82).toFixed(3));
       requestAnimationFrame(fr);
     }
     requestAnimationFrame(fr);
@@ -580,7 +571,6 @@
       else if(st.n==='flurry'){ var e2=EASE(p); scraps.forEach(function(s){ curSet(s,lerp(s.px,s.qx,e2),lerp(s.py,s.qy,e2),lerp(s.pr,s.qr,e2)); }); lock=0.05; }
       else if(st.n==='card'){ var fp=clamp(p/0.32,0,1),e3=EOUT(fp); scraps.forEach(function(s){ var d=clamp((e3-s.delay*0.3)/0.7,0,1); curSet(s,lerp(s.qx,s.hx,d),lerp(s.qy,s.hy,d),lerp(s.qr,s.hr,d)); }); lock=fp; }
       else if(st.n==='slam'){ var e4=EOUT(clamp(p/0.7,0,1)); scraps.forEach(function(s){ var d=clamp((e4-s.delay*0.15)/0.85,0,1); curSet(s,lerp(s.qx,s.hx,d),lerp(s.qy,s.hy,d),lerp(s.qr,s.hr,d)); }); lock=Math.min(1,p*1.3); }
-      glow.setAttribute('opacity',(lock*0.82).toFixed(3));
       requestAnimationFrame(frame);
     }
     enter(0); requestAnimationFrame(frame);
@@ -629,13 +619,11 @@
         var pr = clamp(T / DRAW, 0, 1); drawCurve(pr);
         flags.forEach(function (f) { f.g.setAttribute('opacity', pr >= f.t ? clamp((pr - f.t) / 0.08, 0, 1).toFixed(2) : '0'); });
         scraps.forEach(function (s) { if (!s.active) return; s.ry += s.vy * dt; if (s.ry > H + 40) { s.ry = -40; s.rx = 20 + Math.random() * 760; } s.rot += s.vr * dt; setTs(s, s.rx, s.ry, s.rot, s.sc); });
-        glow.setAttribute('opacity', '0.12');
       } else {
         if (!convInit) { convInit = true; maskOn(true); applyWord('TAME', scraps, 0, 0); scraps.forEach(function (s) { s.cx0 = s.rx; s.cy0 = s.ry; s.cr0 = s.rot; s.cs0 = s.sc; }); }
         var cp = clamp((T - DRAW - HOLD) / CONV, 0, 1), e = EASE(cp);
         chartG.setAttribute('opacity', (1 - clamp(cp * 1.4, 0, 1)).toFixed(2));
         scraps.forEach(function (s) { setTs(s, lerp(s.cx0, s.hx, e), lerp(s.cy0, s.hy, e), lerp(s.cr0, s.hr, e), lerp(s.cs0, 1, e)); });
-        glow.setAttribute('opacity', (0.12 + cp * 0.7).toFixed(3));
       }
       requestAnimationFrame(frame);
     }
@@ -706,13 +694,13 @@
 
   <div class="section-title">Progress</div>
   <h2>Day 22 Sprint Status</h2>
-  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale, but the 600M run has to be thrown away and done again, because the learning rate was wrong.</p>
+  <p class="lead">Real progress, and one expensive mistake. The architecture holds up at small scale, but the 600M run has to be thrown away and done again because the learning rate was wrong.</p>
 
   <div class="timeline">
     <div class="timeline-item">
       <div class="date">Day ~2</div>
       <h3>14M Proof-of-Concept Trained</h3>
-      <p>We trained a ~14M parameter TAME model on TinyStories for 10,000 steps on a free Colab T4. Despite the tiny scale, the model produces <strong>coherent multi-paragraph English with dialogue and narrative structure</strong> — promising signal for the architecture.</p>
+      <p>A ~14M parameter TAME model was trained on TinyStories for 10,000 steps on a Colab T4. Despite the tiny scale, the model produces <strong>coherent multi-paragraph English with dialogue and narrative structure</strong> — promising signal for the architecture.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Day ~3</div>
@@ -723,13 +711,13 @@
       <div class="date">Scaling up</div>
       <h3>102M Trained, 300M Came Up Short</h3>
       <p>Crucible Axon-Chat (102M) trained on a mixed UltraChat + TinyChat dataset using the full validated stack: topically relevant responses, correct poem formatting, natural stopping points. Scaling the same recipe to 300M was a <strong>partial failure</strong>: enough of it worked to be worth diagnosing, not enough to keep.</p>
-      <p>Having fixed what caused it, we skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B, the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
+      <p>Having fixed what caused it, Sennoric skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B, the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Setback</div>
       <h3>The Learning Rate Was 0.009 Too High — Run Scrapped</h3>
       <p>The training config had the <strong>learning rate set 0.009 above where it should have been</strong>. Written down on its own, 0.009 looks like a rounding error. As a learning rate it is nothing of the sort: they live down in the ten-thousandths, so an extra 0.009 doesn't nudge the value, it swamps it. The model was taking wildly oversized steps from the first batch onward and never had a chance to settle.</p>
-      <p>There's no partial credit to salvage. Everything downstream of that number is untrustworthy, and a run you can't trust is worse than no run at all, because you end up stacking the next experiment on top of it. So the 600M model goes in the bin and we start it again.</p>
+      <p>There's no partial credit to salvage. Everything downstream of that number is untrustworthy, and a run that can't be trusted is worse than no run at all. So the 600M model goes in the bin and the run starts again.</p>
     </div>
     <div class="timeline-item">
       <div class="date">In Progress</div>
@@ -739,8 +727,8 @@
     <div class="timeline-item">
       <div class="date">Next</div>
       <h3>Head-to-Head Against Microsoft's BitDistill</h3>
-      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so our 600M run starts from the same weights. Same base model, same target precision, two different routes there, which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
-      <p>Either result is worth having. If TAME comes out ahead, we have a reason to keep building it. If BitDistill does, we have a better starting point than the one we were about to build ourselves, which is a cheaper thing to learn now than at 300M of wasted compute.</p>
+      <p>Once the rerun finishes, the plan is to evaluate it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so the 600M run starts from the same weights. Same base model, same target precision, two different routes there, which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
+      <p>Either result is worth having. If TAME comes out ahead, there's a reason to keep building it. If BitDistill does, there's a better starting point than the one that was about to be built from scratch — cheaper to learn now than at 300M of wasted compute.</p>
     </div>
   </div>
 
@@ -755,7 +743,7 @@
   <p>Every MoE layer has one full-precision shared expert and 8 ternary routed experts. A learned router produces logits over the 8 routed experts; top-1 gating selects which expert to activate per token. The shared expert processes every token, acting as a stable backbone while routed experts handle specialization.</p>
 
   <h3>Aux-Loss-Free Balancing</h3>
-  <p>Instead of adding an auxiliary loss to encourage balanced expert usage (which competes with the main LM loss gradient), we use per-expert bias terms added directly to the routing logits. After each step, if an expert receives fewer tokens than the expected uniform share, its bias is incremented; if it receives more, its bias is decremented. This is a purely feedback-based mechanism: no gradient competition, no tuning of loss coefficients.</p>
+  <p>Instead of adding an auxiliary loss to encourage balanced expert usage (which competes with the main LM loss gradient), per-expert bias terms are added directly to the routing logits. After each step, if an expert receives fewer tokens than the expected uniform share, its bias is incremented; if it receives more, its bias is decremented. This is a purely feedback-based mechanism: no gradient competition, no tuning of loss coefficients.</p>
 
   <h3>Multi-Token Prediction</h3>
   <p>The model has two LM heads. The primary head predicts t+1 as usual. A secondary head, fed from an intermediate layer, predicts t+2. Both heads contribute to the training loss with a fixed ratio. At inference time, only the primary head is used; the auxiliary head is discarded, so there's no runtime cost.</p>
@@ -804,7 +792,7 @@
     </tr>
     <tr>
       <td><strong>Training hardware</strong></td>
-      <td>Colab T4 (free tier)</td>
+      <td>Colab T4</td>
       <td>TBD</td>
     </tr>
   </table>
@@ -815,25 +803,7 @@
   </p>
 
   <div class="accent-block">
-    <strong>What's next?</strong> The 600M run is training again after a bad learning rate cost us the first attempt. Once it lands, it goes head-to-head with Microsoft's BitDistill from the same Qwen 0.6B starting point, with the long-term goal of open-sourcing the architecture and tooling either way. Follow along on <a href="https://github.com/Ravikxx/Sennoric">GitHub</a>.
-  </div>
-
-  <p class="footnote" id="fn-bitdistill">
-    <span class="fn-mark">*</span> <strong>BitDistill</strong> (BitNet Distillation) is Microsoft's pipeline for
-    converting an off-the-shelf full-precision language model into 1.58-bit ternary weights for a given task,
-    instead of training a ternary model from scratch. It combines three pieces: the SubLN normalisation module
-    from BitNet, multi-head attention distillation from the full-precision teacher, and a continual pre-training
-    warm-up that stops the quality gap between the full-precision and ternary versions widening as models get
-    larger. Microsoft reports quality comparable to the full-precision original with up to 10× memory savings and
-    roughly 2.65× faster CPU inference. Paper:
-    <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">arXiv:2510.13998</a> ·
-    code: <a class="ext-link" href="https://github.com/microsoft/BitNet" target="_blank" rel="noopener noreferrer">github.com/microsoft/BitNet</a>.
-  </p>
-
-</main>
-
-<footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+    <strong>What's next?</strong> The 600M run is training again after a bad learning rate cost us the first attempt. Once it lands, it goes head-to-head with Microsoft's BitDistill from the same Qwen 0.6B starting point, with the long-term goal of open-sourcing the architecture and tooling either way. Follow along on code: <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>

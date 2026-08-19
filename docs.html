@@ -13,8 +13,10 @@
   <meta property="og:url" content="https://sennoric.com/docs">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/assets/theme-adaptive.css">
-  <link rel="stylesheet" href="/assets/site-shell.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -184,6 +186,45 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/profile.css">
   <link rel="stylesheet" href="assets/mobile.css">
+  <style>
+    /* This page keeps its own long-form documentation layout and markup; only
+       the palette and type are brought onto the paper shell. The legacy token
+       names used throughout the rules below are aliased onto paper.css values
+       here, so the whole page restyles without touching the documentation.
+       Every mapped colour is measured against the surface it lands on. */
+    :root {
+      --bg:         var(--paper);
+      --text:       var(--ink);       /* 16.2:1 on paper */
+      --muted:      var(--ink-2);     /*  6.6:1 on paper */
+      --muted2:     var(--ink-2);
+      --surface:    var(--paper-2);
+      --surface2:   #e2dccb;
+      --border:     var(--rule);
+      --border2:    var(--rule-2);
+      --accent:     var(--green);     /*  7.0:1 on paper; also a fill, see below */
+      --accent-d:   #144a2a;
+      --accent-ink: var(--paper);     /* 6.6:1 on the green fill */
+      --green:      #1a5c35;
+      --yellow:     #7d5409;          /*  5.6:1 on paper — the old #fbbf24 was 1.7:1 */
+    }
+
+    h1, h2, h3, h4 { font-family: var(--disp); letter-spacing: -.015em; }
+
+    /* Code keeps the forest ground it has on the rest of the site rather than
+       inheriting the light --surface alias. */
+    .code-block {
+      background: var(--forest) !important;
+      border-color: var(--forest) !important;
+      color: #dfe6d9 !important;
+    }
+    .code-block .prompt { color: var(--marigold); }
+    .code-block .comment { color: var(--code-comment); }
+    .code-block .green { color: var(--code-str); }
+
+    /* paper.css excludes .nav-btn from its generic nav-link rule, so the
+       filled button just needs its own ink against the green fill. */
+    .nav-btn { color: var(--paper); }
+  </style>
 </head>
 <body>
 
@@ -196,7 +237,6 @@
     <a href="/help" class="nav-link">Help</a>
   </div>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -217,7 +257,7 @@
 
   <aside class="sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-heading">Our Models</div>
+      <div class="sidebar-heading">Sennoric Models</div>
       <a href="#free-models">Fresco &amp; Glyph</a>
       <a href="#web-chat">Web Chat</a>
       <a href="#sennoric-api">API Keys & Limits</a>
@@ -248,18 +288,18 @@
         <div class="model-card">
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Fresco 1.2.5</div>
-          <div class="model-card-alias"><code>model: "lumen"</code></div>
-          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/fresco" style="color:var(--accent)">sennoric.com/fresco</a>.</div>
+          <div class="model-card-alias"><code>model: "fresco"</code></div>
+          <div class="model-card-desc">Fine-tuned with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/fresco" style="color:var(--accent)">sennoric.com/fresco</a>.</div>
         </div>
         <div class="model-card">
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Glyph 1.1</div>
-          <div class="model-card-alias"><code>model: "veil"</code></div>
-          <div class="model-card-desc">Our first model, a fine-tuned Llama 3.1 3B for quick general chat. Runs on its own RunPod endpoint; see the <a href="/glyph" style="color:var(--accent)">Glyph page</a> for details.</div>
+          <div class="model-card-alias"><code>model: "glyph"</code></div>
+          <div class="model-card-desc">Our first model, tuned for quick general chat. Runs on dedicated inference capacity of its own; see the <a href="/glyph" style="color:var(--accent)">Glyph page</a> for details.</div>
         </div>
       </div>
       <div class="callout info">
-        Fresco and Glyph keep their original wire model ids, <code>model: "lumen"</code> and <code>model: "veil"</code>, even though they're branded Fresco and Glyph everywhere you read them. No code changes needed on your end.
+        The wire model ids are <code>fresco</code> and <code>glyph</code>, and those are what <code>/v1/models</code> returns. The original ids <code>lumen</code> and <code>veil</code> still resolve, so existing code keeps working without changes.
       </div>
       <div class="callout info">
         Response times can vary under load. Sign in for browser chat, or create an <a href="/keys" style="color:var(--accent)">Sennoric API key</a> for CLI and API access.
@@ -316,14 +356,14 @@
         curl https://api.sennoric.com/v1/chat/completions \<br>
         &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hi"}]}'
+        &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hi"}]}'
       </div>
 
       <h3>Python (openai library)</h3>
       <div class="code-block">
         from openai import OpenAI<br>
         client = OpenAI(api_key="axion-sk-…", base_url="https://api.sennoric.com/v1")<br>
-        resp = client.chat.completions.create(model="lumen", messages=[{"role":"user","content":"Hi"}])
+        resp = client.chat.completions.create(model="fresco", messages=[{"role":"user","content":"Hi"}])
       </div>
     </div>
 
@@ -393,7 +433,7 @@
         <span class="comment"># Or set your Sennoric key directly</span><br>
         <span class="prompt">› </span>/axion-key axion-sk-…<br><br>
         <span class="comment"># Skip to the free model</span><br>
-        <span class="prompt">$ </span>axion --model lumen
+        <span class="prompt">$ </span>axion --model fresco
       </div>
     </div>
 
@@ -587,7 +627,7 @@
         <span class="comment"># Start the daemon</span><br>
         <span class="prompt">$ </span>axion-discord<br><br>
         <span class="comment"># Override the model</span><br>
-        <span class="prompt">$ </span>axion-discord --model lumen
+        <span class="prompt">$ </span>axion-discord --model fresco
       </div>
       <p>Once running, message the bot in Discord. Tasks run in a queue, one at a time. Members can cancel the current task by typing <code>cancel</code>.</p>
       <div class="callout info">
@@ -601,24 +641,7 @@
       <h3>Setup</h3>
       <ol>
         <li>Start the Sennoric web UI: <code>/web</code> inside Sennoric or run <code>axion-serve</code></li>
-        <li>Install the extension from its <a href="https://github.com/Ravikxx/Sennoric-Chrome-Extension" style="color:var(--accent)">standalone GitHub repository</a> — load unpacked from the repository root</li>
-        <li>In extension Settings, enter the local URL and the short-lived extension import token printed by <code>/web</code></li>
-      </ol>
-      <h3>What it can do</h3>
-      <ul>
-        <li>Read the full text and DOM of any page</li>
-        <li>Click buttons and links after one-time approval</li>
-        <li>Fill and submit forms after one-time approval</li>
-        <li>Take screenshots after one-time approval</li>
-        <li>Navigate to HTTP(S) URLs after one-time approval</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
-<footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+        <li>Install the extension from its <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
 </footer>
 
 <script>
@@ -645,7 +668,7 @@
       { cmd: 'npm install -g @axion-labs-ai/quark-cli' },
       { out: '  ✓ installed @axion-labs-ai/quark-cli', cls: 'green' },
       { blank: true },
-      { cmd: 'axion --model lumen' },
+      { cmd: 'axion --model fresco' },
       { out: '     Sennoric v2.0.5  ·  fresco', cls: 'green' },
       { blank: true },
       { cmd: 'add a dark mode toggle to settings' },

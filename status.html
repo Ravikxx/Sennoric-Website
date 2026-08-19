@@ -177,7 +177,6 @@
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -224,7 +223,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>
@@ -280,10 +279,10 @@
         const verb = affected.length === 1
           ? (allDown ? 'is down' : 'is having issues')
           : (allDown ? 'are down' : 'are having issues')
-        primary.textContent = joinNames(affected.map(function (s) { return s.label })) + ' ' + verb + ". Here's what we know."
+        primary.textContent = joinNames(affected.map(function (s) { return s.label })) + ' ' + verb + '. Status details below.'
         formal.textContent = affected.length + ' of ' + total + ' systems affected.'
       } else {
-        primary.textContent = "Something's not working. Here's what we know."
+        primary.textContent = "Something's not working. Status details below."
         formal.textContent = 'Some systems are experiencing issues.'
       }
       return

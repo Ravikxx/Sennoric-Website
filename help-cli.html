@@ -142,7 +142,6 @@
     <a href="/help" class="nav-link active">Help</a>
   </div>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
@@ -233,7 +232,7 @@ brew install axion</div>
 
   <div class="doc-section" id="models">
     <h2>Model selection and switching providers</h2>
-    <p>Free, no-key-required models: <code>veil</code> (Sennoric's Glyph), <code>groq</code>, and <code>gemini</code>. Bring-your-own-key providers include Anthropic (<code>claude</code>, <code>claude-opus</code>, <code>claude-haiku</code>), OpenAI (<code>gpt</code>, <code>gpt-mini</code>), Mistral, GLM, and any OpenAI-compatible endpoint via <code>/endpoint</code>.</p>
+    <p>No-key-required models: <code>glyph</code> (Sennoric's Glyph), <code>groq</code>, and <code>gemini</code>. Bring-your-own-key providers include Anthropic (<code>claude</code>, <code>claude-opus</code>, <code>claude-haiku</code>), OpenAI (<code>gpt</code>, <code>gpt-mini</code>), Mistral, GLM, and any OpenAI-compatible endpoint via <code>/endpoint</code>.</p>
     <div class="code-block">/model claude
 /model gemini-2.5-pro
 /endpoint openrouter https://openrouter.ai/api/v1 meta-llama/llama-3.3-70b-instruct sk-or-...</div>
@@ -254,12 +253,12 @@ brew install axion</div>
     <h2>Troubleshooting common CLI errors</h2>
     <p><strong>Computer-use tools not working (Linux):</strong> install <code>xdotool</code> (required), plus <code>scrot</code> for screenshots and <code>xclip</code> as a text-input fallback.</p>
     <p><strong>Computer-use tools not working (macOS):</strong> install <code>cliclick</code> (<code>brew install cliclick</code>) for scroll support, and grant <strong>Accessibility</strong> and <strong>Screen Recording</strong> permissions to your terminal app in System Settings → Privacy & Security.</p>
-    <p><strong>A free model is being slow:</strong> <code>veil</code> is free but can take up to 100 seconds to respond — this is expected, not a bug. Switch to <code>groq</code> for a faster free option.</p>
+    <p><strong>A model is being slow:</strong> <code>glyph</code> can take up to 100 seconds to respond — this is expected, not a bug. Switch to <code>groq</code> for a faster option.</p>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/help">Help Center</a> · <a href="/docs">Docs</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/help">Help Center</a> · <a href="/docs">Docs</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a></p>
 </footer>
 
 <script src="/assets/enhance.js"></script>

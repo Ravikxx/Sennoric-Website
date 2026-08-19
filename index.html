@@ -4,610 +4,479 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sennoric — Free, Open AI Models</title>
-  <meta name="description" content="Sennoric builds and hosts free AI models. Create a free account to chat with Fresco in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
+  <title>Sennoric — Independent AI Models</title>
+  <meta name="description" content="Sennoric is an independent lab that trains its own AI models and serves them from its own hardware. Fresco and Glyph are available in the browser, through any OpenAI-compatible client, and in the terminal.">
   <link rel="canonical" href="https://sennoric.com/">
-  <meta property="og:title" content="Sennoric — Free, Open AI Models">
-  <meta property="og:description" content="Create a free account to chat with Fresco, use the OpenAI-compatible API, or bring Sennoric into your terminal.">
+  <meta property="og:title" content="Sennoric — Independent AI Models">
+  <meta property="og:description" content="AI models with nothing hidden inside them. An independent lab, an OpenAI-compatible API, no watermarks and no advertising.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://sennoric.com/">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#f3f0e6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/theme-adaptive.css">
-  <link rel="stylesheet" href="/assets/site-shell.css">
-  <link rel="stylesheet" href="/assets/paper-banner.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Shared shell lives in /assets/paper.css. Only homepage-specific
+       composition stays here. */
 
-    :root {
-      --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      --mono: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
-    }
+    /* ── Hero ───────────────────────────────────────────────────────────── */
+    .hero { padding: 104px 0 88px; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 72px; align-items: start; }
+    .hero h1 { font-size: clamp(40px, 5.6vw, 68px); }
+    .h1-link { color: inherit; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+    .hero-body { font-size: 17px; line-height: 1.62; color: var(--ink-2); }
+    .hero-body strong { color: var(--ink); font-weight: 600; }
+    .hero-body p + p { margin-top: 16px; }
 
-    html { scroll-behavior: smooth; }
-    html, body { height: 100%; }
-    body {
-      font-family: var(--sans);
-      background: var(--bg); color: var(--text);
-      line-height: 1.5; font-size: 15px;
-      -webkit-font-smoothing: antialiased;
+    /* Hero composer. A plain GET form, so it still works with JS disabled; the
+       script at the end upgrades it to hand off via sessionStorage. */
+    .ask { display: flex; gap: 10px; margin-top: 34px; flex-wrap: wrap; }
+    .ask-input {
+      flex: 1 1 240px; min-width: 0;
+      padding: 13px 16px; border-radius: 4px;
+      border: 1px solid var(--rule-2); background: var(--paper-3); color: var(--ink);
+      font-family: var(--sans); font-size: 15px;
+      transition: border-color .15s;
     }
-    a { color: inherit; text-decoration: none; }
-    ::selection { background: rgba(184, 162, 125,.35); }
+    .ask-input::placeholder { color: var(--ink-2); }
+    .ask-input:focus { border-color: var(--green); outline-offset: 1px; }
+    .ask-send { flex: none; cursor: pointer; }
+    .ask-note { margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
+    .ask-note a { color: var(--green); font-weight: 500; }
+    .ask-note a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-    /* Nav */
-    nav {
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      display: flex; align-items: center; height: 56px; gap: 24px;
-      position: sticky; top: 0; z-index: 100;
-    }
-    /* Blur goes on a pseudo-element. backdrop-filter on nav itself would make
-       nav the containing block for the position:fixed mobile drawer. */
-    nav::before {
-      content: '';
-      position: absolute; inset: 0; z-index: -1;
-      background: color-mix(in srgb, var(--bg) 82%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      pointer-events: none;
-    }
-    nav a { color: var(--muted2); text-decoration: none; font-size: 14px; transition: color .15s; position: relative; z-index: 1; }
-    nav a:hover { color: var(--text); }
-    nav a.brand { color: var(--text); font-weight: 700; font-size: 16px; margin-right: 4px; }
-    nav a.active { color: var(--text); }
-    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
-    .nav-btn {
-      padding: 7px 15px; border-radius: 7px; font-size: 13px; font-weight: 600;
-      background: var(--accent); color: var(--accent-ink); border: none; cursor: pointer;
-      transition: background .15s; text-decoration: none; display: inline-block;
-    }
-    .nav-btn:hover { background: var(--accent-d); }
-    .nav-btn-ghost {
-      padding: 7px 15px; border-radius: 7px; font-size: 13px; font-weight: 500;
-      background: none; color: var(--muted2); border: 1px solid var(--border2);
-      transition: all .15s; text-decoration: none; display: inline-block;
-    }
-    .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
-
-    /* Hero */
-    .hero-wrap { padding: 76px 32px 64px; }
-    .hero {
-      position: relative;
-      max-width: 1060px; margin: 0 auto;
-      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-      gap: 56px; align-items: center;
-    }
-    .hero-eyebrow {
-      font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--muted); margin-bottom: 18px;
-    }
-    .hero h1 {
-      font-size: clamp(38px, 4.6vw, 62px);
-      font-weight: 700; letter-spacing: -.03em; line-height: 1.05;
-      margin-bottom: 18px;
-    }
-    .hero h1 .fresco { color: var(--accent); }
-    .hero-sub {
-      font-size: 17px; color: var(--muted2); line-height: 1.65;
-      max-width: 460px; margin-bottom: 16px;
-    }
-    .hero-sub b { color: var(--text); font-weight: 600; }
     .hero-status {
-      font-family: var(--mono); font-size: 12px;
-      color: var(--muted); margin-bottom: 28px;
+      display: flex; align-items: center; gap: 9px; margin-top: 26px;
+      font-family: var(--mono); font-size: 12.5px; color: var(--ink-2);
     }
-    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 22px; border-radius: 6px;
-      font-size: 14px; font-weight: 600; transition: opacity .2s;
-    }
-    .btn:hover { opacity: .9; }
-    .btn-primary { background: var(--accent); color: var(--accent-ink); }
-    .btn-ghost { background: none; color: var(--muted2); border: 1px solid var(--border2); }
-    .btn-ghost:hover { color: var(--text); border-color: var(--muted); opacity: 1; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); flex: none; }
+    .dot.up { background: var(--green); }
+    .dot.down { background: #a8720f; }
 
-    /* Chat window (signature) */
-    .chat {
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      overflow: hidden;
+    /* ── The commitment panel ───────────────────────────────────────────── */
+    .panel {
+      background: var(--forest); color: var(--paper);
+      border-radius: 10px; padding: 72px 64px;
+      display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 56px; align-items: center;
     }
-    .chat-bar {
-      display: flex; align-items: center; gap: 9px;
-      padding: 12px 16px;
-      background: rgba(255,255,255,.025);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--mono); font-size: 12px; color: var(--muted);
+    .panel h2 { font-size: clamp(30px, 3.6vw, 44px); color: var(--paper); }
+    .panel h2 .mark { color: var(--marigold); }
+    .panel p { color: #cfd6c9; font-size: 16.5px; line-height: 1.62; }
+    .panel p + p { margin-top: 14px; }
+    .panel-link {
+      display: inline-block; margin-top: 22px; font-weight: 600; font-size: 15px;
+      color: var(--marigold); border-bottom: 1px solid rgba(232,181,52,.45); padding-bottom: 2px;
     }
-    .chat-bar .right { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; }
-    .chat-body { padding: 22px 20px 24px; min-height: 300px; display: flex; flex-direction: column; gap: 14px; }
-    .msg { max-width: 88%; font-size: 14px; line-height: 1.6; opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
-    .msg.show { opacity: 1; transform: none; }
-    .msg.user {
-      align-self: flex-end;
-      background: var(--surface2); border: 1px solid var(--border2);
-      border-radius: 8px 8px 2px 8px; padding: 10px 14px;
-    }
-    .msg.fresco { align-self: flex-start; color: var(--muted2); }
-    .msg.fresco .who { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 5px; letter-spacing: .05em; }
-    .msg.fresco pre {
-      font-family: var(--mono); font-size: 12px; line-height: 1.7;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 6px; padding: 12px 14px; margin-top: 8px;
-      overflow-x: auto; color: var(--text);
-    }
-    .msg.fresco pre .kw { color: var(--accent); }
-    .msg.fresco pre .fn { color: var(--yellow); }
-    .msg.fresco pre .cm { color: var(--muted); }
-    .msg.fresco pre .str { color: var(--green); }
-    .type-caret { display: inline-block; width: 7px; height: 13px; background: var(--accent); vertical-align: middle; animation: blink 1s step-end infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .panel-link:hover { border-bottom-color: var(--marigold); }
 
-    /* API status strip under the chat window */
-    .chat-status {
-      display: flex; align-items: center;
-      font-family: var(--mono); font-size: 12px;
-      background: var(--surface2);
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      overflow-x: auto;
+    /* ── Latest ─────────────────────────────────────────────────────────── */
+    .latest { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0; border-top: 1px solid var(--rule); }
+    .post {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 28px 28px 32px; border-right: 1px solid var(--rule);
+      transition: background .15s;
     }
-    .chat-status .seg { padding: 8px 14px; white-space: nowrap; }
-    .chat-status .seg b { color: var(--muted2); font-weight: 500; }
-    .chat-status .seg.ep { color: var(--muted2); font-weight: 600; }
-    .chat-status .seg.right { margin-left: auto; }
+    .post:last-child { border-right: 0; }
+    .post:first-child { padding-left: 0; }
+    .post:hover { background: var(--paper-2); }
+    .post-meta { display: flex; gap: 14px; }
+    .post h3 { font-size: 21px; letter-spacing: -.015em; }
+    .post p { color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+    .post-go { margin-top: auto; padding-top: 14px; font-size: 14px; font-weight: 500; color: var(--green); }
+    .post:hover .post-go { text-decoration: underline; text-underline-offset: 3px; }
 
-    /* News banner */
-    .paper-banner-wrap { max-width: 1060px; margin: 28px auto 0; padding: 0 32px; }
-    .news-wrap { max-width: 1060px; margin: 0 auto; padding: 0 32px; }
-    .news-banner {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 8px; padding: 13px 18px;
-      transition: border-color .15s;
-    }
-    .news-banner:hover { border-color: var(--muted); }
-    .news-tag { color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
-    .news-text { font-size: 14px; color: var(--muted2); flex: 1; }
-    .news-text strong { color: var(--text); }
-    .news-arrow { color: var(--muted); font-size: 15px; }
+    /* ── Build ──────────────────────────────────────────────────────────── */
+    .build { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 56px; align-items: start; }
+    .build-note { color: var(--ink-2); font-size: 14.5px; margin-top: 16px; max-width: 60ch; }
+    .surfaces { display: flex; flex-direction: column; }
+    .surface { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+    .surface:first-child { padding-top: 0; }
+    .surface:last-child { border-bottom: 0; }
+    .surface-name { font-family: var(--disp); font-weight: 600; font-size: 16px; }
+    .surface-how { font-family: var(--mono); font-size: 12px; color: var(--green); margin-top: 5px; overflow-wrap: break-word; }
+    .surface p { color: var(--ink-2); font-size: 14px; margin-top: 6px; }
 
-    /* Main */
-    main { max-width: 1060px; margin: 0 auto; padding: 72px 32px 96px; }
-    section { margin-bottom: 88px; }
-    .section-tag {
-      font-family: var(--mono); font-size: 12px; letter-spacing: .05em;
-      color: var(--muted); margin-bottom: 12px;
-    }
-    .section-heading { font-size: 27px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 9px; }
-    .section-lead { color: var(--muted2); font-size: 15px; margin-bottom: 34px; max-width: 640px; }
-    .section-lead code {
-      font-family: var(--mono); font-size: .88em;
-      background: var(--surface2); padding: 2px 6px; border-radius: 4px;
-    }
-
-    /* Model family */
-    .family { display: grid; grid-template-columns: 1.25fr 1fr; gap: 14px; }
-    .model-card {
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 8px; padding: 26px; position: relative; overflow: hidden;
-      display: flex; flex-direction: column;
-      transition: border-color .15s;
-    }
-    .model-card:hover { border-color: var(--muted); }
-    .model-card.star { border-color: var(--muted); }
-    .model-status {
-      align-self: flex-start;
-      font-family: var(--mono); font-size: 12px; letter-spacing: .04em;
-      margin-bottom: 14px; color: var(--muted);
-    }
-    .model-name { font-size: 21px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
-    .model-desc { font-size: 14px; color: var(--muted2); line-height: 1.6; margin-bottom: 18px; flex: 1; }
-    .model-facts { display: flex; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
-    .fact .n { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--text); }
-    .fact .l { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .model-link { font-family: var(--mono); font-size: 13px; color: var(--accent); }
-    .model-link:hover { text-decoration: underline; }
-
-    /* API quickstart */
-    .code-block {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 20px 24px;
-      font-family: var(--mono);
-      font-size: 13px; color: var(--muted2); overflow-x: auto; line-height: 1.9;
-    }
-    .code-block .prompt { color: var(--accent); user-select: none; }
-    .code-block .comment { color: var(--muted); }
-    .code-block .cmd { color: var(--text); }
-    .code-block .str { color: var(--green); }
-    .api-points { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; font-size: 13px; color: var(--muted2); }
-
-    /* Ways to use */
-    .ways { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .way-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 22px 20px;
-      transition: border-color .15s;
-      display: block;
-    }
-    .way-card:hover { border-color: var(--muted); }
-    .way-kbd {
-      display: inline-block;
-      font-family: var(--mono); font-size: 12px;
-      color: var(--muted2);
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 4px; padding: 3px 8px;
-      margin-bottom: 12px;
-    }
-    .way-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .way-desc { font-size: 13px; color: var(--muted2); line-height: 1.6; }
-
-    /* Safety */
-    .safety-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .safety-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 20px;
-      display: block; transition: border-color .15s;
-    }
-    .safety-card:hover { border-color: var(--border2); }
-    .safety-date { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-    .safety-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
-    .safety-desc { font-size: 13px; color: var(--muted2); line-height: 1.55; }
-
-    /* CTA */
-    .cta-section {
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 10px; padding: 56px 48px; text-align: center;
-      position: relative; overflow: hidden; margin-bottom: 0;
-    }
-    .cta-section h2 { font-size: 28px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 10px; }
-    .cta-section p { color: var(--muted2); font-size: 15px; margin-bottom: 30px; }
-    .cta-section .btn-ghost { margin-left: 8px; }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border); padding: 34px 32px 40px;
-      font-size: 13px; color: var(--muted);
-    }
-    .footer-inner { max-width: 1060px; margin: 0 auto; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
-    footer a { color: var(--muted2); }
-    footer a:hover { color: var(--text); }
-    .footer-note { font-family: var(--mono); font-size: 12px; color: var(--muted); max-width: 420px; line-height: 1.7; }
-    .footer-note .sym { color: var(--accent); }
-
-    /* Reveal on scroll */
-    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
-    .reveal.in { opacity: 1; transform: none; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .type-caret { animation: none; }
-      .msg { opacity: 1; transform: none; transition: none; }
-    }
-
-    /* Mobile */
-    @media (max-width: 880px) {
-      .hero { grid-template-columns: minmax(0, 1fr); gap: 40px; }
-      .family { grid-template-columns: minmax(0, 1fr); }
-      .ways, .safety-row { grid-template-columns: minmax(0, 1fr); }
-    }
-    @media (max-width: 720px) {
-      .hero-wrap { padding: 44px 16px 40px; }
-      .news-wrap { padding: 0 16px; }
-      main { padding: 56px 16px 72px; }
-      .cta-section { padding: 40px 22px; }
-      .footer-inner { flex-direction: column; }
-      /* Keep both segments visible instead of clipping the endpoint label. */
-      .chat-status { font-size: 11px; }
-      .chat-status .seg { padding: 8px 10px; }
+    @media (max-width: 1000px) {
+      .hero { padding: 72px 0 60px; }
+      .hero-grid { grid-template-columns: minmax(0,1fr); gap: 32px; }
+      .panel { grid-template-columns: minmax(0,1fr); gap: 28px; padding: 48px 36px; }
+      .build { grid-template-columns: minmax(0,1fr); gap: 32px; }
+      .latest { grid-template-columns: minmax(0,1fr); }
+      .post { border-right: 0; border-bottom: 1px solid var(--rule); padding-left: 0; padding-right: 0; }
+      .post:last-child { border-bottom: 0; }
     }
   </style>
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/assets/profile.css">
-  <link rel="stylesheet" href="assets/mobile.css">
 </head>
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
+  <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="https://github.com/Ravikxx/Sennoric" class="nav-btn-ghost">GitHub</a>
-    <a href="/keys" class="nav-btn">API Keys</a>
+    <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="paper-banner-wrap">
-  <div class="paper-banner"
-       data-images="/assets/paper/paper-1.jpg,/assets/paper/paper-3.jpg,/assets/paper/paper-4.jpg,/assets/paper/paper-5.jpg,/assets/paper/paper-6.jpg,/assets/paper/paper-7.jpg,/assets/paper/paper-8.jpg"
-       data-logo="/assets/logo-spiral-wordmark-banner.png"
-       data-logo-alt="Sennoric AI"
-       data-interval="500"
-       data-zoom-min="100"
-       data-zoom-max="100"></div>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-grid grid-safe">
+      <h1>AI research and <a href="/models" class="h1-link">models</a> that yield to safety alone.</h1>
+      <div class="hero-body">
+        <p>AI's risks demand independent scrutiny. Sennoric is a safety company dedicated to rigorous evaluation — unencumbered by corporate interests.</p>
+        <form class="ask" action="/chat" method="get" id="ask-form">
+          <label class="sr-only" for="ask-q">Ask Solan a question</label>
+          <input class="ask-input" id="ask-q" name="q" type="text" maxlength="2000"
+                 placeholder="Ask Solan something" autocomplete="off" enterkeyhint="go">
+          <button class="btn btn-solid ask-send" type="submit">Try Solan</button>
+        </form>
+        <p class="ask-note">An account takes a moment to make. <a href="/docs">Read the docs</a></p>
+        <p class="hero-status"><span class="dot" id="status-dot"></span><span id="status-text">Checking model status…</span></p>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel grid-safe">
+    <h2>No <span class="mark">invisible ink</span>.</h2>
+    <div>
+      <p>Sennoric does not watermark generated text, and does not place advertising inside conversations.</p>
+      <p>A sentence shaped with a model should not leave carrying a hidden signature, and a conversation with an assistant should not become ad inventory.</p>
+      <a class="panel-link" href="/no-invisible-ink">Read the commitment</a>
+    </div>
+  </section>
+
+  <main>
+
+    <section class="band">
+      <div class="band-head">
+        <h2>Latest releases</h2>
+        <a class="band-more" href="/announcements">All announcements</a>
+      </div>
+
+      <!-- Replaced at runtime by the three most recent real announcements.
+           The markup below is the fallback shown if both sources are
+           unreachable, so the section is never blank. -->
+      <div class="latest grid-safe" id="latest">
+        <a class="post" href="/no-invisible-ink">
+          <div class="post-meta"><span class="label">August 12, 2026</span><span class="label">Announcement</span></div>
+          <h3>No invisible ink</h3>
+          <p>The case against watermarking generated text and selling advertising inside conversations.</p>
+          <span class="post-go">Read announcement</span>
+        </a>
+        <a class="post" href="/fresco-13">
+          <div class="post-meta"><span class="label">August 11, 2026</span><span class="label">Safety update</span></div>
+          <h3>Fresco 1.3: training complete</h3>
+          <p>Early safety results for the next Fresco, published before release rather than after it.</p>
+          <span class="post-go">Read announcement</span>
+        </a>
+        <a class="post" href="/announcements">
+          <div class="post-meta"><span class="label">August 6, 2026</span><span class="label">Notice</span></div>
+          <h3>Introducing Sennoric</h3>
+          <p>Axion Labs is now Sennoric. Models, accounts, and API keys are unchanged.</p>
+          <span class="post-go">Read announcement</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="band-head">
+        <h2>The Solan family</h2>
+        <a class="band-more" href="/models">Compare models</a>
+      </div>
+
+      <table class="models">
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Status</th>
+            <th scope="col">Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="m-name">Solan Fresco 1.2.5</div>
+              <p class="m-desc">Sennoric's default model. Tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code.</p>
+            </td>
+            <td><span class="pill" id="fresco-status">Checking&#8230;</span></td>
+            <td><a class="m-go" href="/fresco-model">Model details</a></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="m-name">Solan Fresco 1.3</div>
+              <p class="m-desc">Training completed in August. Fresco 1.3 remains off the API until adversarial testing concludes and the results are published.</p>
+            </td>
+            <td><span class="pill wip">In safety testing</span></td>
+            <td><a class="m-go" href="/fresco-13">Early results</a></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="m-name">Solan Glyph 1.1</div>
+              <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on dedicated inference capacity of its own.</p>
+            </td>
+            <td><a class="m-go" href="/status">Service status</a></td>
+            <td><a class="m-go" href="/glyph">Model details</a></td>
+          </tr>
+          <tr class="upcoming">
+            <td>
+              <div class="m-name">Solan Mosaic</div>
+              <p class="m-desc">A larger tier above Fresco. Mosaic is expected to take over from Glyph once it ships; Glyph stays in the lineup until then, with advance notice before any retirement.</p>
+            </td>
+            <td><span class="pill soon">Announced</span></td>
+            <td><a class="m-go" href="/models">Model line</a></td>
+          </tr>
+          <tr class="upcoming">
+            <td>
+              <div class="m-name">Solan Relic</div>
+              <p class="m-desc">The fourth name in the Solan family. Nothing has been published about it yet.</p>
+            </td>
+            <td><span class="pill soon">Not yet detailed</span></td>
+            <td><a class="m-go" href="/models">Model line</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="band">
+      <div class="band-head">
+        <h2>Build with Sennoric</h2>
+        <a class="band-more" href="/docs">API reference</a>
+      </div>
+
+      <div class="build grid-safe">
+        <div>
+          <div class="code"><span class="c"># a free Sennoric account and API key are required</span>
+<span class="p">$</span> curl https://api.sennoric.com/v1/chat/completions \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -H <span class="s">"Authorization: Bearer $SENNORIC_API_KEY"</span> \
+  -d <span class="s">'{"model": "fresco", "messages": [{"role": "user", "content": "hello!"}]}'</span></div>
+          <p class="build-note">The Sennoric API implements the OpenAI chat-completions format. An existing client needs a new base URL and model name; the rest of the code is unchanged. Streaming behaves as it does with OpenAI.</p>
+        </div>
+
+        <div class="surfaces">
+          <div class="surface">
+            <div class="surface-name">Browser</div>
+            <div class="surface-how">sennoric.com/chat</div>
+            <p>Signed-in conversations sync across devices.</p>
+          </div>
+          <div class="surface">
+            <div class="surface-name">API</div>
+            <div class="surface-how">POST /v1/chat/completions</div>
+            <p>Works with the official OpenAI SDKs in any language.</p>
+          </div>
+          <div class="surface">
+            <div class="surface-name">Axion CLI</div>
+            <div class="surface-how">npm i -g @axion-labs-ai/quark-cli</div>
+            <p>An open-source terminal agent that edits files and runs commands.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </div>
-
-<div class="hero-wrap">
-  <div class="hero">
-    <div class="hero-text">
-      <p class="hero-eyebrow">Sennoric · open models</p>
-      <h1>Meet <span class="fresco">Fresco</span>.</h1>
-      <p class="hero-sub">We build and host our own models. <b>Fresco 1.2.5</b> runs in the browser, behind an <b>OpenAI-compatible API</b>, and in your terminal.</p>
-      <p class="hero-status"><span id="status-text">checking model status…</span></p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="/chat">Create account &amp; chat</a>
-        <a class="btn btn-ghost" href="/keys">Get API key</a>
-      </div>
-    </div>
-
-    <div class="hero-demo">
-      <div class="chat">
-        <div class="chat-bar">
-          fresco-1.2.5
-          <span class="right">api.sennoric.com</span>
-        </div>
-        <div class="chat-body" id="chat-body"></div>
-        <div class="chat-status">
-          <span class="seg ep">POST /v1/chat/completions</span>
-          <span class="seg right"><b>$0.125</b> free / week</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="news-wrap">
-  <a class="news-banner" href="/announcements">
-    <span class="news-tag">Update</span>
-    <span class="news-text"><strong>Fresco now runs on our own servers.</strong> Responses went from around 220s down to 2–3s.</span>
-    <span class="news-arrow">›</span>
-  </a>
-</div>
-
-<main>
-
-  <section>
-    <p class="section-tag">the models</p>
-    <h2 class="section-heading">The Sennoric model family</h2>
-    <p class="section-lead">We train these ourselves and run them on our own hardware.</p>
-
-    <div class="family">
-      <div class="model-card star">
-        <span class="model-status" id="fresco-status">checking…</span>
-        <p class="model-name">Fresco 1.2.5</p>
-        <p class="model-desc">Our main model: a fine-tuned Llama 3.1 8B trained in two stages, supervised fine-tuning then DPO safety alignment. Good for chat, writing, and explaining code.</p>
-        <div class="model-facts">
-          <div class="fact"><div class="n">8B</div><div class="l">parameters</div></div>
-          <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
-        </div>
-        <a class="model-link" href="/fresco-model">model details →</a>
-      </div>
-
-      <div class="model-card">
-        <span class="model-status">live · free</span>
-        <p class="model-name">Glyph 1.1</p>
-        <p class="model-desc">A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Runs on its own RunPod endpoint.</p>
-        <div class="model-facts">
-          <div class="fact"><div class="n">3B</div><div class="l">parameters</div></div>
-          <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
-        </div>
-        <a class="model-link" href="/glyph">model details →</a>
-      </div>
-
-    </div>
-  </section>
-
-  <section>
-    <p class="section-tag">the api</p>
-    <h2 class="section-heading">Works with your existing OpenAI code</h2>
-    <p class="section-lead">We speak the OpenAI chat-completions format. Point your client at our base URL, change the model name to <code>fresco</code>, and the rest of your code stays put.</p>
-
-    <div class="code-block">
-      <span class="comment"># free Sennoric account and API key required</span><br>
-      <span class="prompt">$ </span><span class="cmd">curl https://api.sennoric.com/v1/chat/completions \</span><br>
-      <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</span><br>
-      <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $SENNORIC_API_KEY"</span> \</span><br>
-      <span class="cmd">&nbsp;&nbsp;-d <span class="str">'{"model": "lumen", "messages": [{"role": "user", "content": "hello!"}]}'</span></span>
-    </div>
-    <div class="api-points">
-      <span>$0.125 weekly included usage with a free account</span>
-      <span>streaming supported</span>
-      <span>keys &amp; usage dashboard at <a href="/keys" style="color:var(--accent)">sennoric/keys</a></span>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="section-tag">ways to use it</p>
-    <h2 class="section-heading">Browser, API, and terminal</h2>
-    <p class="section-lead">All three run on the same models and the same account.</p>
-
-    <div class="ways">
-      <a class="way-card" href="/chat">
-        <span class="way-kbd">browser</span>
-        <p class="way-title">Chat</p>
-        <p class="way-desc">A clean chat interface for Fresco. Signed-in chats sync across your devices.</p>
-      </a>
-      <a class="way-card" href="/docs#sennoric-api">
-        <span class="way-kbd">POST /v1/chat/completions</span>
-        <p class="way-title">API</p>
-        <p class="way-desc">An OpenAI-compatible endpoint. Works with the official OpenAI SDKs in any language.</p>
-      </a>
-      <a class="way-card" href="/docs">
-        <span class="way-kbd">$ npm i -g @axion-labs-ai/quark-cli</span>
-        <p class="way-title">Sennoric CLI</p>
-        <p class="way-desc">Our open-source terminal agent. It edits files and runs commands, using Fresco or any model you point it at.</p>
-      </a>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="section-tag">safety</p>
-    <h2 class="section-heading">We publish our safety work</h2>
-    <p class="section-lead">Every Fresco release gets adversarial testing before it ships. When a model fails, we take it down and publish why.</p>
-
-    <div class="safety-row">
-      <a class="safety-card" href="/fresco-125-safety">
-        <p class="safety-date">Fresco 1.2.5</p>
-        <p class="safety-title">Safety report: 73% pass rate</p>
-        <p class="safety-desc">DPO safety training results across 15 adversarial scenarios.</p>
-      </a>
-      <a class="safety-card" href="/fresco-suspension">
-        <p class="safety-date">Fresco 1.2.1 · June 2026</p>
-        <p class="safety-title">Why we suspended a model</p>
-        <p class="safety-desc">Testing showed dangerous self-preservation behavior. We took it offline and published the findings.</p>
-      </a>
-      <a class="safety-card" href="/fresco-safety">
-        <p class="safety-date">Fresco 1.2.1 · June 2026</p>
-        <p class="safety-title">Safety report: 26% pass rate</p>
-        <p class="safety-desc">The full 1.2.1 results: 7 scenarios, 5 runs each, with every prompt and response published.</p>
-      </a>
-    </div>
-  </section>
-
-  <section>
-    <div class="cta-section">
-      <h2>Start talking to Fresco</h2>
-      <p>Accounts are free, and $0.125 of weekly usage is included.</p>
-      <a class="btn btn-primary" href="/chat">Create a free account</a>
-      <a class="btn btn-ghost" href="/docs">Read the docs</a>
-    </div>
-  </section>
-
-</main>
 
 <footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Sennoric">GitHub</a></p>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
+        <p class="foot-note">Sennoric trains and hosts small language models on its own infrastructure.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Solan models</h4>
+        <a href="/models">All Solan models</a>
+        <a href="/fresco-model">Fresco</a>
+        <a href="/fresco-13">Fresco 1.3</a>
+        <a href="/glyph">Glyph</a>
+      </div>
+      <div class="foot-col">
+        <h4>Build</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/keys">API keys</a>
+        <a href="/usage">Usage</a>
+        <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">CLI on npm</a>
+      </div>
+      <div class="foot-col">
+        <h4>Safety</h4>
+        <a href="/no-invisible-ink">No invisible ink</a>
+        <a href="/fresco-125-safety">Fresco 1.2.5 report</a>
+        <a href="/fresco-safety">Fresco 1.2.1 report</a>
+        <a href="/fresco-suspension">Model suspension</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="/announcements">Announcements</a>
+        <a href="/status">Status</a>
+        <a href="/help">Help center</a>
+        <a href="/tos">Terms</a> · <a href="/status">Status</a></span>
+    </div>
+  </div>
 </footer>
 
 <script>
-  // Live model status from the real API
-  const statusText = document.getElementById('status-text')
-  const frescoStatus = document.getElementById('fresco-status')
-
-  const healthController = new AbortController()
-  const healthTimeout = setTimeout(() => healthController.abort(), 6000)
-  fetch('https://api.sennoric.com/health', { signal: healthController.signal })
-    .then((r) => r.json())
-    .then((d) => {
-      // `ok` is just the API worker; `model_up` is a real probe of the model.
-      const up = !!(d.ok && d.model_up)
-      statusText.textContent = up ? 'Fresco is live right now' : 'Fresco is temporarily unavailable'
-      frescoStatus.textContent = up ? 'live · free' : 'temporarily unavailable'
+  // Upgrade the hero composer: hand the question to /chat through
+  // sessionStorage instead of the query string, so what someone types never
+  // lands in browser history or an access log. The plain GET form underneath
+  // stays as the no-JS fallback.
+  ;(function () {
+    var form = document.getElementById('ask-form')
+    var field = document.getElementById('ask-q')
+    if (!form || !field) return
+    form.addEventListener('submit', function (e) {
+      var q = field.value.trim()
+      if (!q) { e.preventDefault(); field.focus(); return }
+      try {
+        sessionStorage.setItem('sennoric:handoff', q)
+      } catch (err) { return }  // storage blocked — let the GET form submit as-is
+      e.preventDefault()
+      window.location.href = '/chat'
     })
-    // A failed probe means the status API is unreachable, not that the model
-    // is down. Don't claim an outage we can't actually see.
-    .catch(() => {
-      statusText.textContent = 'Model status unavailable. See the status page.'
-      frescoStatus.textContent = 'status unavailable'
-    })
-    .finally(() => clearTimeout(healthTimeout))
+  })()
 
-  // Animated chat demo
-  const chatBody = document.getElementById('chat-body')
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  // Latest releases, built from the real announcement history rather than
+  // hand-copied here (which is how this section drifts out of date).
+  //
+  // Two sources, because neither alone is complete:
+  //   - the API holds anything that went out through the email webhook,
+  //     including items not yet written into the archive;
+  //   - /announcements holds the curated archive, which is the only place
+  //     older entries live.
+  // They are merged on a normalised title, newest first. If both fail the
+  // static markup already in the page stands.
+  ;(function () {
+    var grid = document.getElementById('latest')
+    if (!grid) return
 
-  const FRESCO_REPLY = 'Point base_url at our endpoint and use your Sennoric key:'
-  const FRESCO_CODE = [
-    { text: 'from ', cls: 'kw' }, { text: 'openai ' }, { text: 'import ', cls: 'kw' }, { text: 'OpenAI\n\n' },
-    { text: 'client = ' }, { text: 'OpenAI', cls: 'fn' }, { text: '(\n' },
-    { text: '    base_url=' }, { text: '"https://api.sennoric.com/v1"', cls: 'str' }, { text: ',\n' },
-    { text: '    api_key=' }, { text: '"sk-axion-..."', cls: 'str' }, { text: ',\n' },
-    { text: ')' },
-  ]
-
-  function addUserMsg() {
-    const el = document.createElement('div')
-    el.className = 'msg user'
-    el.textContent = 'How do I use Fresco with the OpenAI Python SDK?'
-    chatBody.appendChild(el)
-    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')))
-    return el
-  }
-
-  function addFrescoMsg() {
-    const el = document.createElement('div')
-    el.className = 'msg fresco'
-    el.innerHTML = '<div class="who">FRESCO</div><div class="reply"></div>'
-    chatBody.appendChild(el)
-    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')))
-    return el.querySelector('.reply')
-  }
-
-  function buildCode(pre, upTo) {
-    pre.textContent = ''
-    let remaining = upTo
-    for (const part of FRESCO_CODE) {
-      if (remaining <= 0) break
-      const take = part.text.slice(0, remaining)
-      remaining -= part.text.length
-      const span = document.createElement('span')
-      if (part.cls) span.className = part.cls
-      span.textContent = take
-      pre.appendChild(span)
+    var CATS = { announcement: 'Announcement', notice: 'Notice', safety: 'Safety update', update: 'Update', release: 'Release' }
+    var key = function (t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() }
+    var fmt = function (d) {
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     }
-  }
+    var withTimeout = function (url) {
+      var c = new AbortController()
+      var t = setTimeout(function () { c.abort() }, 6000)
+      return fetch(url, { signal: c.signal }).finally(function () { clearTimeout(t) })
+    }
 
-  function playDemo() {
-    addUserMsg()
-    setTimeout(() => {
-      const reply = addFrescoMsg()
-      if (reduced) {
-        reply.textContent = FRESCO_REPLY
-        const pre = document.createElement('pre')
-        reply.appendChild(pre)
-        buildCode(pre, Infinity)
-        return
-      }
-      // stream the text reply
-      let i = 0
-      const textNode = document.createElement('span')
-      const caret = document.createElement('span')
-      caret.className = 'type-caret'
-      reply.appendChild(textNode)
-      reply.appendChild(caret)
-      const streamText = () => {
-        i += 2
-        textNode.textContent = FRESCO_REPLY.slice(0, i)
-        if (i < FRESCO_REPLY.length) setTimeout(streamText, 25)
-        else {
-          const pre = document.createElement('pre')
-          reply.insertBefore(pre, caret)
-          const codeLen = FRESCO_CODE.reduce((n, p) => n + p.text.length, 0)
-          let j = 0
-          const streamCode = () => {
-            j += 3
-            buildCode(pre, j)
-            if (j < codeLen) setTimeout(streamCode, 25)
-            else caret.remove()
+    // The archive page: the curated <article class="ann"> entries.
+    // Falls back to the .html path so this also works off a plain static
+    // server, where extensionless routes don't resolve.
+    var fromArchive = withTimeout('/announcements')
+      .then(function (r) { return r.ok ? r : withTimeout('/announcements.html') })
+      .catch(function () { return withTimeout('/announcements.html') })
+      .then(function (r) { return r.text() })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html')
+        return [].slice.call(doc.querySelectorAll('article.ann')).map(function (el) {
+          var when = (el.querySelector('.ann-when') || {}).textContent || ''
+          var cat = (el.querySelector('.ann-cat') || {}).textContent || ''
+          var title = (el.querySelector('.ann-title') || {}).textContent || ''
+          var body = (el.querySelector('.ann-panel-inner p') || {}).textContent || ''
+          var cta = el.querySelector('.ann-footer a[href]')
+          var date = new Date(when)
+          return {
+            date: isNaN(date) ? null : date,
+            cat: cat.trim(),
+            title: title.trim().replace(/\.$/, ''),
+            body: body.trim(),
+            href: cta ? cta.getAttribute('href') : (el.id ? '/announcements#' + el.id : '/announcements')
           }
-          setTimeout(streamCode, 250)
-        }
-      }
-      setTimeout(streamText, 400)
-    }, reduced ? 0 : 900)
-  }
-  setTimeout(playDemo, reduced ? 0 : 600)
+        }).filter(function (a) { return a.date && a.title })
+      })
+      .catch(function () { return [] })
 
-  // Scroll reveals
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) }
-  }, { threshold: 0.08 })
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
+    // The API: anything emailed but not yet written into the archive.
+    var fromApi = withTimeout('https://api.sennoric.com/announcements')
+      .then(function (r) { return r.json() })
+      .then(function (d) {
+        return (d.announcements || []).map(function (a) {
+          return {
+            date: new Date(a.created_at * 1000),
+            cat: CATS[a.category] || 'Announcement',
+            title: String(a.title || '').trim().replace(/\.$/, ''),
+            body: String(a.body || '').split('\n')[0],
+            href: a.link || '/announcements'
+          }
+        }).filter(function (a) { return !isNaN(a.date) && a.title })
+      })
+      .catch(function () { return [] })
+
+    Promise.all([fromApi, fromArchive]).then(function (sets) {
+      var seen = Object.create(null)
+      var all = []
+      sets[0].concat(sets[1]).forEach(function (a) {
+        var k = key(a.title)
+        if (seen[k]) return
+        seen[k] = 1
+        all.push(a)
+      })
+      all.sort(function (a, b) { return b.date - a.date })
+      var top = all.slice(0, 3)
+      if (top.length < 3) return   // not enough real data — keep the fallback
+
+      grid.textContent = ''
+      top.forEach(function (a) {
+        var card = document.createElement('a')
+        card.className = 'post'
+        card.href = a.href
+        var meta = document.createElement('div')
+        meta.className = 'post-meta'
+        ;[fmt(a.date), a.cat].forEach(function (t) {
+          var s = document.createElement('span')
+          s.className = 'label'
+          s.textContent = t
+          meta.appendChild(s)
+        })
+        var h = document.createElement('h3')
+        h.textContent = a.title
+        var p = document.createElement('p')
+        p.textContent = a.body.length > 130 ? a.body.slice(0, 127).trim() + '…' : a.body
+        var go = document.createElement('span')
+        go.className = 'post-go'
+        go.textContent = 'Read announcement'
+        card.appendChild(meta); card.appendChild(h); card.appendChild(p); card.appendChild(go)
+        grid.appendChild(card)
+      })
+    })
+  })()
+
+  // Live model status from the real API.
+  ;(function () {
+    var text = document.getElementById('status-text')
+    var dot = document.getElementById('status-dot')
+    var pill = document.getElementById('fresco-status')
+
+    var ctrl = new AbortController()
+    var t = setTimeout(function () { ctrl.abort() }, 6000)
+
+    fetch('https://api.sennoric.com/health', { signal: ctrl.signal })
+      .then(function (r) { return r.json() })
+      .then(function (d) {
+        // `ok` is only the API worker; `model_up` is a real probe of the model.
+        var up = !!(d.ok && d.model_up)
+        text.textContent = up ? 'Fresco is answering now' : 'Fresco is temporarily unavailable'
+        dot.className = 'dot ' + (up ? 'up' : 'down')
+        pill.textContent = up ? 'Live' : 'Unavailable'
+        if (!up) pill.className = 'pill wip'
+      })
+      // A failed probe means the status endpoint is unreachable, not that the
+      // model is down. Don't claim an outage we can't actually see.
+      .catch(function () {
+        text.innerHTML = 'Model status unavailable — see the <a href="/status" style="color:var(--green)">status page</a>'
+        pill.textContent = 'See status'
+      })
+      .finally(function () { clearTimeout(t) })
+  })()
 </script>
-<script src="/assets/paper-banner.js"></script>
-<script src="/assets/profile.js"></script>
 
 </body>
 </html>
