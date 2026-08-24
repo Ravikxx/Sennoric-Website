@@ -4139,7 +4139,18 @@
     let outcome = { status: 'interrupted' }
 
     const paint = () => {
-      if (text) live.classList.remove('waiting')
+      // The server pushes an initial 'snapshot' event with text:'' the
+      // instant the stream opens (chatGeneration.js), before anything has
+      // actually been generated. live.textContent clobbers whatever's
+      // currently inside #live — including the thinking-spiral SVG set via
+      // innerHTML in openLiveBubble() — so painting on that empty snapshot
+      // wiped the spinner out immediately, well before any real text
+      // existed to replace it. Moderated models (Fresco 1.3) make this
+      // worst: they hold the whole reply server-side and deliver it as one
+      // delta at the end, so the bubble sat blank for the entire generation.
+      // Only touch the DOM once there's real text to show.
+      if (!text) { onText?.(text); return }
+      live.classList.remove('waiting')
       live.textContent = text
       onText?.(text)
       if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight
