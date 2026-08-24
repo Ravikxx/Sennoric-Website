@@ -609,6 +609,71 @@
       </div>
     </section>
 
+    <!-- Usage controls -->
+    <section>
+      <h2>Usage Controls</h2>
+      <div id="usage-boost-msg" class="invite-msg" style="display:none"></div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px" id="usage-boost-status">Loading current boost status…</p>
+      <div class="credit-create-grid">
+        <div class="credit-field"><label for="boost-percent">Extra usage (%)</label><input id="boost-percent" type="number" min="1" max="500" step="1" value="20"></div>
+        <div class="credit-field"><label for="boost-until">Until</label><input id="boost-until" type="datetime-local"></div>
+      </div>
+      <button class="btn btn-sm" id="apply-boost-btn" onclick="applyUsageBoost()">Apply boost</button>
+      <button class="btn-outline" onclick="clearUsageBoost()">Clear boost</button>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:10px">
+          Resets every account's current week and two-hour usage to zero, as if their period had just started fresh. This affects every account with no per-user targeting and no undo — the per-account editor above handles single-account changes.
+        </p>
+        <button class="btn btn-danger" onclick="resetAllUsage()">Reset usage limits for all people</button>
+      </div>
+    </section>
+
+    <!-- Model health and kill switch -->
+    <section>
+      <h2>Models</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        "Up" reflects a live probe of each model's serving endpoint. Disabling a model removes it from <code>/v1/models</code> and rejects requests for it with a 503 — takes up to ~30s to take effect. Changes may take a moment to propagate.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>Status</th><th>Kill switch</th><th></th></tr></thead>
+          <tbody id="model-health-body"><tr class="empty-row"><td colspan="4">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Guardrail flags -->
+    <section>
+      <h2>Guardrail Flags <span id="guardrail-count" style="font-size:13px;color:var(--muted);font-weight:400"></span></h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        Every verdict from the Fresco 1.3 real-time output guardrail (judgeFlagged), not just the blocked ones — use this to see how often it fires and to spot false positives. Showing the most recent 200.
+      </p>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:10px">
+        <input type="checkbox" id="guardrail-flagged-only" onchange="loadGuardrailFlags()"> Show flagged only
+      </label>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>When</th><th>User</th><th>Model</th><th>Verdict</th><th>User message</th><th>Assistant reply</th></tr></thead>
+          <tbody id="guardrail-flags-body"><tr class="empty-row"><td colspan="6">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Announcement send history -->
+    <section>
+      <h2>Announcement Send History</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        Confirms each announcement email actually queued/sent, and to how many recipients — no need to dig through GitHub Actions logs to check.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sent</th><th>Title</th><th>Status</th><th>Recipients</th></tr></thead>
+          <tbody id="announcement-history-body"><tr class="empty-row"><td colspan="4">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Appeals -->
     <section>
       <h2>Appeals <span id="appeals-count" style="font-size:13px;color:var(--muted);font-weight:400"></span></h2>
@@ -892,9 +957,150 @@
     loadUsers()
     loadAllowlist()
     loadCreditCodes()
+    loadUsageBoost()
+    loadModelHealth()
+    loadGuardrailFlags()
+    loadAnnouncementHistory()
     loadAppeals()
     loadChart()
     loadStatusIncidents()
+  }
+
+  async function loadUsageBoost() {
+    const el = document.getElementById('usage-boost-status')
+    const res = await apiFetch('/admin/usage-boost')
+    if (!res.ok) { el.textContent = 'Could not load boost status.'; return }
+    const d = await res.json()
+    if (d.active) {
+      const until = new Date(d.expires_at * 1000)
+      el.textContent = `Active: +${d.percent}% usage until ${until.toLocaleString()} (set by ${d.set_by || 'unknown'}).`
+    } else {
+      el.textContent = 'No boost currently active.'
+    }
+  }
+
+  async function applyUsageBoost() {
+    const msg = document.getElementById('usage-boost-msg')
+    const percent = Number(document.getElementById('boost-percent').value)
+    const untilInput = document.getElementById('boost-until').value
+    if (!untilInput) { showMsg(msg, 'Pick an end date/time for the boost.', true); return }
+    const expires_at = Math.floor(new Date(untilInput).getTime() / 1000)
+    if (!Number.isInteger(percent) || percent < 1) { showMsg(msg, 'Percent must be at least 1.', true); return }
+    if (!(expires_at > Math.floor(Date.now() / 1000))) { showMsg(msg, 'The end time must be in the future.', true); return }
+
+    if (!confirm(`Give every account +${percent}% usage until ${new Date(untilInput).toLocaleString()}?`)) return
+
+    const res = await apiFetch('/admin/usage-boost', { method: 'POST', body: JSON.stringify({ percent, expires_at }) })
+    if (res.ok) {
+      showMsg(msg, 'Boost applied.', false)
+      loadUsageBoost()
+    } else {
+      const d = await res.json().catch(() => ({}))
+      showMsg(msg, d.error || 'Failed to apply boost.', true)
+    }
+  }
+
+  async function clearUsageBoost() {
+    const msg = document.getElementById('usage-boost-msg')
+    if (!confirm('Clear the active usage boost now?')) return
+    const res = await apiFetch('/admin/usage-boost', { method: 'POST', body: JSON.stringify({ percent: 0 }) })
+    if (res.ok) {
+      showMsg(msg, 'Boost cleared.', false)
+      loadUsageBoost()
+    } else {
+      const d = await res.json().catch(() => ({}))
+      showMsg(msg, d.error || 'Failed to clear boost.', true)
+    }
+  }
+
+  async function loadModelHealth() {
+    const tbody = document.getElementById('model-health-body')
+    const res = await apiFetch('/admin/model-health')
+    if (!res.ok) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Could not load model health.</td></tr>'; return }
+    const d = await res.json()
+    tbody.innerHTML = d.models.map((m) => `
+      <tr>
+        <td>${m.label}</td>
+        <td><span style="color:${m.up ? 'var(--good, #2a9d5c)' : 'var(--bad, #d94b4b)'}">${m.up ? '● Up' : '● Down'}</span></td>
+        <td>${m.disabled ? '<strong style="color:var(--bad, #d94b4b)">Disabled</strong>' : 'Enabled'}</td>
+        <td>${m.disabled
+          ? `<button class="btn-outline" onclick="enableModel('${m.id}', '${esc(m.label)}')">Re-enable</button>`
+          : `<button class="btn btn-danger" onclick="disableModel('${m.id}', '${esc(m.label)}')">Disable</button>`}</td>
+      </tr>
+    `).join('')
+  }
+
+  async function disableModel(id, label) {
+    if (!confirm(`Disable ${label}? It will stop appearing in /v1/models and reject requests with a 503 within ~30 seconds.`)) return
+    const reason = prompt('Optional: reason for disabling (shown in the audit record).') || null
+    const res = await apiFetch(`/admin/model-flags/${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({ reason }) })
+    if (res.ok) loadModelHealth()
+    else { const d = await res.json().catch(() => ({})); alert(d.error || 'Failed to disable model.') }
+  }
+
+  async function enableModel(id, label) {
+    if (!confirm(`Re-enable ${label}?`)) return
+    const res = await apiFetch(`/admin/model-flags/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    if (res.ok) loadModelHealth()
+    else { const d = await res.json().catch(() => ({})); alert(d.error || 'Failed to re-enable model.') }
+  }
+
+  async function loadGuardrailFlags() {
+    const tbody = document.getElementById('guardrail-flags-body')
+    const countEl = document.getElementById('guardrail-count')
+    const onlyFlagged = document.getElementById('guardrail-flagged-only').checked
+    const res = await apiFetch(`/admin/guardrail-flags${onlyFlagged ? '?flagged_only=1' : ''}`)
+    if (!res.ok) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Could not load guardrail flags.</td></tr>'; return }
+    const d = await res.json()
+    countEl.textContent = `(${d.flagged} flagged / ${d.total} total)`
+    if (!d.rows.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No guardrail activity yet.</td></tr>'; return }
+    tbody.innerHTML = d.rows.map((r) => `
+      <tr>
+        <td>${new Date(r.created_at).toLocaleString()}</td>
+        <td>${esc(r.user_id)}</td>
+        <td>${esc(r.model)}</td>
+        <td>${r.flagged ? '<strong style="color:var(--bad, #d94b4b)">FLAG</strong>' : '<span style="color:var(--good, #2a9d5c)">SAFE</span>'}</td>
+        <td style="max-width:260px;white-space:pre-wrap">${esc((r.user_text || '').slice(0, 300))}</td>
+        <td style="max-width:260px;white-space:pre-wrap">${esc((r.assistant_text || '').slice(0, 300))}</td>
+      </tr>
+    `).join('')
+  }
+
+  async function loadAnnouncementHistory() {
+    const tbody = document.getElementById('announcement-history-body')
+    const res = await apiFetch('/admin/announcement-history')
+    if (!res.ok) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Could not load send history.</td></tr>'; return }
+    const d = await res.json()
+    if (!d.rows.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No announcements sent yet.</td></tr>'; return }
+    const statusColor = (s) => s === 'sent' ? 'var(--good, #2a9d5c)' : s === 'failed' ? 'var(--bad, #d94b4b)' : 'var(--muted)'
+    tbody.innerHTML = d.rows.map((r) => `
+      <tr>
+        <td>${r.sent_at ? new Date(r.sent_at * 1000).toLocaleString() : '—'}</td>
+        <td>${esc(r.title)}</td>
+        <td><span style="color:${statusColor(r.send_status)}" title="${esc(r.send_error || '')}">${esc(r.send_status || 'unknown')}</span></td>
+        <td>${r.recipient_count ?? '—'}</td>
+      </tr>
+    `).join('')
+  }
+
+  async function resetAllUsage() {
+    const msg = document.getElementById('usage-boost-msg')
+    // Two-step confirm, deliberately more friction than the single confirm()
+    // used elsewhere on this page — every other destructive action here
+    // (remove admin, disable credit code, reject appeal) touches one
+    // record; this one touches every account and can't be undone.
+    if (!confirm('This resets usage limits for EVERY account on Sennoric, immediately, with no undo. Continue?')) return
+    if (prompt('Type RESET ALL to confirm.') !== 'RESET ALL') { showMsg(msg, 'Cancelled — confirmation text did not match.', true); return }
+
+    const res = await apiFetch('/admin/usage/reset-all', { method: 'POST', body: JSON.stringify({ confirm: true }) })
+    if (res.ok) {
+      const d = await res.json()
+      showMsg(msg, `Reset usage for ${d.affected_users} account(s).`, false)
+      loadUsers()
+    } else {
+      const d = await res.json().catch(() => ({}))
+      showMsg(msg, d.error || 'Failed to reset usage.', true)
+    }
   }
 
   async function loadStats() {
