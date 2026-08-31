@@ -286,6 +286,20 @@
 </nav>
 
 <main>
+  <article class="ann update" data-cat="update" id="infra-in-house-compute">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">August 30, 2026</span>
+      <span class="ann-cat update">Update</span>
+      <span class="ann-title">Infrastructure Update: Moving to In-House Compute</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+      <p>Over the coming months, we're bringing a meaningful chunk of our compute in-house. We're acquiring dedicated hardware — including a new machine built around an RX 9070 XT — that will handle workloads we've been renting cloud GPU time for. This means significantly lower ongoing compute spend, more predictable costs instead of scaling with usage, and full control over availability with no rate limits or shared-tenant contention.</p>
+      <p>This builds on upgrades already underway: a major software upgrade across our stack, server status monitoring so we can catch and resolve issues before they become outages, additional drive capacity, and generally much more robust systems end to end.</p>
+      <p>Together, these changes mean a more reliable, more scalable, and more cost-efficient foundation going forward — with more updates as the hardware comes online.</p>
+    </div></div>
+  </article>
+
   <article class="ann update" data-cat="update" id="fresco-13-infra-delay">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">August 23, 2026</span>
@@ -371,6 +385,15 @@
   <!-- Parsed by .github/scripts/send-announcement.cjs on push and emailed to
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
+  <div class="announcement" style="display:none">
+    <h2>Infrastructure Update: Moving to In-House Compute</h2>
+    <p>Over the coming months, we're bringing a meaningful chunk of our compute in-house. We're acquiring dedicated hardware — including a new machine built around an RX 9070 XT — that will handle workloads we've been renting cloud GPU time for. This means significantly lower ongoing compute spend, more predictable costs instead of scaling with usage, and full control over availability with no rate limits or shared-tenant contention.</p>
+    <p>This builds on upgrades already underway: a major software upgrade across our stack, server status monitoring so we can catch and resolve issues before they become outages, additional drive capacity, and generally much more robust systems end to end.</p>
+    <p>Together, these changes mean a more reliable, more scalable, and more cost-efficient foundation going forward — with more updates as the hardware comes online.</p>
+    <p>Read the full announcement: https://sennoric.com/announcements#infra-in-house-compute</p>
+  </div>
+  <!-- end pending announcement -->
+
   <div class="announcement" style="display:none">
     <h2>Fresco 1.3 Launch Update</h2>
     <p>We owe you an update on the Fresco 1.3 launch.</p>
