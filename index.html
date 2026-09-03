@@ -48,8 +48,6 @@
     /* ── Hero ───────────────────────────────────────────────────────────── */
     .hero { min-height: calc(var(--vh) - 66px); display: flex; flex-direction: column; justify-content: center; padding: 48px 0 64px; position: relative; }
     .hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .9fr); gap: 56px; align-items: center; }
-    .eyebrow { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 30px; }
-    .eyebrow .label::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--marigold); margin-right: 9px; vertical-align: 1px; }
     .hero h1 { font-size: clamp(46px, 7.2vw, 104px); font-weight: 800; letter-spacing: -.035em; line-height: .96; }
     .hero h1 .line { display: block; overflow: hidden; padding-bottom: .06em; margin-bottom: -.06em; }
     .hero h1 .line > span { display: block; transform: translateY(110%); animation: rise 1s var(--ease) forwards; }
@@ -86,8 +84,6 @@
     .spiral { width: min(100%, 420px); height: auto; display: block; will-change: transform; }
     .spiral path { stroke: var(--marigold); stroke-width: 15; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.6s var(--ease) .2s forwards; }
     @keyframes draw { to { stroke-dashoffset: 0; } }
-    .mark-caption { display: flex; gap: 14px; }
-    .mark-caption i { font-style: normal; color: var(--ink); }
 
     .scroll-cue { position: absolute; left: var(--gut); bottom: 22px; display: flex; align-items: center; gap: 12px; }
     .scroll-cue::after { content: ''; width: 1px; height: 34px; background: var(--ink-2); transform-origin: top; animation: cue 1.8s var(--ease) infinite; }
@@ -171,6 +167,24 @@
     }
     .lamp-ring::after { content: 'lamp'; position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--mark); }
     .ink.lit .lamp-ring { opacity: 1; }
+    /* Touch devices have no cursor to carry a lamp, so the hidden layer is
+       developed across the whole sheet instead, with a wipe from the left. */
+    .only-touch { display: none; }
+    .develop-row { margin-top: 24px; }
+    @media (hover: none), (pointer: coarse) {
+      .only-pointer { display: none; }
+      .only-touch { display: inline; }
+      .develop-row.only-touch { display: block; }
+      .ink { cursor: auto; }
+      .lamp-ring { display: none; }
+      .lamp-layer {
+        -webkit-mask-image: none; mask-image: none;
+        clip-path: inset(0 100% 0 0); transition: clip-path 1.1s var(--ease);
+        background: rgba(232, 181, 52, .1);
+      }
+      .ink.developed .lamp-layer { clip-path: inset(0 0 0 0); }
+      .ink.developed .sheet[data-sheet="clean"] .lamp-layer { transition-delay: .35s; }
+    }
     .ink-note { margin-top: 26px; font-size: 14.5px; color: var(--ink-2); max-width: 66ch; }
     .ink-note a { color: var(--green); font-weight: 500; }
     .ink-note a:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -235,7 +249,6 @@
       .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
       .hero-mark { order: -1; align-items: flex-start; }
       .spiral { width: 120px; }
-      .mark-caption { display: none; }
       .ledger-inner { grid-template-columns: minmax(0, 1fr); gap: 24px; }
       .ledger-rail { display: flex; align-items: center; gap: 16px; }
       .rail { width: 160px; height: 1px; margin: 0; }
@@ -302,7 +315,6 @@
 <header class="hero" id="top">
   <div class="wrap hero-grid grid-safe">
     <div class="hero-copy">
-      <p class="eyebrow"><span class="label">Independent lab</span><span class="label">Own models</span><span class="label">Own hardware</span></p>
       <h1>
         <span class="line"><span>Models with</span></span>
         <span class="line"><span><span class="mark-word">nothing</span> hidden</span></span>
@@ -321,7 +333,6 @@
       <svg class="spiral" id="spiral" viewBox="0 0 200 200" role="img" aria-label="The Sennoric mark">
         <path pathLength="1" d="M38 158 C 20 112, 44 42, 104 32 C 160 23, 186 84, 156 124 C 128 161, 68 152, 66 110 C 65 78, 100 62, 122 86 C 138 104, 124 126, 106 118"/>
       </svg>
-      <p class="mark-caption"><span class="label">Fig. 1</span><span class="label">The mark, <i>turns as you read</i></span></p>
     </div>
   </div>
   <div class="scroll-cue label" aria-hidden="true">Scroll</div>
@@ -359,7 +370,7 @@
         <h2>No invisible ink.</h2>
         <a class="band-more" href="/no-invisible-ink">Read the commitment</a>
       </div>
-      <p class="band-lede" data-reveal>Generated text can be shaped so it carries a hidden signature, and a conversation can be sold as ad space. Neither shows on the page. Hold the lamp over both sheets.</p>
+      <p class="band-lede" data-reveal>Generated text can be shaped so it carries a hidden signature, and a conversation can be sold as ad space. Neither shows on the page. <span class="only-pointer">Hold the lamp over both sheets.</span><span class="only-touch">Develop both sheets below.</span></p>
 
       <div class="sheets" id="sheets">
         <article class="sheet" data-sheet="marked">
@@ -390,6 +401,7 @@
           </div>
         </article>
       </div>
+      <p class="develop-row only-touch"><button class="btn btn-solid develop" id="develop" type="button" aria-pressed="false">Develop the sheets</button></p>
       <p class="ink-note" data-reveal>Sheet A carries a statistical watermark and an ad slot. Sheet B is what a Sennoric model returns: the words, and only the words. <a href="/no-invisible-ink">Why we refuse both</a></p>
     </div>
     <div class="lamp-ring" id="lamp-ring" aria-hidden="true"></div>
@@ -664,38 +676,20 @@
       return
     }
 
-    // Touch, keyboard, or reduced motion: the lamp sweeps each sheet on its
-    // own while the section is on screen, so the reveal still happens.
-    var running = false, t0 = 0
-    function sweep(now) {
-      if (!running) return
-      if (!t0) t0 = now
-      var t = (now - t0) / 1000
-      sheets.forEach(function (s) {
-        var r = s.getBoundingClientRect()
-        var x = (0.5 + 0.42 * Math.sin(t * 0.9)) * r.width
-        var y = (0.5 + 0.38 * Math.sin(t * 0.6 + 1.3)) * r.height
-        s.style.setProperty('--lx', x + 'px')
-        s.style.setProperty('--ly', y + 'px')
-      })
-      requestAnimationFrame(sweep)
-    }
-    if (reduced) {
+    // Fine pointer but reduced motion: leave the lamp parked over the sheets.
+    if (hasPointer && reduced) {
       sheets.forEach(function (s) { s.style.setProperty('--lx', '50%'); s.style.setProperty('--ly', '55%'); s.style.setProperty('--lr', '240px') })
       return
     }
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (en) {
-        var on = en[0].isIntersecting
-        if (on && !running) { running = true; requestAnimationFrame(sweep) }
-        if (!on) running = false
-      }, { threshold: 0.2 }).observe(section)
-    } else { running = true; requestAnimationFrame(sweep) }
-    section.addEventListener('touchmove', function (e) {
-      var t = e.touches[0]
-      running = false
-      paint(t.pageX, t.pageY)
-    }, { passive: true })
+
+    // No fine pointer: a button develops both sheets with a wipe instead.
+    var btn = $('develop')
+    if (btn) btn.addEventListener('click', function () {
+      var on = !section.classList.contains('developed')
+      section.classList.toggle('developed', on)
+      btn.setAttribute('aria-pressed', String(on))
+      btn.textContent = on ? 'Clear the sheets' : 'Develop the sheets'
+    })
   })()
 
   // ── Build: tabs, and the curl example prints itself once ───────────────
