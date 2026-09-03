@@ -208,4 +208,31 @@ footer { border-top: 1px solid var(--rule); padding: 64px 0 48px; }
   .models td { display: block; padding: 3px 0; border: 0; }
   .models .m-num, .models .m-base, .models .m-tbd { display: inline-block; margin-right: 14px; }
   .foot-grid { grid-template-columns: minmax(0, 1fr); }
+
+  /* Mobile drawer. site-nav.js wraps the links in .nav-links and toggles
+     .nav-links-visible on <nav>; pages on this shell don't load mobile.css,
+     so the open state has to be styled here or the hamburger does nothing. */
+  /* The drawer is positioned absolutely against <nav>, not fixed: the nav's
+     backdrop-filter makes it the containing block for fixed descendants, so
+     `position: fixed` here would measure from the nav bar instead of the
+     viewport. The nav is sticky at the top whenever the drawer is open, so
+     "below the nav, viewport-tall" is the same box either way. */
+  nav.nav-links-visible .nav-links {
+    display: flex !important; position: absolute; top: 100%; left: 0; right: 0;
+    height: calc(100vh - 66px); height: calc(100dvh - 66px);
+    flex-direction: column !important; align-items: stretch !important; gap: 0 !important;
+    padding: 8px var(--gut) 140px; background: var(--paper); border-top: 1px solid var(--rule);
+    overflow-y: auto; z-index: 90;
+  }
+  nav.nav-links-visible .nav-links a {
+    display: block; font-family: var(--disp); font-weight: 600; font-size: 24px; letter-spacing: -.02em;
+    color: var(--ink); padding: 18px 0; border-bottom: 1px solid var(--rule);
+  }
+  nav.nav-links-visible .nav-right {
+    display: flex; position: absolute; left: var(--gut); right: var(--gut);
+    top: calc(100vh - 92px); top: calc(100dvh - 92px);
+    flex-direction: column; align-items: stretch; gap: 10px; margin: 0; z-index: 95;
+  }
+  nav.nav-links-visible .nav-right a { display: block; text-align: center; padding: 14px 16px; font-size: 15px; }
+  html.ax-nav-open { overflow: hidden; }
 }

@@ -16,102 +16,276 @@
   <meta name="theme-color" content="#f3f0e6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
   <style>
-    /* Shared shell lives in /assets/paper.css. Only homepage-specific
-       composition stays here. */
+    /* Shared shell lives in /assets/paper.css. Everything below is the
+       homepage's own composition: a printed ledger on paper, with one
+       marigold mark that turns as the reader scrolls.
+
+       Motion rules for this page:
+         - only transform and opacity animate;
+         - scroll-linked work happens in one rAF loop (see script);
+         - prefers-reduced-motion gets the same page with nothing moving. */
+
+    :root {
+      --mark: #a8720f;          /* developer ink: what the lamp reveals */
+      --vh: 100vh;
+      --ease: cubic-bezier(.2, .7, .2, 1);
+    }
+    @supports (height: 100svh) { :root { --vh: 100svh; } }
+
+    body { overflow-x: clip; }
+
+    /* Reading progress: a hairline of marigold under the nav. */
+    .progress {
+      position: fixed; top: 66px; left: 0; height: 2px; width: 100%;
+      background: var(--marigold); transform-origin: left; transform: scaleX(0);
+      z-index: 101; pointer-events: none;
+    }
 
     /* ── Hero ───────────────────────────────────────────────────────────── */
-    .hero { padding: 104px 0 88px; }
-    .hero-grid { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 72px; align-items: start; }
-    .hero h1 { font-size: clamp(40px, 5.6vw, 68px); }
-    .h1-link { color: inherit; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
-    .hero-body { font-size: 17px; line-height: 1.62; color: var(--ink-2); }
-    .hero-body strong { color: var(--ink); font-weight: 600; }
-    .hero-body p + p { margin-top: 16px; }
+    .hero { min-height: calc(var(--vh) - 66px); display: flex; flex-direction: column; justify-content: center; padding: 48px 0 64px; position: relative; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .9fr); gap: 56px; align-items: center; }
+    .eyebrow { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 30px; }
+    .eyebrow .label::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--marigold); margin-right: 9px; vertical-align: 1px; }
+    .hero h1 { font-size: clamp(46px, 7.2vw, 104px); font-weight: 800; letter-spacing: -.035em; line-height: .96; }
+    .hero h1 .line { display: block; overflow: hidden; padding-bottom: .06em; margin-bottom: -.06em; }
+    .hero h1 .line > span { display: block; transform: translateY(110%); animation: rise 1s var(--ease) forwards; }
+    .hero h1 .line:nth-child(2) > span { animation-delay: .08s; }
+    .hero h1 .line:nth-child(3) > span { animation-delay: .16s; }
+    .hero h1 .mark-word { color: var(--green); }
+    @keyframes rise { to { transform: none; } }
 
-    /* Hero composer. A plain GET form, so it still works with JS disabled; the
-       script at the end upgrades it to hand off via sessionStorage. */
-    .ask { display: flex; gap: 10px; margin-top: 34px; flex-wrap: wrap; }
+    .hero-body { margin-top: 30px; font-size: 18px; line-height: 1.6; color: var(--ink-2); max-width: 54ch; }
+    .hero-body strong { color: var(--ink); font-weight: 600; }
+
+    /* Composer: a plain GET form that works without JS; the script hands
+       the question to /chat through sessionStorage instead. */
+    .ask { display: flex; gap: 10px; margin-top: 34px; flex-wrap: wrap; max-width: 560px; }
     .ask-input {
-      flex: 1 1 240px; min-width: 0;
-      padding: 13px 16px; border-radius: 4px;
+      flex: 1 1 240px; min-width: 0; padding: 14px 16px; border-radius: 4px;
       border: 1px solid var(--rule-2); background: var(--paper-3); color: var(--ink);
-      font-family: var(--sans); font-size: 15px;
-      transition: border-color .15s;
+      font-family: var(--sans); font-size: 15px; transition: border-color .15s;
     }
     .ask-input::placeholder { color: var(--ink-2); }
     .ask-input:focus { border-color: var(--green); outline-offset: 1px; }
     .ask-send { flex: none; cursor: pointer; }
-    .ask-note { margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
-    .ask-note a { color: var(--green); font-weight: 500; }
-    .ask-note a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
     .hero-status {
-      display: flex; align-items: center; gap: 9px; margin-top: 26px;
+      display: flex; align-items: center; gap: 9px; margin-top: 22px;
       font-family: var(--mono); font-size: 12.5px; color: var(--ink-2);
     }
+    .hero-status a { color: var(--green); }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); flex: none; }
-    .dot.up { background: var(--green); }
-    .dot.down { background: #a8720f; }
+    .dot.up { background: var(--green); box-shadow: 0 0 0 3px rgba(26, 92, 53, .14); }
+    .dot.down { background: var(--mark); }
 
-    /* ── The commitment panel ───────────────────────────────────────────── */
-    .panel {
-      background: var(--forest); color: var(--paper);
-      border-radius: 10px; padding: 72px 64px;
-      display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 56px; align-items: center;
-    }
-    .panel h2 { font-size: clamp(30px, 3.6vw, 44px); color: var(--paper); }
-    .panel h2 .mark { color: var(--marigold); }
-    .panel p { color: #cfd6c9; font-size: 16.5px; line-height: 1.62; }
-    .panel p + p { margin-top: 14px; }
-    .panel-link {
-      display: inline-block; margin-top: 22px; font-weight: 600; font-size: 15px;
-      color: var(--marigold); border-bottom: 1px solid rgba(232,181,52,.45); padding-bottom: 2px;
-    }
-    .panel-link:hover { border-bottom-color: var(--marigold); }
+    /* The mark. Drawn once on load, then turned by the scroll loop. */
+    .hero-mark { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; will-change: transform; }
+    .spiral { width: min(100%, 420px); height: auto; display: block; will-change: transform; }
+    .spiral path { stroke: var(--marigold); stroke-width: 15; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.6s var(--ease) .2s forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    .mark-caption { display: flex; gap: 14px; }
+    .mark-caption i { font-style: normal; color: var(--ink); }
 
-    /* ── Latest ─────────────────────────────────────────────────────────── */
-    .latest { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0; border-top: 1px solid var(--rule); }
-    .post {
-      display: flex; flex-direction: column; gap: 10px;
-      padding: 28px 28px 32px; border-right: 1px solid var(--rule);
-      transition: background .15s;
+    .scroll-cue { position: absolute; left: var(--gut); bottom: 22px; display: flex; align-items: center; gap: 12px; }
+    .scroll-cue::after { content: ''; width: 1px; height: 34px; background: var(--ink-2); transform-origin: top; animation: cue 1.8s var(--ease) infinite; }
+    @keyframes cue { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+    /* ── The ledger: a pinned forest panel with torn paper edges ─────────── */
+    .ledger { position: relative; height: 400vh; background: var(--forest); margin-top: 24px; overflow-x: clip; }
+    .ledger-stage { position: sticky; top: 0; height: var(--vh); overflow: hidden; display: flex; align-items: center; }
+    .ledger-stage::before {
+      /* Real paper fibre, not a generated texture. */
+      content: ''; position: absolute; inset: 0;
+      background: url(/assets/paper/paper-6.jpg) center / cover;
+      mix-blend-mode: soft-light; opacity: .55; pointer-events: none;
     }
-    .post:last-child { border-right: 0; }
-    .post:first-child { padding-left: 0; }
-    .post:hover { background: var(--paper-2); }
-    .post-meta { display: flex; gap: 14px; }
-    .post h3 { font-size: 21px; letter-spacing: -.015em; }
-    .post p { color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
-    .post-go { margin-top: auto; padding-top: 14px; font-size: 14px; font-weight: 500; color: var(--green); }
-    .post:hover .post-go { text-decoration: underline; text-underline-offset: 3px; }
+    .ledger-inner { position: relative; width: 100%; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 40px; align-items: center; }
+    .ledger-idx { font-family: var(--mono); font-size: 12.5px; color: var(--marigold); letter-spacing: .12em; }
+    .rail { position: relative; width: 1px; height: 180px; background: rgba(243, 240, 230, .22); margin-top: 18px; }
+    .rail-fill { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--marigold); transform-origin: top; transform: scaleY(0); }
+    .rail i { position: absolute; left: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--forest); border: 1px solid rgba(243, 240, 230, .5); transition: background .3s, border-color .3s; }
+    .rail i.on { background: var(--marigold); border-color: var(--marigold); }
+    .ledger-lines { position: relative; height: 46vh; min-height: 260px; }
+    .ledger-line {
+      position: absolute; inset: 0; display: flex; align-items: center; margin: 0;
+      font-family: var(--disp); font-weight: 700; letter-spacing: -.03em; line-height: 1.02;
+      font-size: clamp(36px, 6vw, 84px); color: var(--paper);
+      opacity: 0; transform: translateY(48px); transition: opacity .55s var(--ease), transform .7s var(--ease);
+      will-change: transform, opacity;
+    }
+    .ledger-line > span { display: block; max-width: 16ch; }
+    .ledger-line em { font-style: normal; color: var(--marigold); }
+    .ledger-line.is-on { opacity: 1; transform: none; }
+    .ledger-line.was-on { opacity: 0; transform: translateY(-48px); }
+    .ledger-foot { position: absolute; left: var(--gut); right: var(--gut); bottom: 64px; display: flex; justify-content: space-between; gap: 20px; font-family: var(--mono); font-size: 12px; color: #9fb09a; letter-spacing: .06em; }
+    .ledger-foot a { color: var(--marigold); }
+    .seal { position: absolute; right: var(--gut); top: 92px; width: 56px; height: 56px; opacity: .9; }
+    .seal path { stroke: var(--marigold); stroke-width: 15; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+    /* Torn edges: a paper-coloured strip with a turbulence-displaced edge.
+       Strips overlap the paper above/below by 30px so only the ragged side
+       shows. Seeded per load, so the tear is different on every visit. */
+    .tear { position: absolute; left: -20px; right: -20px; height: 70px; background: var(--paper); filter: url(#tear); pointer-events: none; z-index: 2; }
+    .tear-top { top: -34px; }
+    .tear-bottom { bottom: -34px; }
+    .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    /* ── No invisible ink: the lamp ─────────────────────────────────────── */
+    .ink { position: relative; padding-top: 112px; cursor: none; }
+    .ink .band-lede { max-width: 58ch; }
+    .sheets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; margin-top: 44px; }
+    .sheet {
+      position: relative; background: var(--paper-3); border: 1px solid var(--rule);
+      padding: 26px 28px 30px; border-radius: 3px; overflow: hidden;
+      box-shadow: 0 1px 0 rgba(23, 20, 13, .04), 0 14px 30px -24px rgba(23, 20, 13, .4);
+      --lx: -1000px; --ly: -1000px; --lr: 170px;
+    }
+    .sheet-head { display: flex; justify-content: space-between; margin-bottom: 18px; }
+    .sheet-text { font-family: var(--sans); font-size: 16px; line-height: 1.75; color: var(--ink); }
+    .sheet-text p + p { margin-top: 12px; }
+    /* Marks take no width so the visible copy and the lamp copy wrap identically. */
+    .wm { display: inline-block; width: 0; overflow: visible; color: transparent; font-family: var(--mono); font-size: 13px; font-style: normal; font-weight: 500; vertical-align: .55em; white-space: nowrap; }
+    .lamp-layer {
+      position: absolute; inset: 0; padding: inherit; pointer-events: none;
+      -webkit-mask-image: radial-gradient(circle var(--lr) at var(--lx) var(--ly), #000 0, #000 45%, transparent 100%);
+      mask-image: radial-gradient(circle var(--lr) at var(--lx) var(--ly), #000 0, #000 45%, transparent 100%);
+      background: rgba(232, 181, 52, .12);
+    }
+    .lamp-layer .sheet-head { visibility: hidden; }
+    .lamp-layer .sheet-text { color: transparent; }
+    .lamp-layer .wm { color: var(--mark); }
+    .stamp {
+      position: absolute; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--mark); border: 1.5px dashed var(--mark); padding: 6px 10px; border-radius: 3px; transform: rotate(-5deg);
+      background: rgba(251, 249, 243, .85);
+    }
+    .stamp-clean { color: var(--green); border-color: var(--green); transform: rotate(3deg); }
+    .lamp-ring {
+      position: absolute; width: calc(var(--lr, 170px) * 2); height: calc(var(--lr, 170px) * 2); border-radius: 50%;
+      border: 1px solid rgba(168, 114, 15, .55); pointer-events: none; z-index: 3;
+      transform: translate(-50%, -50%); opacity: 0; transition: opacity .25s; left: 0; top: 0;
+      background: radial-gradient(circle at center, rgba(232, 181, 52, .16), rgba(232, 181, 52, 0) 70%);
+    }
+    .lamp-ring::after { content: 'lamp'; position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--mark); }
+    .ink.lit .lamp-ring { opacity: 1; }
+    .ink-note { margin-top: 26px; font-size: 14.5px; color: var(--ink-2); max-width: 66ch; }
+    .ink-note a { color: var(--green); font-weight: 500; }
+    .ink-note a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── The family ─────────────────────────────────────────────────────── */
+    .probe { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .probe b { font-weight: 500; color: var(--ink); }
+    .fam { list-style: none; border-top: 1px solid var(--rule-2); }
+    .fam-row {
+      position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 28px; align-items: start;
+      padding: 32px 0 34px; transition: background .2s;
+    }
+    .fam-row::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%; background: var(--rule-2); transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease); }
+    .fam-row.in::after { transform: scaleX(1); }
+    .fam-row > * { opacity: 0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .7s var(--ease); }
+    .fam-row.in > * { opacity: 1; transform: none; }
+    .fam-row.in > :nth-child(2) { transition-delay: .08s; }
+    .fam-row.in > :nth-child(3) { transition-delay: .16s; }
+    .fam-n { font-family: var(--mono); font-size: 13px; color: var(--ink-2); padding-top: 10px; }
+    .fam-row h3 { font-size: clamp(26px, 3vw, 38px); font-weight: 700; letter-spacing: -.025em; }
+    .fam-row h3 a { position: relative; }
+    .fam-row h3 a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 3px; background: var(--marigold); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+    .fam-row:hover h3 a::after { transform: scaleX(1); }
+    .fam-row p { margin-top: 10px; color: var(--ink-2); font-size: 15px; max-width: 56ch; line-height: 1.55; }
+    .fam-side { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; padding-top: 10px; text-align: right; }
 
     /* ── Build ──────────────────────────────────────────────────────────── */
-    .build { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 56px; align-items: start; }
+    .build { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+    .tab { font-family: var(--mono); font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; border-radius: 3px; border: 1px solid transparent; background: none; color: var(--ink-2); cursor: pointer; }
+    .tab[aria-selected="true"] { color: var(--ink); border-color: var(--rule-2); background: var(--paper-2); }
+    .code[hidden] { display: none; }
+    .code .ln { display: block; opacity: 0; transform: translateX(-6px); transition: opacity .35s, transform .35s var(--ease); }
+    .code.typed .ln, .code.static .ln { opacity: 1; transform: none; }
     .build-note { color: var(--ink-2); font-size: 14.5px; margin-top: 16px; max-width: 60ch; }
     .surfaces { display: flex; flex-direction: column; }
-    .surface { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+    .surface { padding: 20px 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 14px; }
     .surface:first-child { padding-top: 0; }
     .surface:last-child { border-bottom: 0; }
-    .surface-name { font-family: var(--disp); font-weight: 600; font-size: 16px; }
+    .surface-n { font-family: var(--mono); font-size: 12px; color: var(--ink-2); padding-top: 3px; }
+    .surface-name { font-family: var(--disp); font-weight: 600; font-size: 17px; }
     .surface-how { font-family: var(--mono); font-size: 12px; color: var(--green); margin-top: 5px; overflow-wrap: break-word; }
     .surface p { color: var(--ink-2); font-size: 14px; margin-top: 6px; }
 
+    /* ── From the ledger (latest) ───────────────────────────────────────── */
+    .news { list-style: none; border-top: 1px solid var(--rule-2); }
+    .news li { display: grid; grid-template-columns: 170px 130px minmax(0, 1fr); gap: 24px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+    .news li:hover { background: var(--paper-2); }
+    .news a { display: contents; }
+    .news h3 { font-size: 20px; font-weight: 600; letter-spacing: -.015em; }
+    .news p { color: var(--ink-2); font-size: 14.5px; margin-top: 6px; max-width: 70ch; }
+    .news .go { color: var(--green); font-size: 14px; font-weight: 500; margin-top: 8px; display: inline-block; }
+    .news li:hover .go { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* Generic reveal for section heads and blocks. */
+    [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .8s var(--ease); }
+    [data-reveal].in { opacity: 1; transform: none; }
+
+    /* ── Responsive ─────────────────────────────────────────────────────── */
     @media (max-width: 1000px) {
-      .hero { padding: 72px 0 60px; }
-      .hero-grid { grid-template-columns: minmax(0,1fr); gap: 32px; }
-      .panel { grid-template-columns: minmax(0,1fr); gap: 28px; padding: 48px 36px; }
-      .build { grid-template-columns: minmax(0,1fr); gap: 32px; }
-      .latest { grid-template-columns: minmax(0,1fr); }
-      .post { border-right: 0; border-bottom: 1px solid var(--rule); padding-left: 0; padding-right: 0; }
-      .post:last-child { border-bottom: 0; }
+      .hero { padding: 56px 0 72px; }
+      .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+      .hero-mark { order: -1; align-items: flex-start; }
+      .spiral { width: 120px; }
+      .mark-caption { display: none; }
+      .ledger-inner { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+      .ledger-rail { display: flex; align-items: center; gap: 16px; }
+      .rail { width: 160px; height: 1px; margin: 0; }
+      .rail-fill { transform-origin: left; transform: scaleX(0); }
+      .rail i { top: -3px; left: auto; }
+      .sheets { grid-template-columns: minmax(0, 1fr); }
+      .fam-row { grid-template-columns: 44px minmax(0, 1fr); }
+      .fam-side { grid-column: 2; align-items: flex-start; text-align: left; flex-direction: row; align-items: center; }
+      .build { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+      .news li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    }
+    @media (max-width: 700px) {
+      .hero h1 { font-size: clamp(42px, 12vw, 64px); }
+      .ledger { height: 320vh; }
+      .ledger-line { font-size: clamp(34px, 9.5vw, 56px); }
+      .ledger-line > span { max-width: none; }
+      .seal { display: none; }
+      .ink { cursor: auto; }
+      .lamp-ring::after { display: none; }
+      .scroll-cue { display: none; }
+    }
+
+    /* Reduced motion: nothing pinned, nothing drawn, nothing turning. */
+    @media (prefers-reduced-motion: reduce) {
+      .hero h1 .line > span, .spiral path, .scroll-cue::after { animation: none; }
+      .hero h1 .line > span { transform: none; }
+      .spiral path { stroke-dashoffset: 0; }
+      .progress { display: none; }
+      .ledger { height: auto; padding: 96px 0; }
+      .ledger-stage { position: static; height: auto; display: block; }
+      .ledger-lines { height: auto; min-height: 0; display: flex; flex-direction: column; gap: 28px; }
+      .ledger-line { position: static; opacity: 1; transform: none; font-size: clamp(30px, 4vw, 52px); }
+      .ledger-foot { position: static; margin-top: 48px; }
+      .rail-fill { transform: none; }
+      .fam-row::after { transform: scaleX(1); }
+      .fam-row > *, [data-reveal], .code .ln { opacity: 1; transform: none; transition: none; }
+      .lamp-ring { display: none; }
     }
   </style>
 </head>
 <body>
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <filter id="tear" x="-5%" y="-60%" width="110%" height="220%" color-interpolation-filters="sRGB">
+    <feTurbulence id="tear-noise" type="fractalNoise" baseFrequency="0.011 0.07" numOctaves="3" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
 
 <nav>
   <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
@@ -125,148 +299,203 @@
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="wrap">
+<header class="hero" id="top">
+  <div class="wrap hero-grid grid-safe">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="label">Independent lab</span><span class="label">Own models</span><span class="label">Own hardware</span></p>
+      <h1>
+        <span class="line"><span>Models with</span></span>
+        <span class="line"><span><span class="mark-word">nothing</span> hidden</span></span>
+        <span class="line"><span>inside.</span></span>
+      </h1>
+      <p class="hero-body">Sennoric is an independent lab. It trains its <strong>Solan</strong> models itself, runs them on hardware it owns, and publishes what it finds <strong>before</strong> a release rather than after. No watermarks in the text. No advertising in the conversation.</p>
+      <form class="ask" action="/chat" method="get" id="ask-form">
+        <label class="sr-only" for="ask-q">Ask Solan a question</label>
+        <input class="ask-input" id="ask-q" name="q" type="text" maxlength="2000"
+               placeholder="Ask Solan something" autocomplete="off" enterkeyhint="go">
+        <button class="btn btn-solid ask-send" type="submit">Try Solan</button>
+      </form>
+      <p class="hero-status"><span class="dot" id="status-dot"></span><span id="status-text">Checking model status…</span></p>
+    </div>
+    <div class="hero-mark" id="hero-mark">
+      <svg class="spiral" id="spiral" viewBox="0 0 200 200" role="img" aria-label="The Sennoric mark">
+        <path pathLength="1" d="M38 158 C 20 112, 44 42, 104 32 C 160 23, 186 84, 156 124 C 128 161, 68 152, 66 110 C 65 78, 100 62, 122 86 C 138 104, 124 126, 106 118"/>
+      </svg>
+      <p class="mark-caption"><span class="label">Fig. 1</span><span class="label">The mark, <i>turns as you read</i></span></p>
+    </div>
+  </div>
+  <div class="scroll-cue label" aria-hidden="true">Scroll</div>
+</header>
 
-  <header class="hero">
-    <div class="hero-grid grid-safe">
-      <h1>AI research and <a href="/models" class="h1-link">models</a> that yield to safety alone.</h1>
-      <div class="hero-body">
-        <p>AI's risks demand independent scrutiny. Sennoric is a safety company dedicated to rigorous evaluation — unencumbered by corporate interests.</p>
-        <form class="ask" action="/chat" method="get" id="ask-form">
-          <label class="sr-only" for="ask-q">Ask Solan a question</label>
-          <input class="ask-input" id="ask-q" name="q" type="text" maxlength="2000"
-                 placeholder="Ask Solan something" autocomplete="off" enterkeyhint="go">
-          <button class="btn btn-solid ask-send" type="submit">Try Solan</button>
-        </form>
-        <p class="ask-note">An account takes a moment to make. <a href="/docs">Read the docs</a></p>
-        <p class="hero-status"><span class="dot" id="status-dot"></span><span id="status-text">Checking model status…</span></p>
+<section class="ledger" id="ledger" aria-label="What Sennoric commits to">
+  <div class="tear tear-top" aria-hidden="true"></div>
+  <div class="ledger-stage">
+    <div class="wrap ledger-inner">
+      <div class="ledger-rail">
+        <span class="ledger-idx" id="ledger-idx">01 / 04</span>
+        <div class="rail" aria-hidden="true"><div class="rail-fill" id="rail-fill"></div><i style="top:0"></i><i style="top:33.3%"></i><i style="top:66.6%"></i><i style="top:100%"></i></div>
+      </div>
+      <div class="ledger-lines" id="ledger-lines">
+        <p class="ledger-line is-on"><span>We train <em>our own</em> models.</span></p>
+        <p class="ledger-line"><span>We run them on hardware <em>we own</em>.</span></p>
+        <p class="ledger-line"><span>Safety results go out <em>before</em> a release, not after.</span></p>
+        <p class="ledger-line"><span>No watermarks. <em>No ads.</em> Ever.</span></p>
       </div>
     </div>
-  </header>
+    <svg class="seal" id="seal" viewBox="0 0 200 200" aria-hidden="true"><path d="M38 158 C 20 112, 44 42, 104 32 C 160 23, 186 84, 156 124 C 128 161, 68 152, 66 110 C 65 78, 100 62, 122 86 C 138 104, 124 126, 106 118"/></svg>
+    <div class="ledger-foot">
+      <span>Sennoric · commitments</span>
+      <span><a href="/fresco-125-safety">Read a safety report</a></span>
+    </div>
+  </div>
+  <div class="tear tear-bottom" aria-hidden="true"></div>
+</section>
 
-  <section class="panel grid-safe">
-    <h2>No <span class="mark">invisible ink</span>.</h2>
-    <div>
-      <p>Sennoric does not watermark generated text, and does not place advertising inside conversations.</p>
-      <p>A sentence shaped with a model should not leave carrying a hidden signature, and a conversation with an assistant should not become ad inventory.</p>
-      <a class="panel-link" href="/no-invisible-ink">Read the commitment</a>
+<main>
+
+  <section class="ink band" id="ink">
+    <div class="wrap">
+      <div class="band-head" data-reveal>
+        <h2>No invisible ink.</h2>
+        <a class="band-more" href="/no-invisible-ink">Read the commitment</a>
+      </div>
+      <p class="band-lede" data-reveal>Generated text can be shaped so it carries a hidden signature, and a conversation can be sold as ad space. Neither shows on the page. Hold the lamp over both sheets.</p>
+
+      <div class="sheets" id="sheets">
+        <article class="sheet" data-sheet="marked">
+          <div class="sheet-head"><span class="label">Sheet A</span><span class="label">Text from elsewhere</span></div>
+          <div class="sheet-text">
+            <p>A sourdough<b class="wm">˙</b> starter wants a warm<b class="wm">⁚</b> spot and a little patience. Feed it once<b class="wm">˙</b> a day with equal parts flour and water,<b class="wm">ˑ</b> and by the fifth day it should double<b class="wm">⁚</b> within six hours.</p>
+            <p>If it smells<b class="wm">˙</b> like nail polish, it is hungry, not dead.<b class="wm">ˑ</b> Feed it, wait, and the sharp<b class="wm">⁚</b> smell fades by the next morning.<b class="wm">˙</b></p>
+          </div>
+          <div class="lamp-layer" aria-hidden="true">
+            <div class="sheet-head"><span class="label">Sheet A</span><span class="label">Text from elsewhere</span></div>
+            <div class="sheet-text">
+              <p>A sourdough<b class="wm">˙</b> starter wants a warm<b class="wm">⁚</b> spot and a little patience. Feed it once<b class="wm">˙</b> a day with equal parts flour and water,<b class="wm">ˑ</b> and by the fifth day it should double<b class="wm">⁚</b> within six hours.</p>
+              <p>If it smells<b class="wm">˙</b> like nail polish, it is hungry, not dead.<b class="wm">ˑ</b> Feed it, wait, and the sharp<b class="wm">⁚</b> smell fades by the next morning.<b class="wm">˙</b></p>
+            </div>
+            <span class="stamp" style="right:22px;top:48px">watermark · id 7f3a</span>
+            <span class="stamp" style="left:24px;bottom:16px">sponsored · a cold drink for that</span>
+          </div>
+        </article>
+
+        <article class="sheet" data-sheet="clean">
+          <div class="sheet-head"><span class="label">Sheet B</span><span class="label">Text from Sennoric</span></div>
+          <div class="sheet-text">
+            <p>A sourdough starter wants a warm spot and a little patience. Feed it once a day with equal parts flour and water, and by the fifth day it should double within six hours.</p>
+            <p>If it smells like nail polish, it is hungry, not dead. Feed it, wait, and the sharp smell fades by the next morning.</p>
+          </div>
+          <div class="lamp-layer" aria-hidden="true">
+            <span class="stamp stamp-clean" style="right:22px;bottom:16px">nothing here</span>
+          </div>
+        </article>
+      </div>
+      <p class="ink-note" data-reveal>Sheet A carries a statistical watermark and an ad slot. Sheet B is what a Sennoric model returns: the words, and only the words. <a href="/no-invisible-ink">Why we refuse both</a></p>
+    </div>
+    <div class="lamp-ring" id="lamp-ring" aria-hidden="true"></div>
+  </section>
+
+  <section class="band" id="models">
+    <div class="wrap">
+      <div class="band-head" data-reveal>
+        <h2>The Solan family</h2>
+        <p class="probe" id="probe"><span>api.sennoric.com</span><span>·</span><span id="probe-text">probing…</span></p>
+      </div>
+      <ol class="fam" id="fam">
+        <li class="fam-row" data-row>
+          <span class="fam-n">01</span>
+          <div>
+            <h3><a href="/fresco-model">Solan Fresco 1.2.5</a></h3>
+            <p>The default model. Tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code.</p>
+          </div>
+          <div class="fam-side"><span class="pill" id="fresco-status">Checking&#8230;</span><a class="m-go" href="/fresco-model">Model details</a></div>
+        </li>
+        <li class="fam-row" data-row>
+          <span class="fam-n">02</span>
+          <div>
+            <h3><a href="/fresco-13">Solan Fresco 1.3</a></h3>
+            <p>Training is complete and the early safety results are already published. It stays off the API until adversarial testing concludes; the latest on timing is in the announcements.</p>
+          </div>
+          <div class="fam-side"><span class="pill wip">In safety testing</span><a class="m-go" href="/fresco-13">Early results</a></div>
+        </li>
+        <li class="fam-row" data-row>
+          <span class="fam-n">03</span>
+          <div>
+            <h3><a href="/glyph">Solan Glyph 1.1</a></h3>
+            <p>The first Sennoric model, and still the quickest for short exchanges. Runs on dedicated inference capacity of its own.</p>
+          </div>
+          <div class="fam-side"><span class="pill" id="glyph-status">Live</span><a class="m-go" href="/glyph">Model details</a></div>
+        </li>
+      </ol>
     </div>
   </section>
 
-  <main>
-
-    <section class="band">
-      <div class="band-head">
-        <h2>Latest releases</h2>
-        <a class="band-more" href="/announcements">All announcements</a>
-      </div>
-
-      <!-- Replaced at runtime by the three most recent real announcements.
-           The markup below is the fallback shown if both sources are
-           unreachable, so the section is never blank. -->
-      <div class="latest grid-safe" id="latest">
-        <a class="post" href="/no-invisible-ink">
-          <div class="post-meta"><span class="label">August 12, 2026</span><span class="label">Announcement</span></div>
-          <h3>No invisible ink</h3>
-          <p>The case against watermarking generated text and selling advertising inside conversations.</p>
-          <span class="post-go">Read announcement</span>
-        </a>
-        <a class="post" href="/fresco-13">
-          <div class="post-meta"><span class="label">August 11, 2026</span><span class="label">Safety update</span></div>
-          <h3>Fresco 1.3: training complete</h3>
-          <p>Early safety results for the next Fresco, published before release rather than after it.</p>
-          <span class="post-go">Read announcement</span>
-        </a>
-        <a class="post" href="/announcements">
-          <div class="post-meta"><span class="label">August 6, 2026</span><span class="label">Notice</span></div>
-          <h3>Introducing Sennoric</h3>
-          <p>Axion Labs is now Sennoric. Models, accounts, and API keys are unchanged.</p>
-          <span class="post-go">Read announcement</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="band">
-      <div class="band-head">
-        <h2>The Solan family</h2>
-        <a class="band-more" href="/models">Compare models</a>
-      </div>
-
-      <table class="models">
-        <thead>
-          <tr>
-            <th scope="col">Model</th>
-            <th scope="col">Status</th>
-            <th scope="col">Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div class="m-name">Solan Fresco 1.2.5</div>
-              <p class="m-desc">Sennoric's default model. Tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code.</p>
-            </td>
-            <td><span class="pill" id="fresco-status">Checking&#8230;</span></td>
-            <td><a class="m-go" href="/fresco-model">Model details</a></td>
-          </tr>
-          <tr>
-            <td>
-              <div class="m-name">Solan Fresco 1.3</div>
-              <p class="m-desc">Training completed in August. Fresco 1.3 remains off the API until adversarial testing concludes and the results are published.</p>
-            </td>
-            <td><span class="pill wip">In safety testing</span></td>
-            <td><a class="m-go" href="/fresco-13">Early results</a></td>
-          </tr>
-          <tr>
-            <td>
-              <div class="m-name">Solan Glyph 1.1</div>
-              <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on dedicated inference capacity of its own.</p>
-            </td>
-            <td><span class="pill" id="glyph-status">Live</span></td>
-            <td><a class="m-go" href="/glyph">Model details</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="band">
-      <div class="band-head">
+  <section class="band" id="build">
+    <div class="wrap">
+      <div class="band-head" data-reveal>
         <h2>Build with Sennoric</h2>
         <a class="band-more" href="/docs">API reference</a>
       </div>
-
       <div class="build grid-safe">
-        <div>
-          <div class="code"><span class="c"># a free Sennoric account and API key are required</span>
-<span class="p">$</span> curl https://api.sennoric.com/v1/chat/completions \
-  -H <span class="s">"Content-Type: application/json"</span> \
-  -H <span class="s">"Authorization: Bearer $SENNORIC_API_KEY"</span> \
-  -d <span class="s">'{"model": "fresco", "messages": [{"role": "user", "content": "hello!"}]}'</span></div>
+        <div data-reveal>
+          <div class="tabs" role="tablist" aria-label="Example language">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="code-curl" id="tab-curl">curl</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="code-py" id="tab-py">Python</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="code-js" id="tab-js">Node</button>
+          </div>
+          <div class="code" id="code-curl" role="tabpanel" aria-labelledby="tab-curl"><span class="ln c"># a free Sennoric account and API key are required</span><span class="ln"><span class="p">$</span> curl https://api.sennoric.com/v1/chat/completions \</span><span class="ln">  -H <span class="s">"Content-Type: application/json"</span> \</span><span class="ln">  -H <span class="s">"Authorization: Bearer $SENNORIC_API_KEY"</span> \</span><span class="ln">  -d <span class="s">'{"model": "fresco", "messages": [{"role": "user", "content": "hello!"}]}'</span></span></div>
+          <div class="code static" id="code-py" role="tabpanel" aria-labelledby="tab-py" hidden><span class="ln c"># pip install openai</span><span class="ln">from openai import OpenAI</span><span class="ln"> </span><span class="ln">client = OpenAI(base_url=<span class="s">"https://api.sennoric.com/v1"</span>, api_key=<span class="s">"SENNORIC_API_KEY"</span>)</span><span class="ln">reply = client.chat.completions.create(</span><span class="ln">    model=<span class="s">"fresco"</span>,</span><span class="ln">    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"hello!"</span>}],</span><span class="ln">)</span><span class="ln">print(reply.choices[0].message.content)</span></div>
+          <div class="code static" id="code-js" role="tabpanel" aria-labelledby="tab-js" hidden><span class="ln c">// npm install openai</span><span class="ln">import OpenAI from <span class="s">"openai"</span></span><span class="ln"> </span><span class="ln">const client = new OpenAI({ baseURL: <span class="s">"https://api.sennoric.com/v1"</span>, apiKey: process.env.SENNORIC_API_KEY })</span><span class="ln">const reply = await client.chat.completions.create({</span><span class="ln">  model: <span class="s">"fresco"</span>,</span><span class="ln">  messages: [{ role: <span class="s">"user"</span>, content: <span class="s">"hello!"</span> }],</span><span class="ln">})</span><span class="ln">console.log(reply.choices[0].message.content)</span></div>
           <p class="build-note">The Sennoric API implements the OpenAI chat-completions format. An existing client needs a new base URL and model name; the rest of the code is unchanged. Streaming behaves as it does with OpenAI.</p>
         </div>
 
-        <div class="surfaces">
+        <div class="surfaces" data-reveal>
           <div class="surface">
-            <div class="surface-name">Browser</div>
-            <div class="surface-how">sennoric.com/chat</div>
-            <p>Signed-in conversations sync across devices.</p>
+            <span class="surface-n">a</span>
+            <div>
+              <div class="surface-name">Browser</div>
+              <div class="surface-how">sennoric.com/chat</div>
+              <p>Signed-in conversations sync across devices.</p>
+            </div>
           </div>
           <div class="surface">
-            <div class="surface-name">API</div>
-            <div class="surface-how">POST /v1/chat/completions</div>
-            <p>Works with the official OpenAI SDKs in any language.</p>
+            <span class="surface-n">b</span>
+            <div>
+              <div class="surface-name">API</div>
+              <div class="surface-how">POST /v1/chat/completions</div>
+              <p>Works with the official OpenAI SDKs in any language.</p>
+            </div>
           </div>
           <div class="surface">
-            <div class="surface-name">Axion CLI</div>
-            <div class="surface-how">npm i -g @axion-labs-ai/quark-cli</div>
-            <p>An open-source terminal agent that edits files and runs commands.</p>
+            <span class="surface-n">c</span>
+            <div>
+              <div class="surface-name">Axion CLI</div>
+              <div class="surface-how">npm i -g @axion-labs-ai/quark-cli</div>
+              <p>An open-source terminal agent that edits files and runs commands.</p>
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
-</div>
+  <section class="band" id="latest">
+    <div class="wrap">
+      <div class="band-head" data-reveal>
+        <h2>From the ledger</h2>
+        <a class="band-more" href="/announcements">All announcements</a>
+      </div>
+      <!-- Replaced at runtime by the three most recent real announcements.
+           The markup below is the fallback if both sources are unreachable. -->
+      <ol class="news" id="news" data-reveal>
+        <li><a href="/announcements#infra-in-house-compute"><span class="label">August 30, 2026</span><span class="label">Update</span><div><h3>Infrastructure Update: Moving to In-House Compute</h3><p>Over the coming months, we're bringing a meaningful chunk of our compute in-house.</p><span class="go">Read announcement</span></div></a></li>
+        <li><a href="/announcements#fresco-13-infra-delay"><span class="label">August 23, 2026</span><span class="label">Update</span><div><h3>Fresco 1.3 Launch Update</h3><p>We owe you an update on the Fresco 1.3 launch.</p><span class="go">Read announcement</span></div></a></li>
+        <li><a href="/no-invisible-ink"><span class="label">August 12, 2026</span><span class="label">Announcement</span><div><h3>No invisible ink</h3><p>The case against watermarking generated text and selling advertising inside conversations.</p><span class="go">Read announcement</span></div></a></li>
+      </ol>
+    </div>
+  </section>
+
+</main>
 
 <footer>
   <div class="wrap">
@@ -301,59 +530,242 @@
         <a href="/announcements">Announcements</a>
         <a href="/status">Status</a>
         <a href="/help">Help center</a>
-        <a href="/tos">Terms</a> · <a href="/status">Status</a></span>
+        <a href="/tos">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
     </div>
   </div>
 </footer>
 
 <script>
-  // Upgrade the hero composer: hand the question to /chat through
-  // sessionStorage instead of the query string, so what someone types never
-  // lands in browser history or an access log. The plain GET form underneath
-  // stays as the no-JS fallback.
+;(function () {
+  'use strict'
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  var $ = function (id) { return document.getElementById(id) }
+
+  // ── Composer: hand the question to /chat via sessionStorage, not the URL ──
   ;(function () {
-    var form = document.getElementById('ask-form')
-    var field = document.getElementById('ask-q')
+    var form = $('ask-form'), field = $('ask-q')
     if (!form || !field) return
     form.addEventListener('submit', function (e) {
       var q = field.value.trim()
       if (!q) { e.preventDefault(); field.focus(); return }
-      try {
-        sessionStorage.setItem('sennoric:handoff', q)
-      } catch (err) { return }  // storage blocked — let the GET form submit as-is
+      try { sessionStorage.setItem('sennoric:handoff', q) } catch (err) { return }
       e.preventDefault()
       window.location.href = '/chat'
     })
   })()
 
-  // Latest releases, built from the real announcement history rather than
-  // hand-copied here (which is how this section drifts out of date).
-  //
-  // Two sources, because neither alone is complete:
-  //   - the API holds anything that went out through the email webhook,
-  //     including items not yet written into the archive;
-  //   - /announcements holds the curated archive, which is the only place
-  //     older entries live.
-  // They are merged on a normalised title, newest first. If both fail the
-  // static markup already in the page stands.
+  // ── Torn edges: a new tear on every visit ──────────────────────────────
   ;(function () {
-    var grid = document.getElementById('latest')
-    if (!grid) return
+    var n = $('tear-noise')
+    if (n) n.setAttribute('seed', String(1 + Math.floor(Math.random() * 500)))
+  })()
 
+  // ── One scroll loop: progress hairline, the turning mark, the ledger ──
+  ;(function () {
+    var progress = $('progress'), spiral = $('spiral'), mark = $('hero-mark'), seal = $('seal')
+    var ledger = $('ledger'), lines = [].slice.call(document.querySelectorAll('.ledger-line'))
+    var idx = $('ledger-idx'), fill = $('rail-fill'), ticks = [].slice.call(document.querySelectorAll('.rail i'))
+    var current = 0, ticking = false
+
+    function setStep(step) {
+      if (step === current) return
+      lines.forEach(function (el, i) {
+        el.classList.toggle('is-on', i === step)
+        el.classList.toggle('was-on', i < step)
+      })
+      idx.textContent = '0' + (step + 1) + ' / 0' + lines.length
+      current = step
+    }
+
+    function frame() {
+      ticking = false
+      var y = window.scrollY || window.pageYOffset
+      var vh = window.innerHeight
+      var docH = document.documentElement.scrollHeight - vh
+      progress.style.transform = 'scaleX(' + (docH > 0 ? Math.min(1, y / docH) : 0) + ')'
+
+      // The mark turns a quarter-turn per screen of scrolling and drifts up
+      // a little slower than the page, so it reads as sitting on the paper.
+      spiral.style.transform = 'rotate(' + (y * 0.16) + 'deg)'
+      mark.style.transform = 'translateY(' + (y * 0.12) + 'px)'
+      if (seal) seal.style.transform = 'rotate(' + (y * 0.16) + 'deg)'
+
+      // Ledger: progress through the pinned section drives the line index.
+      var rect = ledger.getBoundingClientRect()
+      var total = rect.height - vh
+      var p = Math.min(1, Math.max(0, -rect.top / total))
+      var step = Math.min(lines.length - 1, Math.floor(p * lines.length))
+      setStep(step)
+      var within = p * lines.length - step
+      var railP = (step + Math.min(1, within * 1.4)) / lines.length
+      fill.style.transform = (window.innerWidth <= 1000 ? 'scaleX(' : 'scaleY(') + railP + ')'
+      ticks.forEach(function (t, i) { t.classList.toggle('on', i / (ticks.length - 1) <= railP + 0.001) })
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(frame) } }
+
+    if (reduced) {
+      lines.forEach(function (el) { el.classList.add('is-on') })
+      ticks.forEach(function (t) { t.classList.add('on') })
+      return
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    frame()
+  })()
+
+  // ── Reveal on entry ────────────────────────────────────────────────────
+  ;(function () {
+    var els = [].slice.call(document.querySelectorAll('[data-reveal], [data-row]'))
+    if (reduced || !('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in') }); return }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return
+        en.target.classList.add('in')
+        io.unobserve(en.target)
+      })
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' })
+    els.forEach(function (el) { io.observe(el) })
+  })()
+
+  // ── The lamp ───────────────────────────────────────────────────────────
+  ;(function () {
+    var section = $('ink'), ring = $('lamp-ring')
+    var sheets = [].slice.call(document.querySelectorAll('[data-sheet]'))
+    if (!section || !sheets.length) return
+    var hasPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    var raf = null, target = null, pos = null
+
+    function paint(x, y) {
+      // x, y are page coordinates. Each sheet gets the lamp in its own space.
+      sheets.forEach(function (s) {
+        var r = s.getBoundingClientRect()
+        s.style.setProperty('--lx', (x - r.left - window.scrollX) + 'px')
+        s.style.setProperty('--ly', (y - r.top - window.scrollY) + 'px')
+      })
+      var sr = section.getBoundingClientRect()
+      ring.style.transform = 'translate(' + (x - sr.left - window.scrollX) + 'px,' + (y - sr.top - window.scrollY) + 'px) translate(-50%,-50%)'
+    }
+    function tick() {
+      raf = null
+      if (!target) return
+      if (!pos) pos = { x: target.x, y: target.y }
+      pos.x += (target.x - pos.x) * 0.22
+      pos.y += (target.y - pos.y) * 0.22
+      paint(pos.x, pos.y)
+      if (Math.abs(target.x - pos.x) > 0.3 || Math.abs(target.y - pos.y) > 0.3) raf = requestAnimationFrame(tick)
+    }
+    function aim(x, y) { target = { x: x, y: y }; if (!raf) raf = requestAnimationFrame(tick) }
+
+    if (hasPointer && !reduced) {
+      section.addEventListener('pointermove', function (e) { section.classList.add('lit'); aim(e.pageX, e.pageY) })
+      section.addEventListener('pointerleave', function () { section.classList.remove('lit'); target = null; paint(-9999, -9999) })
+      return
+    }
+
+    // Touch, keyboard, or reduced motion: the lamp sweeps each sheet on its
+    // own while the section is on screen, so the reveal still happens.
+    var running = false, t0 = 0
+    function sweep(now) {
+      if (!running) return
+      if (!t0) t0 = now
+      var t = (now - t0) / 1000
+      sheets.forEach(function (s) {
+        var r = s.getBoundingClientRect()
+        var x = (0.5 + 0.42 * Math.sin(t * 0.9)) * r.width
+        var y = (0.5 + 0.38 * Math.sin(t * 0.6 + 1.3)) * r.height
+        s.style.setProperty('--lx', x + 'px')
+        s.style.setProperty('--ly', y + 'px')
+      })
+      requestAnimationFrame(sweep)
+    }
+    if (reduced) {
+      sheets.forEach(function (s) { s.style.setProperty('--lx', '50%'); s.style.setProperty('--ly', '55%'); s.style.setProperty('--lr', '240px') })
+      return
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) {
+        var on = en[0].isIntersecting
+        if (on && !running) { running = true; requestAnimationFrame(sweep) }
+        if (!on) running = false
+      }, { threshold: 0.2 }).observe(section)
+    } else { running = true; requestAnimationFrame(sweep) }
+    section.addEventListener('touchmove', function (e) {
+      var t = e.touches[0]
+      running = false
+      paint(t.pageX, t.pageY)
+    }, { passive: true })
+  })()
+
+  // ── Build: tabs, and the curl example prints itself once ───────────────
+  ;(function () {
+    var tabs = [].slice.call(document.querySelectorAll('.tab'))
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) {
+          var on = t === tab
+          t.setAttribute('aria-selected', String(on))
+          var panel = $(t.getAttribute('aria-controls'))
+          if (panel) panel.hidden = !on
+        })
+      })
+    })
+    var curl = $('code-curl')
+    if (!curl) return
+    var lns = [].slice.call(curl.querySelectorAll('.ln'))
+    function type() {
+      lns.forEach(function (ln, i) { ln.style.transitionDelay = (i * 160) + 'ms' })
+      curl.classList.add('typed')
+    }
+    if (reduced || !('IntersectionObserver' in window)) { curl.classList.add('static'); return }
+    var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { type(); io.disconnect() } }, { threshold: 0.4 })
+    io.observe(curl)
+  })()
+
+  // ── Live status, with the real round-trip time ─────────────────────────
+  ;(function () {
+    var text = $('status-text'), dot = $('status-dot'), pill = $('fresco-status'), probe = $('probe-text')
+    var ctrl = new AbortController()
+    var t = setTimeout(function () { ctrl.abort() }, 6000)
+    var t0 = performance.now()
+    fetch('https://api.sennoric.com/health', { signal: ctrl.signal })
+      .then(function (r) { return r.json() })
+      .then(function (d) {
+        var ms = Math.round(performance.now() - t0)
+        var up = !!(d.ok && d.model_up)
+        text.textContent = up ? 'Fresco is answering now · ' + ms + ' ms round trip' : 'Fresco is temporarily unavailable'
+        dot.className = 'dot ' + (up ? 'up' : 'down')
+        pill.textContent = up ? 'Live' : 'Unavailable'
+        if (!up) pill.className = 'pill wip'
+        if (probe) probe.innerHTML = '<b>' + (d.model || 'fresco') + '</b> · ' + (up ? 'answering' : 'unavailable') + ' · ' + ms + ' ms'
+      })
+      // A failed probe means the status endpoint is unreachable, not that the
+      // model is down. Don't claim an outage we can't actually see.
+      .catch(function () {
+        text.innerHTML = 'Model status unavailable · see the <a href="/status">status page</a>'
+        pill.textContent = 'See status'
+        if (probe) probe.textContent = 'status unavailable'
+      })
+      .finally(function () { clearTimeout(t) })
+  })()
+
+  // ── From the ledger: the three newest real announcements ───────────────
+  // Two sources: the API holds anything emailed (including items not yet
+  // written into the archive); /announcements holds the curated archive with
+  // proper categories and anchors. Merged on a normalised title, archive
+  // metadata preferred, newest first. If both fail the static list stands.
+  ;(function () {
+    var list = $('news')
+    if (!list) return
     var CATS = { announcement: 'Announcement', notice: 'Notice', safety: 'Safety update', update: 'Update', release: 'Release' }
     var key = function (t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() }
-    var fmt = function (d) {
-      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    }
+    var fmt = function (d) { return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }
     var withTimeout = function (url) {
       var c = new AbortController()
       var t = setTimeout(function () { c.abort() }, 6000)
       return fetch(url, { signal: c.signal }).finally(function () { clearTimeout(t) })
     }
-
-    // The archive page: the curated <article class="ann"> entries.
-    // Falls back to the .html path so this also works off a plain static
-    // server, where extensionless routes don't resolve.
     var fromArchive = withTimeout('/announcements')
       .then(function (r) { return r.ok ? r : withTimeout('/announcements.html') })
       .catch(function () { return withTimeout('/announcements.html') })
@@ -368,35 +780,28 @@
           var cta = el.querySelector('.ann-footer a[href]')
           var date = new Date(when)
           return {
-            date: isNaN(date) ? null : date,
-            cat: cat.trim(),
-            title: title.trim().replace(/\.$/, ''),
-            body: body.trim(),
+            date: isNaN(date) ? null : date, cat: cat.trim(),
+            title: title.trim().replace(/\.$/, ''), body: body.trim(),
             href: cta ? cta.getAttribute('href') : (el.id ? '/announcements#' + el.id : '/announcements')
           }
         }).filter(function (a) { return a.date && a.title })
       })
       .catch(function () { return [] })
-
-    // The API: anything emailed but not yet written into the archive.
     var fromApi = withTimeout('https://api.sennoric.com/announcements')
       .then(function (r) { return r.json() })
       .then(function (d) {
         return (d.announcements || []).map(function (a) {
           return {
-            date: new Date(a.created_at * 1000),
-            cat: CATS[a.category] || 'Announcement',
+            date: new Date(a.created_at * 1000), cat: CATS[a.category] || 'Announcement',
             title: String(a.title || '').trim().replace(/\.$/, ''),
-            body: String(a.body || '').split('\n')[0],
-            href: a.link || '/announcements'
+            body: String(a.body || '').split('\n')[0], href: a.link || '/announcements'
           }
         }).filter(function (a) { return !isNaN(a.date) && a.title })
       })
       .catch(function () { return [] })
 
-    Promise.all([fromApi, fromArchive]).then(function (sets) {
-      var seen = Object.create(null)
-      var all = []
+    Promise.all([fromArchive, fromApi]).then(function (sets) {
+      var seen = Object.create(null), all = []
       sets[0].concat(sets[1]).forEach(function (a) {
         var k = key(a.title)
         if (seen[k]) return
@@ -405,61 +810,25 @@
       })
       all.sort(function (a, b) { return b.date - a.date })
       var top = all.slice(0, 3)
-      if (top.length < 3) return   // not enough real data — keep the fallback
-
-      grid.textContent = ''
+      if (top.length < 3) return
+      list.textContent = ''
       top.forEach(function (a) {
-        var card = document.createElement('a')
-        card.className = 'post'
-        card.href = a.href
-        var meta = document.createElement('div')
-        meta.className = 'post-meta'
+        var li = document.createElement('li')
+        var link = document.createElement('a')
+        link.href = a.href
         ;[fmt(a.date), a.cat].forEach(function (t) {
-          var s = document.createElement('span')
-          s.className = 'label'
-          s.textContent = t
-          meta.appendChild(s)
+          var s = document.createElement('span'); s.className = 'label'; s.textContent = t; link.appendChild(s)
         })
-        var h = document.createElement('h3')
-        h.textContent = a.title
-        var p = document.createElement('p')
-        p.textContent = a.body.length > 130 ? a.body.slice(0, 127).trim() + '…' : a.body
-        var go = document.createElement('span')
-        go.className = 'post-go'
-        go.textContent = 'Read announcement'
-        card.appendChild(meta); card.appendChild(h); card.appendChild(p); card.appendChild(go)
-        grid.appendChild(card)
+        var box = document.createElement('div')
+        var h = document.createElement('h3'); h.textContent = a.title
+        var p = document.createElement('p'); p.textContent = a.body.length > 160 ? a.body.slice(0, 157).trim() + '…' : a.body
+        var go = document.createElement('span'); go.className = 'go'; go.textContent = 'Read announcement'
+        box.appendChild(h); box.appendChild(p); box.appendChild(go)
+        link.appendChild(box); li.appendChild(link); list.appendChild(li)
       })
     })
   })()
-
-  // Live model status from the real API.
-  ;(function () {
-    var text = document.getElementById('status-text')
-    var dot = document.getElementById('status-dot')
-    var pill = document.getElementById('fresco-status')
-
-    var ctrl = new AbortController()
-    var t = setTimeout(function () { ctrl.abort() }, 6000)
-
-    fetch('https://api.sennoric.com/health', { signal: ctrl.signal })
-      .then(function (r) { return r.json() })
-      .then(function (d) {
-        // `ok` is only the API worker; `model_up` is a real probe of the model.
-        var up = !!(d.ok && d.model_up)
-        text.textContent = up ? 'Fresco is answering now' : 'Fresco is temporarily unavailable'
-        dot.className = 'dot ' + (up ? 'up' : 'down')
-        pill.textContent = up ? 'Live' : 'Unavailable'
-        if (!up) pill.className = 'pill wip'
-      })
-      // A failed probe means the status endpoint is unreachable, not that the
-      // model is down. Don't claim an outage we can't actually see.
-      .catch(function () {
-        text.innerHTML = 'Model status unavailable — see the <a href="/status" style="color:var(--green)">status page</a>'
-        pill.textContent = 'See status'
-      })
-      .finally(function () { clearTimeout(t) })
-  })()
+})()
 </script>
 
 </body>
