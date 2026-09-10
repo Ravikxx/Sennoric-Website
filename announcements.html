@@ -45,6 +45,7 @@
       --chrome-bg:    #0a0b0f;  --chrome-text: #9899a8;  --chrome-mut: #7c7e92;
       --chrome-strong:#e8e9f0;  --chrome-border: rgba(255,255,255,0.06);
       --input-bg:     #14130f;  --input-border: #2a2622;  --input-text: #e8e9f0;
+      --green:        #34d399;  --red:          #f87171;
     }
     @media (prefers-color-scheme: light) {
       :root {
@@ -68,6 +69,7 @@
         --chrome-bg:    #f3f0e7;  --chrome-text: #6f695c;  --chrome-mut: #857c6a;
         --chrome-strong:#1c1710;  --chrome-border: rgba(0,0,0,0.08);
         --input-bg:     #ffffff;  --input-border: #ded8c8;  --input-text: #1c1710;
+        --green:        #0f8c5f;  --red:          #c23232;
       }
     }
 
@@ -242,7 +244,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/profile.css">
-  <link rel="stylesheet" href="assets/mobile.css">
+  <link rel="stylesheet" href="/assets/mobile.css">
 </head>
 <body>
 
@@ -366,7 +368,7 @@
   </article>
 
   <article class="ann announcement" data-cat="announcement" id="no-invisible-ink">
-    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">August 12, 2026</span>
       <span class="ann-cat announcement">Announcement</span>
       <span class="ann-title">No invisible ink</span>
@@ -496,7 +498,7 @@
   </article>
 
   <article class="ann notice" data-cat="notice">
-    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">August 8, 2026</span>
       <span class="ann-cat notice">Notice</span>
       <span class="ann-title">Correcting an Email We Just Sent — Glyph Is Not Retiring on August 17</span>
@@ -995,7 +997,12 @@
   </article>
 
   <div class="news-empty">
-    <p>More announcements coming soon. Follow us on <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
+    <p>More announcements coming soon.</p>
+  </div>
+</main>
+
+<footer>
+  <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a>
 </footer>
 
 <script>
@@ -1076,23 +1083,21 @@
 
   // Load announcements from the DB and merge them into the static feed
   async function loadAnnouncements() {
+    const main = document.querySelector('main')
     try {
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(), 8000)
       const res = await fetch(`${API}/announcements`, { signal: controller.signal })
         .finally(() => clearTimeout(timer))
       const { announcements } = await res.json()
-      if (!announcements?.length) return
       const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      const main = document.querySelector('main')
 
       // Once an announcement gets hand-authored into a permanent, properly
       // categorized <article> below, it stays in the D1 table (needed for the
       // email webhook's dedup), but rendering it here too would show it twice
       // — once generic, once properly formatted.
       const existing = new Set([...document.querySelectorAll('.ann-title')].map(el => annKey(el.textContent)))
-      const fresh = announcements.filter(a => !existing.has(annKey(a.title)))
-      if (!fresh.length) return
+      const fresh = (announcements || []).filter(a => !existing.has(annKey(a.title)))
 
       let uncategorized = false
       for (const a of fresh) {
@@ -1122,8 +1127,10 @@
       }
 
       if (uncategorized) document.getElementById('chip-announcement')?.removeAttribute('hidden')
-      promoteLead(main)
     } catch {}
+    // Always run: the lead/open styling lives on a static article, so it must be
+    // moved to whatever is newest even when the fetch fails or adds nothing.
+    finally { promoteLead(main) }
   }
 
   // Subscribe
