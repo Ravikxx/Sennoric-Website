@@ -30,13 +30,13 @@ Sennoric's Cloudflare-hosted backend stores and processes data needed to run acc
 
 - account identifiers, email address, password hash or linked OAuth identifier, verification and reset state, registration IP address, suspension state, and appeal records;
 - Sennoric-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records;
-- plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers;
+- plan and subscription status, credit balances, credit-code redemptions, and Stripe customer or subscription identifiers;
 - signed-in web chat history and chat metadata used to sync conversations across sessions;
 - a separate server-side log of message content, model responses, and model-requested tool calls across authenticated browser-session and API-key usage, kept independently of your visible chat history. Historical logs may include requests made before Sennoric required authentication for hosted access. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: **safe**, and nothing further happens; **an operational error**, meaning the model, the API, or response parsing failed and the exchange could not be classified at all; this is recorded as a system fault, never as a user-safety violation; or **flagged for human review**, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process;
 - email and announcement preferences, organization membership and invitations, and CLI device-login codes;
 - administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.
 
-Sennoric does not store your full payment-card number. Square processes payment details. Announcement subscriptions can exist separately from a Sennoric account, so deleting an account does not by itself unsubscribe a separately registered announcement email.
+Sennoric does not store your full payment-card number. Stripe processes payment details. Announcement subscriptions can exist separately from a Sennoric account, so deleting an account does not by itself unsubscribe a separately registered announcement email.
 
 ## Hosted features
 
@@ -64,7 +64,7 @@ The Chrome extension requests broad browser permissions so it can read pages, cl
 ### Email and payments
 
 - **Resend** processes account verification, password-reset, invitation, and announcement emails.
-- **Square** processes Pro checkout and payment information. Sennoric receives and stores the customer or subscription identifiers and status needed to manage access.
+- **Stripe** processes Pro checkout and payment information. Sennoric receives and stores the customer or subscription identifiers and status needed to manage access.
 
 ### Training-data contributions (`/contribute`)
 
@@ -81,7 +81,7 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 - Hugging Face (default vision inference): https://huggingface.co/privacy
 - Mistral (asynchronous safety classification): https://legal.mistral.ai/terms/privacy-policy
 - Cloudflare (hosted backend and contribution endpoint): https://www.cloudflare.com/policies/privacy/
-- Square (payments and subscriptions): https://squareup.com/us/en/legal/general/privacy
+- Stripe (payments and subscriptions): https://stripe.com/privacy
 - Resend (transactional and announcement email): https://resend.com/legal/privacy-policy
 - Your configured AI providers and connected integrations: see each provider's privacy policy.
 

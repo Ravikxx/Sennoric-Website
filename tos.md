@@ -21,10 +21,10 @@ The Service provides access to AI models and developer tools. Fresco requests ar
 
 - Fresco and other Sennoric-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or a Sennoric-issued API key.
 - A Free account includes an account-wide $0.125 weekly usage allowance and a $0.05 allowance per rolling two-hour window, with up to three active API keys. Both allowances are lazy-start: a period doesn't begin, or count down toward reset, until your account's first chargeable request after the previous one has fully elapsed.
-- Pro costs $7 per month through Square and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling two-hour window, with unlimited active API keys.
+- Pro costs $7 per month through Stripe and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling two-hour window, with unlimited active API keys.
 - Included usage is measured from input and output tokens. The current accounting rates are $0.15 per million input tokens and $0.50 per million output tokens.
 - Redeemable API credits are used after the included allowance. Credit balances and USD usage values are service accounting units, have no cash value, and cannot be withdrawn. Variable-value administrative credit codes may be redeemed in $0.001 increments.
-- Square processes checkout and card details. Sennoric stores the identifiers and subscription status needed to provide the plan, but does not receive or store your full card number.
+- Stripe processes checkout and card details. Sennoric stores the identifiers and subscription status needed to provide the plan, but does not receive or store your full card number.
 - Prices, allowances, rate limits, and availability may change. Free access is intended for individual, non-commercial use and may be restricted or revoked for abuse.
 
 ## Acceptable use
@@ -40,7 +40,7 @@ You agree not to:
 
 ## Third-party providers
 
-Depending on the feature you use, content may be processed by RunPod, Hugging Face, Mistral, an AI provider you configure, Cloudflare, Square, or Resend. Their handling of data is also governed by their own terms and privacy policies. See the [Privacy Policy](/privacy) for the providers used by each feature.
+Depending on the feature you use, content may be processed by RunPod, Hugging Face, Mistral, an AI provider you configure, Cloudflare, Stripe, or Resend. Their handling of data is also governed by their own terms and privacy policies. See the [Privacy Policy](/privacy) for the providers used by each feature.
 
 ## Data handling
 
