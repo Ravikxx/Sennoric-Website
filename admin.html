@@ -768,7 +768,7 @@
     </div>
     <div class="account-dialog-email" id="account-editor-email"></div>
     <div class="account-warning">
-      Changes apply to live API enforcement. Switching the testing plan does not create or cancel a Square subscription, and these controls do not rewrite request history.
+      Changes apply to live API enforcement. Switching the testing plan does not create or cancel a Stripe subscription, and these controls do not rewrite request history.
     </div>
     <div id="account-editor-msg" class="invite-msg" style="display:none"></div>
     <div class="account-fields">
@@ -1429,7 +1429,7 @@
     const included_window_cost = usageFromRemaining(limits.window, window_remaining)
 
     const summary = `${user.email}\nPlan: ${plan === 'pro' ? 'Pro' : 'Free'}\nWeekly allowance left: ${formatUsdMicro(weekly_remaining)}\n2-hour allowance left: ${formatUsdMicro(window_remaining)}\nExtra usage credits: ${formatUsdMicro(credit_balance)}`
-    if (!confirm(`Apply this live testing override?\n\n${summary}\n\nThis does not change Square billing or request history.`)) return
+    if (!confirm(`Apply this live testing override?\n\n${summary}\n\nThis does not change Stripe billing or request history.`)) return
 
     const btn = document.getElementById('account-save')
     btn.disabled = true

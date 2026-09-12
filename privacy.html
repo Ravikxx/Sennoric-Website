@@ -216,13 +216,13 @@
     <ul>
       <li>Account identifiers, email address, password hash or linked OAuth identifier, verification and reset state, registration IP address, suspension state, and appeal records.</li>
       <li>Sennoric-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
-      <li>Plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers.</li>
+      <li>Plan and subscription status, credit balances, credit-code redemptions, and Stripe customer or subscription identifiers.</li>
       <li>Signed-in web chat history and chat metadata used to sync conversations across sessions.</li>
       <li>A separate server-side log of message content, model responses, and model-requested tool calls across authenticated browser-session and API-key usage, kept independently of your visible chat history. Historical logs may include requests made before Sennoric required authentication for hosted access. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: <strong>safe</strong>, and nothing further happens; <strong>an operational error</strong>, meaning the model, the API, or response parsing failed and the exchange could not be classified at all; this is recorded as a system fault, never as a user-safety violation; or <strong>flagged for human review</strong>, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process.</li>
       <li>Email and announcement preferences, organization membership and invitations, and CLI device-login codes.</li>
       <li>Administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.</li>
     </ul>
-    <p>Sennoric does not store your full payment-card number. Square processes payment details. Announcement subscriptions can exist separately from a Sennoric account, so deleting an account does not by itself unsubscribe a separately registered announcement email.</p>
+    <p>Sennoric does not store your full payment-card number. Stripe processes payment details. Announcement subscriptions can exist separately from a Sennoric account, so deleting an account does not by itself unsubscribe a separately registered announcement email.</p>
   </div>
 
   <div class="policy-section">
@@ -271,7 +271,7 @@
     <p style="margin-top:16px"><strong>Email and payments.</strong></p>
     <ul>
       <li><strong>Resend</strong> processes account verification, password-reset, invitation, and announcement emails.</li>
-      <li><strong>Square</strong> processes Pro checkout and payment information. Sennoric receives and stores the customer or subscription identifiers and status needed to manage access.</li>
+      <li><strong>Stripe</strong> processes Pro checkout and payment information. Sennoric receives and stores the customer or subscription identifiers and status needed to manage access.</li>
     </ul>
 
     <p style="margin-top:16px"><strong>Training-data contributions</strong> (<code>/contribute</code>). Opt-in: nothing is sent unless you type <code>/contribute</code> yourself. When you do:</p>
@@ -291,7 +291,7 @@
       <li><strong>Hugging Face</strong> (default vision inference) — <a href="https://huggingface.co/privacy">huggingface.co/privacy</a></li>
       <li><strong>Mistral</strong> (asynchronous, context-aware safety classification of logged chat exchanges) — <a href="https://legal.mistral.ai/terms/privacy-policy">mistral.ai privacy policy</a></li>
       <li><strong>Cloudflare</strong> (infrastructure provider) — <a href="https://www.cloudflare.com/policies/privacy/">cloudflare.com/policies/privacy</a></li>
-      <li><strong>Square</strong> (payments &amp; subscriptions) — <a href="https://squareup.com/us/en/legal/general/privacy">squareup.com privacy notice</a></li>
+      <li><strong>Stripe</strong> (payments &amp; subscriptions) — <a href="https://stripe.com/privacy">stripe.com privacy policy</a></li>
       <li><strong>Resend</strong> (transactional &amp; announcement email) — <a href="https://resend.com/legal/privacy-policy">resend.com privacy policy</a></li>
       <li><strong>Configured AI providers</strong> (Anthropic, OpenAI, Google, Groq, Mistral, OpenRouter, OpenCode) — see each provider's policy</li>
       <li><strong>Connected integrations</strong> (GitHub, Google, Notion, Slack) — see each service's policy</li>
