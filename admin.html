@@ -629,6 +629,29 @@
       </div>
     </section>
 
+    <!-- Sitewide Pro promotions -->
+    <section>
+      <h2>Pro Promotions</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        Runs a time-boxed discount on the Sennoric Pro checkout. Only one can run at a time — starting a new one ends whichever is active. Applies automatically at checkout (no code needed) and shows as a popup in the chat app to anyone not already on Pro.
+      </p>
+      <div id="promo-msg" class="invite-msg" style="display:none"></div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px" id="promo-status">Loading current promotion status…</p>
+      <div class="credit-create-grid">
+        <div class="credit-field"><label for="promo-percent">Discount (%)</label><input id="promo-percent" type="number" min="1" max="99" step="1" value="20"></div>
+        <div class="credit-field"><label for="promo-hours">Runs for (hours)</label><input id="promo-hours" type="number" min="1" max="8760" step="1" value="168"></div>
+        <div class="credit-field"><label for="promo-label">Label (shown to customers)</label><input id="promo-label" type="text" maxlength="200" placeholder="Launch week special"></div>
+        <div class="credit-field"><label for="promo-code">Code (optional, auto-generated)</label><input id="promo-code" type="text" maxlength="40" placeholder="SENNORIC-XXXXXX" style="text-transform:uppercase"></div>
+      </div>
+      <button class="btn btn-sm" id="start-promo-btn" onclick="startPromotion()">Start promotion</button>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Discount</th><th>Label</th><th>Window</th><th>Redemptions</th><th>Status</th><th></th></tr></thead>
+          <tbody id="promotions-body"><tr class="empty-row"><td colspan="7">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Model health and kill switch -->
     <section>
       <h2>Models</h2>
@@ -699,7 +722,7 @@
     <section>
       <h2>Status Page Incidents</h2>
       <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
-        Automated monitoring checks Fresco and the website every 5 minutes and auto-opens an
+        Automated monitoring checks Fresco and the website every 15 minutes and auto-opens an
         "investigating" incident (with a generic description) after two consecutive failures, and you'll get an email when that happens. Use this to write what's actually wrong, or to post a new
         incident manually. Everything here is public on <a href="/status" target="_blank" rel="noopener" style="color:var(--accent)">/status</a>.
       </p>
@@ -958,6 +981,7 @@
     loadAllowlist()
     loadCreditCodes()
     loadUsageBoost()
+    loadPromotions()
     loadModelHealth()
     loadGuardrailFlags()
     loadAnnouncementHistory()
@@ -1011,6 +1035,80 @@
       const d = await res.json().catch(() => ({}))
       showMsg(msg, d.error || 'Failed to clear boost.', true)
     }
+  }
+
+  // Sitewide Pro promotions
+  async function loadPromotions() {
+    const res = await apiFetch('/admin/promotions')
+    const statusEl = document.getElementById('promo-status')
+    const tbody = document.getElementById('promotions-body')
+    if (!res.ok) { statusEl.textContent = 'Could not load promotions.'; return }
+    const { promotions } = await res.json()
+    const now = Math.floor(Date.now() / 1000)
+    const active = promotions.find(p => !p.ended_at && p.expires_at > now && p.starts_at <= now)
+    statusEl.textContent = active
+      ? `Active: ${esc(active.code)} — ${active.percent_off}% off, ends ${fmtDate(active.expires_at)}.`
+      : 'No promotion currently active.'
+
+    if (!promotions.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No promotions yet</td></tr>'
+      return
+    }
+    tbody.innerHTML = promotions.map(p => {
+      const isActive = !p.ended_at && p.expires_at > now && p.starts_at <= now
+      const status = isActive ? 'Active' : p.ended_at ? 'Ended early' : 'Expired'
+      return `<tr>
+        <td><code>${esc(p.code)}</code></td>
+        <td>${p.percent_off}%</td>
+        <td>${esc(p.label)}</td>
+        <td style="color:var(--muted)">${fmtDate(p.starts_at)} &rarr; ${fmtDate(p.expires_at)}</td>
+        <td>${p.times_redeemed ?? '—'}</td>
+        <td><span class="badge ${isActive ? 'badge-green' : 'badge-red'}">${status}</span></td>
+        <td>${isActive ? `<button class="btn btn-danger" onclick="endPromotion('${esc(p.id)}')">End now</button>` : ''}</td>
+      </tr>`
+    }).join('')
+  }
+
+  async function startPromotion() {
+    const msg = document.getElementById('promo-msg')
+    const percent_off = Number(document.getElementById('promo-percent').value)
+    const duration_hours = Number(document.getElementById('promo-hours').value)
+    const label = document.getElementById('promo-label').value.trim()
+    const code = document.getElementById('promo-code').value.trim()
+    if (!Number.isInteger(percent_off) || percent_off < 1 || percent_off > 99) {
+      showMsg(msg, 'Discount must be a whole number from 1 to 99.', true); return
+    }
+    if (!Number.isFinite(duration_hours) || duration_hours <= 0) {
+      showMsg(msg, 'Runs-for must be a positive number of hours.', true); return
+    }
+    if (!label) { showMsg(msg, 'A label is required — this is what customers see.', true); return }
+    if (!confirm(`Start ${percent_off}% off for ${duration_hours} hours? This ends any promotion currently running.`)) return
+
+    const btn = document.getElementById('start-promo-btn')
+    btn.disabled = true; btn.textContent = 'Starting…'
+    try {
+      const res = await apiFetch('/admin/promotions', {
+        method: 'POST',
+        body: JSON.stringify({ percent_off, duration_hours, label, code: code || undefined }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Could not start promotion')
+      showMsg(msg, `Started ${data.code} — ${percent_off}% off.`, false)
+      document.getElementById('promo-label').value = ''
+      document.getElementById('promo-code').value = ''
+      loadPromotions()
+    } catch (error) {
+      showMsg(msg, error.message || 'Could not start promotion', true)
+    } finally {
+      btn.disabled = false; btn.textContent = 'Start promotion'
+    }
+  }
+
+  async function endPromotion(id) {
+    if (!confirm('End this promotion now? New checkouts stop getting the discount immediately.')) return
+    const res = await apiFetch(`/admin/promotions/${encodeURIComponent(id)}/end`, { method: 'POST' })
+    if (res.ok) loadPromotions()
+    else { const d = await res.json().catch(() => ({})); showMsg(document.getElementById('promo-msg'), d.error || 'Could not end promotion', true) }
   }
 
   async function loadModelHealth() {
