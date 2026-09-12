@@ -546,10 +546,10 @@
     /* Sitewide Pro promotion popup — deliberately the biggest, boldest
        overlay in the app: a one-time announcement, not a routine dialog, so
        it earns visual weight the trash/share/scheduled panels don't need.
-       Always on top (z-index 62) since it can appear before anything else
-       has finished loading — including above the sign-in screen (z-index 80)
-       for anonymous visitors. */
-    #promo-overlay { z-index: 90; }
+       Only ever shown from inside the signed-in chat interface (see
+       showApp() -> initPromoModal()), so it just uses the standard overlay
+       z-index (60, from .trash-overlay) — it never needs to outrank the
+       sign-in screen. */
     .promo-panel {
       width: min(460px, 100%); text-align: center; padding: 40px 32px 32px;
       background: var(--surface); border: 1px solid var(--border2); border-radius: 18px;
@@ -1799,11 +1799,11 @@
   </div>
 </div>
 
-<!-- Sitewide Pro promotion popup. Public: shown to anyone (signed in or not)
-     not already on Pro, while an admin-started promotion is running. Must be
-     explicitly dismissed — closing it hides it for this specific promotion
-     only, via localStorage, so it doesn't come back on every reload but does
-     resurface for the next one. -->
+<!-- Sitewide Pro promotion popup. Shown once a signed-in user not already on
+     Pro reaches the chat interface (never during sign-in), while an
+     admin-started promotion is running. Marked seen the moment it's shown
+     (localStorage, keyed to that promotion's id) — at most once per
+     promotion per user, but resurfaces for the next promotion. -->
 <div class="trash-overlay" id="promo-overlay" style="display:none">
   <button type="button" class="trash-overlay-backdrop" onclick="dismissPromoModal()" aria-label="Close"></button>
   <div class="trash-panel promo-panel" role="dialog" aria-modal="true" aria-label="Limited-time discount">
@@ -1996,21 +1996,23 @@
     if (el && !localStorage.getItem('sennoric_fresco13_banner_dismissed')) el.style.display = 'flex'
   }
 
-  // Sitewide Pro promotion popup. Runs before sign-in state is known so it
-  // reaches anonymous visitors too — a missing/invalid Authorization header
-  // is fine, the backend just treats the caller as anonymous.
-  let activePromo = null
+  // Sitewide Pro promotion popup. Only fires once the signed-in user is
+  // actually inside the chat interface (called from showApp(), never during
+  // sign-in) and shows at most once per promotion per user — the seen-flag
+  // is recorded the moment it's displayed, not only on dismiss, so a reload
+  // right after seeing it doesn't count as a second showing.
   async function initPromoModal() {
     let data
     try {
-      const res = await sennoricFetch(`${API}/billing/promotion`, sessionToken
-        ? { headers: { Authorization: `Bearer ${sessionToken}` } } : {})
+      const res = await sennoricFetch(`${API}/billing/promotion`, {
+        headers: { Authorization: `Bearer ${sessionToken}` },
+      })
       data = await res.json()
     } catch { return }
     if (!data.active) return
-    if (localStorage.getItem('sennoric_promo_dismissed') === data.id) return
+    if (localStorage.getItem('sennoric_promo_seen') === data.id) return
+    localStorage.setItem('sennoric_promo_seen', data.id)
 
-    activePromo = data
     const days = Math.max(1, Math.round((data.expires_at * 1000 - Date.now()) / 86400000))
     document.getElementById('promo-headline').innerHTML =
       `<strong>${data.percent_off}% off</strong> Sennoric Pro`
@@ -2020,11 +2022,9 @@
     document.getElementById('promo-overlay').style.display = 'flex'
   }
   function dismissPromoModal() {
-    if (activePromo) localStorage.setItem('sennoric_promo_dismissed', activePromo.id)
     document.getElementById('promo-overlay').style.display = 'none'
   }
   async function startPromoCheckout() {
-    if (!sessionToken) { dismissPromoModal(); return }
     const btn = document.getElementById('promo-cta')
     btn.disabled = true; btn.textContent = 'Starting checkout…'
     try {
@@ -4574,11 +4574,11 @@
     renderChatList()
     if (chats.some(generationActive)) startGenerationPolling()
     document.getElementById('user-input').focus()
+    initPromoModal()   // only once they're actually looking at the chat interface, never during sign-in
   }
 
   // Init
   ;(async function init() {
-    initPromoModal()   // runs regardless of sign-in state — reaches anonymous visitors too
     const hash = new URLSearchParams(location.hash.slice(1))
     if (hash.get('verified')) {
       const tok = decodeURIComponent(hash.get('verified'))
