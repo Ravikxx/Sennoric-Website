@@ -481,6 +481,7 @@
             <div class="settings-row-desc" id="plan-desc"></div>
           </div>
           <button class="btn-sm" id="btn-upgrade" onclick="upgradeToPro()">Upgrade to Pro — $7/mo</button>
+          <button class="btn-sm" id="btn-manage-subscription" style="display:none" onclick="manageSubscription()">Manage subscription</button>
         </div>
         <p class="section-sub" id="coupon-note" style="display:none;margin:0 0 12px">Have a subscription discount code? Enter it on the secure Stripe checkout page.</p>
         <div class="status-msg" id="plan-msg"></div>
@@ -769,18 +770,24 @@
       const data = await SennoricAccountProfile.fetchAccount(sessionToken);
       creditBalance.textContent = formatCreditUsd(data.credits?.balance_usd);
       row.style.display = 'flex';
+      const manageBtn = document.getElementById('btn-manage-subscription');
+      const windowHours = data.usage?.window_hours || 5;
+      const weeklyPct = Number(data.usage?.weekly_included_percent_used || 0);
+      const windowPct = Number(data.usage?.window_included_percent_used || 0);
       if (data.plan === 'pro') {
-        sub.textContent = `You're on Sennoric Pro — $${Number(data.usage?.weekly_included_limit_usd || 1.25).toFixed(2)} included weekly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
+        sub.textContent = `You're on Sennoric Pro — ${weeklyPct}% of your weekly usage and ${windowPct}% of your ${windowHours}-hour window used, unlimited API keys, and early model access.`;
         label.textContent = 'Sennoric Pro';
         desc.textContent = 'Billed monthly via Stripe.';
         btn.style.display = 'none';
         couponNote.style.display = 'none';
+        manageBtn.style.display = '';
       } else {
-        sub.textContent = `Free plan — $${Number(data.usage?.weekly_included_limit_usd || .125).toFixed(2)} included weekly usage, $${Number(data.usage?.window_included_limit_usd || .05).toFixed(2)} every 2 hours, and up to 3 API keys.`;
+        sub.textContent = `Free plan — ${weeklyPct}% of your weekly usage and ${windowPct}% of your ${windowHours}-hour window used, and up to 3 API keys.`;
         label.textContent = 'Free plan';
-        desc.textContent = 'Upgrade for 10x the limits, unlimited keys, and early model access.';
+        desc.textContent = 'Upgrade for 20x the limits, unlimited keys, and early model access.';
         btn.style.display = '';
         couponNote.style.display = '';
+        manageBtn.style.display = 'none';
       }
     } catch {
       sub.textContent = "Couldn't load your plan or credit balance right now.";
@@ -847,6 +854,23 @@
     } catch {
       msg.textContent = "Couldn't start checkout right now — try again shortly."; msg.className = 'status-msg err';
       btn.disabled = false; btn.textContent = 'Upgrade to Pro — $7/mo';
+      setTimeout(() => { msg.textContent = ''; }, 4000);
+    }
+  }
+
+  async function manageSubscription() {
+    const btn = document.getElementById('btn-manage-subscription');
+    const msg = document.getElementById('plan-msg');
+    btn.disabled = true; btn.textContent = 'Opening…';
+    try {
+      const res = await fetchT(API + '/billing/portal', { method: 'POST', headers: authHeaders });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.error || '');
+      location.href = data.url;
+    } catch (error) {
+      msg.textContent = error.message || "Couldn't open subscription management right now — try again shortly.";
+      msg.className = 'status-msg err';
+      btn.disabled = false; btn.textContent = 'Manage subscription';
       setTimeout(() => { msg.textContent = ''; }, 4000);
     }
   }

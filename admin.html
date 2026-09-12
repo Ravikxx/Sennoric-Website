@@ -540,7 +540,7 @@
               <th>Account</th>
               <th>Plan</th>
               <th>Weekly left</th>
-              <th>2-hour left</th>
+              <th>5-hour left</th>
               <th>Credits</th>
               <th>Total requests</th>
               <th></th>
@@ -623,7 +623,7 @@
 
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
         <p style="color:var(--muted);font-size:13px;margin-bottom:10px">
-          Resets every account's current week and two-hour usage to zero, as if their period had just started fresh. This affects every account with no per-user targeting and no undo — the per-account editor above handles single-account changes.
+          Resets every account's current week and 5-hour usage to zero, as if their period had just started fresh. This affects every account with no per-user targeting and no undo — the per-account editor above handles single-account changes.
         </p>
         <button class="btn btn-danger" onclick="resetAllUsage()">Reset usage limits for all people</button>
       </div>
@@ -777,10 +777,10 @@
         <input id="account-plan" type="hidden" value="free">
         <div class="plan-options" role="group" aria-label="Account plan">
           <button class="plan-option" id="account-plan-free" type="button" onclick="setAccountPlan('free')">
-            <strong>Free</strong><span>$0.125 weekly · $0.05 per two hours</span>
+            <strong>Free</strong><span>$0.0625 weekly · $0.025 per 5 hours</span>
           </button>
           <button class="plan-option" id="account-plan-pro" type="button" onclick="setAccountPlan('pro')">
-            <strong>Pro</strong><span>$7/month · $1.25 weekly included usage · $0.50 per two hours</span>
+            <strong>Pro</strong><span>$7/month · $1.25 weekly included usage · $0.50 per 5 hours</span>
           </button>
         </div>
       </div>
@@ -795,7 +795,7 @@
         <div class="field-hint" id="account-week-hint"></div>
       </div>
       <div class="account-field">
-        <label for="account-window-remaining">Current 2-hour allowance remaining (USD)</label>
+        <label for="account-window-remaining">Current 5-hour allowance remaining (USD)</label>
         <input id="account-window-remaining" type="number" min="0" step="0.000001">
         <div class="field-hint" id="account-window-hint"></div>
       </div>
@@ -821,8 +821,11 @@
   let _adminUsers = []
   let _editingUserId = null
   let _currentAdminUserId = null
+  // Must match FREE_WEEKLY_BUDGET/FREE_WINDOW_BUDGET/PRO_WEEKLY_BUDGET/
+  // PRO_WINDOW_BUDGET in the backend's src/index.js exactly, or this
+  // editor computes remaining allowance against the wrong total.
   const ACCOUNT_LIMITS = {
-    free: { weekly: 125000, window: 50000 },
+    free: { weekly: 62500, window: 25000 },
     pro: { weekly: 1250000, window: 500000 },
   }
 
@@ -1388,7 +1391,7 @@
     document.getElementById('account-week-remaining').max = microToInput(limits.weekly)
     document.getElementById('account-window-remaining').max = microToInput(limits.window)
     document.getElementById('account-week-hint').textContent = `Enter how much of the ${formatUsdMicro(limits.weekly)} weekly allowance should still be available. Setting this to the full amount marks the period as not started (no reset countdown) until the next real charge.`
-    document.getElementById('account-window-hint').textContent = `Enter how much of the ${formatUsdMicro(limits.window)} two-hour allowance should still be available.`
+    document.getElementById('account-window-hint').textContent = `Enter how much of the ${formatUsdMicro(limits.window)} 5-hour allowance should still be available.`
   }
 
   function setNoAllowanceLeft() {
@@ -1428,7 +1431,7 @@
     const included_week_cost = usageFromRemaining(limits.weekly, weekly_remaining)
     const included_window_cost = usageFromRemaining(limits.window, window_remaining)
 
-    const summary = `${user.email}\nPlan: ${plan === 'pro' ? 'Pro' : 'Free'}\nWeekly allowance left: ${formatUsdMicro(weekly_remaining)}\n2-hour allowance left: ${formatUsdMicro(window_remaining)}\nExtra usage credits: ${formatUsdMicro(credit_balance)}`
+    const summary = `${user.email}\nPlan: ${plan === 'pro' ? 'Pro' : 'Free'}\nWeekly allowance left: ${formatUsdMicro(weekly_remaining)}\n5-hour allowance left: ${formatUsdMicro(window_remaining)}\nExtra usage credits: ${formatUsdMicro(credit_balance)}`
     if (!confirm(`Apply this live testing override?\n\n${summary}\n\nThis does not change Stripe billing or request history.`)) return
 
     const btn = document.getElementById('account-save')

@@ -1081,10 +1081,9 @@
     const usageSection = document.getElementById('usage-section');
     if (!accountState || currentOrg) { usageSection.style.display = 'none'; return; }
     usageSection.style.display = '';
-    const weeklyUsed = Number(accountState.usage?.weekly_included_used_usd) || 0;
-    const weeklyLimit = Number(accountState.usage?.weekly_included_limit_usd) || 0;
-    const windowUsed = Number(accountState.usage?.window_included_used_usd) || 0;
-    const windowLimit = Number(accountState.usage?.window_included_limit_usd) || 0;
+    const weeklyPct = Math.min(Number(accountState.usage?.weekly_included_percent_used) || 0, 100);
+    const windowPct = Math.min(Number(accountState.usage?.window_included_percent_used) || 0, 100);
+    const windowHours = accountState.usage?.window_hours || 5;
     const creditBalance = Number(accountState.credits?.balance_usd) || 0;
     const formatUsd = value => '$' + Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
     // Periods are lazy-start server-side — no countdown exists until the
@@ -1103,23 +1102,22 @@
       if (hours > 0) return `Resets in ${unit(hours, 'hour')}${minutes ? ` ${unit(minutes, 'minute')}` : ''}`;
       return `Resets in ${unit(minutes, 'minute')}`;
     };
-    const usageBar = (label, used, limit, started, resetAt) => {
-      const pct = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
+    const usageBar = (label, pct, started, resetAt) => {
       const color = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--yellow)' : 'var(--accent)';
       const resetLabel = formatResetAt(started, resetAt);
       return `
         <div class="usage-bar-item">
           <div class="usage-bar-label">
             <span>${label}</span>
-            <span>${formatUsd(used)} / ${formatUsd(limit)}</span>
+            <span>${pct}% used</span>
           </div>
           <div class="usage-bar-track"><div class="usage-bar-fill" style="width:${pct}%;background:${color}"></div></div>
           ${resetLabel ? `<div class="usage-bar-reset">${resetLabel}</div>` : ''}
         </div>`;
     };
     document.getElementById('usage-bars').innerHTML =
-      usageBar(`${accountState.plan === 'pro' ? 'Pro' : 'Free'} weekly allowance`, weeklyUsed, weeklyLimit, accountState.usage?.weekly_started, accountState.usage?.weekly_reset_at) +
-      usageBar('Two-hour allowance', windowUsed, windowLimit, accountState.usage?.window_started, accountState.usage?.window_reset_at) +
+      usageBar(`${accountState.plan === 'pro' ? 'Pro' : 'Free'} weekly allowance`, weeklyPct, accountState.usage?.weekly_started, accountState.usage?.weekly_reset_at) +
+      usageBar(`${windowHours}-hour allowance`, windowPct, accountState.usage?.window_started, accountState.usage?.window_reset_at) +
       `<div class="usage-bar-item"><div class="usage-bar-label"><span>Redeemable credits</span><span>${formatUsd(creditBalance)}</span></div></div>`;
     if (!usageCountdownTimer) usageCountdownTimer = setInterval(renderUsage, 30000);
   }
