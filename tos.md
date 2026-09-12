@@ -20,8 +20,8 @@ The Service provides access to AI models and developer tools. Fresco requests ar
 ## Usage, plans, and billing
 
 - Fresco and other Sennoric-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or a Sennoric-issued API key.
-- A Free account includes an account-wide $0.125 weekly usage allowance and a $0.05 allowance per rolling two-hour window, with up to three active API keys. Both allowances are lazy-start: a period doesn't begin, or count down toward reset, until your account's first chargeable request after the previous one has fully elapsed.
-- Pro costs $7 per month through Stripe and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling two-hour window, with unlimited active API keys.
+- A Free account includes an account-wide $0.0625 weekly usage allowance and a $0.025 allowance per rolling five-hour window, with up to three active API keys. Both allowances are lazy-start: a period doesn't begin, or count down toward reset, until your account's first chargeable request after the previous one has fully elapsed.
+- Pro costs $7 per month through Stripe and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling five-hour window — 20x Free's — with unlimited active API keys.
 - Included usage is measured from input and output tokens. The current accounting rates are $0.15 per million input tokens and $0.50 per million output tokens.
 - Redeemable API credits are used after the included allowance. Credit balances and USD usage values are service accounting units, have no cash value, and cannot be withdrawn. Variable-value administrative credit codes may be redeemed in $0.001 increments.
 - Stripe processes checkout and card details. Sennoric stores the identifiers and subscription status needed to provide the plan, but does not receive or store your full card number.

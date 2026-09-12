@@ -273,7 +273,7 @@
         <div class="meter">
           <div class="meter-labels">
             <span class="meter-name">Weekly allowance</span>
-            <span class="meter-value skeleton" id="weekly-value">$0.00 of $0.00</span>
+            <span class="meter-value skeleton" id="weekly-value">0% used</span>
           </div>
           <div class="meter-track" role="progressbar" id="weekly-track" aria-label="Weekly usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div class="meter-fill" id="weekly-fill"></div>
@@ -286,10 +286,10 @@
 
         <div class="meter">
           <div class="meter-labels">
-            <span class="meter-name">Two-hour allowance</span>
-            <span class="meter-value skeleton" id="window-value">$0.00 of $0.00</span>
+            <span class="meter-name" id="window-name">5-hour allowance</span>
+            <span class="meter-value skeleton" id="window-value">0% used</span>
           </div>
-          <div class="meter-track" role="progressbar" id="window-track" aria-label="Two-hour usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="meter-track" role="progressbar" id="window-track" aria-label="5-hour usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div class="meter-fill" id="window-fill"></div>
           </div>
           <div class="meter-meta">
@@ -311,7 +311,7 @@
             <div class="exact-stat-meta" id="exact-weekly-meta">0 microdollars</div>
           </div>
           <div class="exact-stat">
-            <div class="exact-stat-label">Two-hour allowance used</div>
+            <div class="exact-stat-label">5-hour allowance used</div>
             <div class="exact-stat-value" id="exact-window">$0.000000</div>
             <div class="exact-stat-meta" id="exact-window-meta">0 microdollars</div>
           </div>
@@ -488,36 +488,37 @@
     if (!resetCountdownTimer) resetCountdownTimer = setInterval(refreshResetLabels, 30000);
   }
 
-  function renderMeter(prefix, used, limit, started, resetAt) {
-    const safeUsed = Math.max(0, Number(used) || 0);
-    const safeLimit = Math.max(0, Number(limit) || 0);
-    const percent = safeLimit > 0 ? Math.min(100, (safeUsed / safeLimit) * 100) : 0;
-    const remaining = Math.max(0, safeLimit - safeUsed);
+  function renderMeter(prefix, percent, started, resetAt) {
+    const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+    const remainingPercent = Math.max(0, 100 - safePercent);
     const fill = document.getElementById(`${prefix}-fill`);
     const track = document.getElementById(`${prefix}-track`);
     const value = document.getElementById(`${prefix}-value`);
 
-    value.textContent = `${usd(safeUsed)} of ${usd(safeLimit)}`;
+    value.textContent = `${safePercent}% used`;
     value.classList.remove('skeleton');
-    fill.style.width = `${percent}%`;
-    fill.className = `meter-fill${percent >= 90 ? ' critical' : percent >= 70 ? ' warning' : ''}`;
-    track.setAttribute('aria-valuenow', String(Math.round(percent)));
+    fill.style.width = `${safePercent}%`;
+    fill.className = `meter-fill${safePercent >= 90 ? ' critical' : safePercent >= 70 ? ' warning' : ''}`;
+    track.setAttribute('aria-valuenow', String(Math.round(safePercent)));
     document.getElementById(`${prefix}-remaining`).textContent = started
-      ? `${usd(remaining)} remaining`
-      : `${usd(safeLimit)} available`;
+      ? `${remainingPercent}% remaining`
+      : '100% available';
     const parsedResetAt = started && resetAt ? new Date(resetAt) : null;
     resetTargets[prefix] = parsedResetAt && !Number.isNaN(parsedResetAt.getTime()) ? parsedResetAt : null;
-    return { percent, remaining, started };
+    return { percent: safePercent, remainingPercent, started };
   }
 
   function renderUsage(data) {
     renderExactUsage(data);
+    const windowHours = data.usage?.window_hours || 5;
+    const windowNameEl = document.getElementById('window-name');
+    if (windowNameEl) windowNameEl.textContent = `${windowHours}-hour allowance`;
     const weekly = renderMeter(
-      'weekly', data.usage?.weekly_included_used_usd, data.usage?.weekly_included_limit_usd,
+      'weekly', data.usage?.weekly_included_percent_used,
       data.usage?.weekly_started, data.usage?.weekly_reset_at,
     );
     const windowUsage = renderMeter(
-      'window', data.usage?.window_included_used_usd, data.usage?.window_included_limit_usd,
+      'window', data.usage?.window_included_percent_used,
       data.usage?.window_started, data.usage?.window_reset_at,
     );
     startResetCountdowns();
@@ -525,7 +526,7 @@
     const hasCredits = balance > 0;
 
     document.getElementById('plan-pill').textContent = `${data.plan === 'pro' ? 'Pro' : 'Free'} plan`;
-    document.getElementById('allowance-state').textContent = weekly.remaining > 0 && windowUsage.remaining > 0
+    document.getElementById('allowance-state').textContent = weekly.remainingPercent > 0 && windowUsage.remainingPercent > 0
       ? 'Included usage available'
       : hasCredits ? 'Using extra usage when needed' : 'A limit has been reached';
 
