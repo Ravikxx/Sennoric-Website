@@ -155,7 +155,7 @@
     .model-card-alias code { font-size: 11px; }
     .model-card-desc { font-size: 12px; color: var(--muted2); margin-top: 6px; line-height: 1.5; }
     .model-card-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin-bottom: 7px; }
-    .badge-free { background: rgba(52,211,153,.12); color: var(--green); }
+    .badge-free { background: rgba(26,92,53,.12); color: var(--green); }
     .badge-key  { background: rgba(184, 162, 125,.12); color: var(--accent); }
     .badge-paid { background: var(--surface2); color: var(--muted); }
 
@@ -229,15 +229,13 @@
 <body>
 
 <nav>
-  <a href="/" class="nav-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Sennoric</span></a>
-  <div class="nav-links">
-    <a href="/models" class="nav-link">Models</a>
-    <a href="/chat" class="nav-link">Chat</a>
-    <a href="/docs" class="nav-link active">Docs</a>
-    <a href="/help" class="nav-link">Help</a>
-  </div>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
+  <a href="/models">Models</a>
+  <a href="/chat">Chat</a>
+  <a href="/docs" class="active">Docs</a>
+  <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">API Keys</a>
+    <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
@@ -641,7 +639,49 @@
       <h3>Setup</h3>
       <ol>
         <li>Start the Sennoric web UI: <code>/web</code> inside Sennoric or run <code>axion-serve</code></li>
-        <li>Install the extension from its <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
+        <li>Install the extension, then sign in with your Sennoric account.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
+        <p class="foot-note">Sennoric trains and hosts models on its own infrastructure.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Solan models</h4>
+        <a href="/fresco-13">Fresco 1.3</a>
+        <a href="/fresco-model">Fresco 1.2.5</a>
+        <a href="/glyph">Glyph 1.1</a>
+      </div>
+      <div class="foot-col">
+        <h4>Build</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/keys">API keys</a>
+        <a href="/usage">Usage</a>
+        <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">Sennoric CLI on npm</a>
+      </div>
+      <div class="foot-col">
+        <h4>Safety</h4>
+        <a href="/no-invisible-ink">No invisible ink</a>
+        <a href="/fresco-125-safety">Fresco 1.2.5 report</a>
+        <a href="/fresco-safety">Fresco 1.2.1 report</a>
+        <a href="/fresco-suspension">Model suspension</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="/announcements">Announcements</a>
+        <a href="/status">Status</a>
+        <a href="/help">Help center</a>
+        <a href="/tos">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script>

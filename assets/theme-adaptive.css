@@ -1,127 +1,71 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   Adaptive theme — follows the visitor's system light/dark setting.
+   Site-wide light theme — cream palette, matching paper.css's "docs" look.
 
-   Drop-in replacement for theme-dark.css / theme-light.css: it defines the
-   union of every token name those two files use, with DARK values by default
-   and a CREAM light palette applied under @media (prefers-color-scheme: light).
-
-   A page is "converted" to system theming by linking this file instead of the
-   old theme-*.css, then replacing any hardcoded colors in its inline styles
-   with these tokens.
+   Formerly adaptive (dark by default, light under prefers-color-scheme):
+   the site now always renders light, so these tokens are the only palette.
+   Kept as CSS custom properties (rather than merging into paper.css) so
+   pages that already reference --bg/--surface/etc. don't need every
+   declaration rewritten to --paper/--ink.
    ───────────────────────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap');
 
 :root {
   --font-body:   "Newsreader", Georgia, "Times New Roman", serif;
-  /* surfaces / structure */
-  --bg:          #0d0e13;
-  --bg-card:     #12131a;
-  --surface:     #12131a;
-  --surface2:    #1a1b24;
-  --surface3:    #23242f;
-  --border:      #23242f;
-  --border2:     #2e2f3e;
-  --dark:        #0a0b0f;   /* dark chrome bar (nav/footer on some pages) */
+  /* surfaces / structure — warm cream */
+  --bg:          #faf9f5;
+  --bg-card:     #f4f1e8;
+  --surface:     #f4f1e8;
+  --surface2:    #efece1;
+  --surface3:    #e7e1d2;
+  --border:      #e5e0d2;
+  --border2:     #d8d2c4;
+  --dark:        #f3f0e7;
 
-  /* text */
-  --text:        #e8e9f0;
-  --text-muted:  #9899a8;
-  --muted:       #6b6d80;
-  --muted2:      #9899a8;
+  /* text — dark ink */
+  --text:        #1c1710;
+  --text-muted:  #6f695c;
+  --muted:       #948b7b;
+  --muted2:      #6f695c;
 
-  /* accent (parchment / gold) */
-  --accent:      #b8a27d;
-  --accent-d:    #d9ca9c;
-  --accent-dim:  #d9ca9c;
-  --accent-ink:  #1a1408;
+  /* accent — deeper gold for contrast on cream */
+  --accent:      #8a6a2f;
+  --accent-d:    #a07f45;
+  --accent-dim:  #a07f45;
+  --accent-ink:  #fbf9f4;
   --brand-logo:  #e8b534;
-  --accent-light:rgba(184,162,125,.12);
-  --accent-lt:   rgba(184,162,125,.12);
-  --fresco:       #b8a27d;
-  --glyph:        #b3a08a;
+  --accent-light:rgba(138,106,47,.12);
+  --accent-lt:   rgba(138,106,47,.12);
+  --fresco:       #8a6a2f;
+  --glyph:        #8a7355;
 
-  /* status */
-  --green:       #34d399;
-  --green-light: rgba(52,211,153,.12);
-  --green-lt:    rgba(52,211,153,.12);
-  --red:         #f87171;
-  --red-light:   rgba(248,113,113,.10);
-  --yellow:      #fbbf24;
-  --blue:        #60a5fa;
-  --purple:      #a78bfa;
-  --green-bright: #4ade80;   /* vivid "pass/good" status, distinct from --green */
+  /* status — matches paper.css's canonical green */
+  --green:       #1a5c35;
+  --green-light: rgba(26,92,53,.12);
+  --green-lt:    rgba(26,92,53,.12);
+  --red:         #c23232;
+  --red-light:   rgba(200,50,50,.10);
+  --yellow:      #b8860b;
+  --blue:        #2563eb;
+  --purple:      #7c3aed;
+  --green-bright: #16a34a;   /* vivid "pass/good" status, distinct from --green */
 
   /* a third muted tone used for meta/date text on several pages, between
      --muted (dimmest) and --muted2/--text-muted (lightest) */
-  --muted3:      #7c7e92;
+  --muted3:      #817a6b;
 
   /* accent as an r,g,b triplet, for rgba(var(--accent-rgb), alpha) glow /
      dust effects that need a variable opacity */
-  --accent-rgb:  184, 162, 125;
+  --accent-rgb:  138, 106, 47;
 
   /* chat bubbles */
-  --user-bg:     #1e1f2e;
-  --asst-bg:     #12131a;
+  --user-bg:     #efe9db;
+  --asst-bg:     #f4f1e8;
 
   /* chrome helpers (for pages that adopt them) */
-  --chrome-bg:     #0a0b0f;
-  --chrome-text:   #9899a8;
-  --chrome-strong: #e8e9f0;
-  --chrome-border: rgba(255,255,255,0.06);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    /* surfaces / structure — warm cream */
-    --bg:          #faf9f5;
-    --bg-card:     #f4f1e8;
-    --surface:     #f4f1e8;
-    --surface2:    #efece1;
-    --surface3:    #e7e1d2;
-    --border:      #e5e0d2;
-    --border2:     #d8d2c4;
-    --dark:        #f3f0e7;
-
-    /* text — dark ink */
-    --text:        #1c1710;
-    --text-muted:  #6f695c;
-    --muted:       #948b7b;
-    --muted2:      #6f695c;
-
-    /* accent — deeper gold for contrast on cream */
-    --accent:      #8a6a2f;
-    --accent-d:    #a07f45;
-    --accent-dim:  #a07f45;
-    --accent-ink:  #fbf9f4;
-    --accent-light:rgba(138,106,47,.12);
-    --accent-lt:   rgba(138,106,47,.12);
-    --fresco:       #8a6a2f;
-    --glyph:        #8a7355;
-
-    /* status — darkened for legibility on cream */
-    --green:       #0f8c5f;
-    --green-light: rgba(16,140,95,.12);
-    --green-lt:    rgba(16,140,95,.12);
-    --red:         #c23232;
-    --red-light:   rgba(200,50,50,.10);
-    --yellow:      #b8860b;
-    --blue:        #2563eb;
-    --purple:      #7c3aed;
-    --green-bright: #16a34a;
-
-    --muted3:      #817a6b;
-    --accent-rgb:  138, 106, 47;
-
-    /* chat bubbles */
-    --user-bg:     #efe9db;
-    --asst-bg:     #f4f1e8;
-
-    /* chrome helpers */
-    --chrome-bg:     #f3f0e7;
-    --chrome-text:   #6f695c;
-    --chrome-strong: #1c1710;
-    --chrome-border: rgba(0,0,0,0.08);
-  }
+  --chrome-bg:     #f3f0e7;
+  --chrome-text:   #6f695c;
+  --chrome-strong: #1c1710;
+  --chrome-border: rgba(0,0,0,0.08);
 }
 
 body { font-family: var(--font-body) !important; }
