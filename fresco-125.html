@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fresco — Sennoric</title>
+  <title>Fresco 1.2.5 — Sennoric</title>
   <meta name="description" content="Meet Fresco 1.2.5, Sennoric's flagship model for general chat, writing, questions, and code explanations.">
-  <link rel="canonical" href="https://sennoric.com/fresco-model">
-  <meta property="og:title" content="Meet Fresco — Sennoric">
-  <meta property="og:description" content="Explore Fresco 1.2.5, its architecture, release history, usage options, and published safety results.">
+  <link rel="canonical" href="https://sennoric.com/fresco-125">
+  <meta property="og:title" content="Meet Fresco 1.2.5 — Sennoric">
+  <meta property="og:description" content="Explore Fresco 1.2.5, its release history, usage options, and published safety results.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sennoric.com/fresco-model">
+  <meta property="og:url" content="https://sennoric.com/fresco-125">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
@@ -228,9 +228,9 @@
 <!-- Hero -->
 <div class="hero">
   <div class="hero-badge">Current Release · Fresco 1.2.5</div>
-  <h1>Meet <span>Fresco</span></h1>
+  <h1>Meet <span>Fresco 1.2.5</span></h1>
   <p class="hero-sub">
-    A fine-tuned Llama 3.1 model built and safety-tested by Sennoric.
+    A fine-tuned Llama model built and safety-tested by Sennoric.
     Available with a Sennoric account. No API key is needed in the browser.
   </p>
   <div class="hero-actions">
@@ -245,19 +245,9 @@
       <div class="stat-sub">adversarial testing, 15 scenarios</div>
     </div>
     <div class="stat">
-      <div class="stat-num accent">8B</div>
-      <div class="stat-label">Parameters</div>
-      <div class="stat-sub">Llama 3.1 base</div>
-    </div>
-    <div class="stat">
       <div class="stat-num good">Open</div>
       <div class="stat-label">Account required</div>
       <div class="stat-sub">hosted by Sennoric</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num accent">Q4_K_M</div>
-      <div class="stat-label">Quantization</div>
-      <div class="stat-sub">4-bit, optimized for speed</div>
     </div>
   </div>
 </div>
@@ -268,38 +258,22 @@
   <section>
     <p class="section-tag">Technical details</p>
     <h2>What's under the hood</h2>
-    <p class="lead">Fresco 1.2.5 is a fine-tuned Llama 3.1 Instruct model, trained in two stages: supervised fine-tuning, then DPO safety alignment.</p>
+    <p class="lead">Fresco 1.2.5 is a fine-tuned Llama model, trained in two stages: supervised fine-tuning, then DPO safety alignment.</p>
 
     <div class="spec-grid">
       <div class="spec-card">
         <div class="spec-label">Base model</div>
-        <div class="spec-value">Llama 3.1 Instruct</div>
-        <div class="spec-sub">Meta · unsloth/Meta-Llama-3.1-8B-Instruct</div>
+        <div class="spec-value">Llama</div>
       </div>
       <div class="spec-card">
         <div class="spec-label">Training method</div>
-        <div class="spec-value">SFT LoRA + DPO</div>
+        <div class="spec-value">SFT + DPO</div>
         <div class="spec-sub">Two rounds — SFT then safety preference training</div>
-      </div>
-      <div class="spec-card">
-        <div class="spec-label">Format</div>
-        <div class="spec-value">GGUF Q4_K_M</div>
-        <div class="spec-sub">4-bit quantized via llama.cpp</div>
       </div>
       <div class="spec-card">
         <div class="spec-label">Context length</div>
         <div class="spec-value">8,192 tokens</div>
         <div class="spec-sub">~6,000 words</div>
-      </div>
-      <div class="spec-card">
-        <div class="spec-label">Inference</div>
-        <div class="spec-value">llama_cpp · dedicated GPU</div>
-        <div class="spec-sub">OpenAI-compatible API endpoint</div>
-      </div>
-      <div class="spec-card">
-        <div class="spec-label">DPO dataset</div>
-        <div class="spec-value">78 preference pairs</div>
-        <div class="spec-sub">Targeting 8 safety failure scenarios</div>
       </div>
     </div>
   </section>
@@ -353,7 +327,7 @@
           <span class="tl-date">June 20, 2026</span>
         </div>
         <p class="tl-desc">
-          DPO safety fine-tune on 78 preference pairs targeting the 8 failing scenarios from 1.2.1.
+          DPO safety fine-tune targeting the 8 failing scenarios from 1.2.1.
           Safety score improved from 26% to 73% (11/15 adversarial scenarios passed).
           Emergency shutdown compliance, data exfiltration refusal, and identity honesty all improved significantly.
         </p>
