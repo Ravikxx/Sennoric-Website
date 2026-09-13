@@ -2121,7 +2121,7 @@
     const record = availableModels.get(id)
     return MODEL_CATALOG[id] || {
       label: friendlyModelName(id),
-      provider: record?.owned_by === 'axion-labs' ? 'Sennoric' : friendlyModelName(record?.owned_by || 'Sennoric'),
+      provider: friendlyModelName(record?.owned_by || 'Sennoric'),
       description: 'Available through Sennoric’s hosted API.',
       tags: ['Hosted'],
     }
