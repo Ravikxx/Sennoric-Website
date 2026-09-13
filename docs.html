@@ -149,7 +149,7 @@
     .cmd-table .desc { color: var(--muted2); font-size: 12px; }
 
     /* Model cards */
-    .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+    .model-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
     .model-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
     .model-card-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
     .model-card-alias code { font-size: 11px; }
@@ -287,13 +287,19 @@
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Fresco 1.2.5</div>
           <div class="model-card-alias"><code>model: "fresco"</code></div>
-          <div class="model-card-desc">Fine-tuned with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/fresco" style="color:var(--accent)">sennoric.com/fresco</a>.</div>
+          <div class="model-card-desc">Sennoric's default model. General assistant: questions, writing, code, explanations. See the <a href="/fresco-125" style="color:var(--accent)">Fresco 1.2.5 page</a> for details.</div>
+        </div>
+        <div class="model-card">
+          <div class="model-card-badge badge-paid">In safety testing</div>
+          <div class="model-card-name">Fresco 1.3</div>
+          <div class="model-card-alias">not yet on the API</div>
+          <div class="model-card-desc">Training is complete; adversarial safety testing is still underway. See the <a href="/fresco-13" style="color:var(--accent)">Fresco 1.3 page</a> for early results.</div>
         </div>
         <div class="model-card">
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Glyph 1.1</div>
           <div class="model-card-alias"><code>model: "glyph"</code></div>
-          <div class="model-card-desc">Our first model, tuned for quick general chat. Runs on dedicated inference capacity of its own; see the <a href="/glyph" style="color:var(--accent)">Glyph page</a> for details.</div>
+          <div class="model-card-desc">Our first model, tuned for quick general chat. Runs on dedicated inference capacity of its own. See the <a href="/glyph" style="color:var(--accent)">Glyph page</a> for details.</div>
         </div>
       </div>
       <div class="callout info">
@@ -655,7 +661,7 @@
       <div class="foot-col">
         <h4>Solan models</h4>
         <a href="/fresco-13">Fresco 1.3</a>
-        <a href="/fresco-model">Fresco 1.2.5</a>
+        <a href="/fresco-125">Fresco 1.2.5</a>
         <a href="/glyph">Glyph 1.1</a>
       </div>
       <div class="foot-col">
