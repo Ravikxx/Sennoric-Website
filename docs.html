@@ -341,7 +341,7 @@
       <table class="cmd-table">
         <thead><tr><th>Tier</th><th>Limit</th><th>How to use</th></tr></thead>
         <tbody>
-          <tr><td>Free account</td><td class="desc">weekly + rolling 5h allowance · up to 3 keys</td><td class="desc"><code>/login</code> or <code>/axion-key axion-sk-…</code></td></tr>
+          <tr><td>Free account</td><td class="desc">weekly + rolling 5h allowance · up to 3 keys</td><td class="desc"><code>/login</code> or <code>/axion-key sennoric-sk-…</code></td></tr>
           <tr><td>Pro account ($7/month)</td><td class="desc">20x Free's weekly + rolling 5h allowance · unlimited keys</td><td class="desc">Upgrade in <a href="/settings" style="color:var(--accent)">Settings</a></td></tr>
         </tbody>
       </table>
@@ -352,7 +352,7 @@
         https://api.sennoric.com/v1<br><br>
         <span class="comment"># Example request</span><br>
         curl https://api.sennoric.com/v1/chat/completions \<br>
-        &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
+        &nbsp;&nbsp;-H "Authorization: Bearer sennoric-sk-…" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
         &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hi"}]}'
       </div>
@@ -360,7 +360,7 @@
       <h3>Python (openai library)</h3>
       <div class="code-block">
         from openai import OpenAI<br>
-        client = OpenAI(api_key="axion-sk-…", base_url="https://api.sennoric.com/v1")<br>
+        client = OpenAI(api_key="sennoric-sk-…", base_url="https://api.sennoric.com/v1")<br>
         resp = client.chat.completions.create(model="fresco", messages=[{"role":"user","content":"Hi"}])
       </div>
     </div>
@@ -429,7 +429,7 @@
         <span class="comment"># Set a third-party API key</span><br>
         <span class="prompt">› </span>/api claude sk-ant-…<br><br>
         <span class="comment"># Or set your Sennoric key directly</span><br>
-        <span class="prompt">› </span>/axion-key axion-sk-…<br><br>
+        <span class="prompt">› </span>/axion-key sennoric-sk-…<br><br>
         <span class="comment"># Skip to the free model</span><br>
         <span class="prompt">$ </span>axion --model fresco
       </div>
