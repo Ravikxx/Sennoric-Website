@@ -25,52 +25,27 @@
        Chrome (nav / subscribe bar / footer) intentionally stays dark in both
        modes for this pilot. */
     :root {
-      --page-bg:      #0d0e13;
-      --ink:          #e8e9f0;
-      --ink-soft:     #9899a8;
-      --ink-faint:    #6f7183;
-      --subtitle:     #8b8d9e;
-      --hair:         #22201b;
-      --strong:       #cfd0da;
-      --code-bg:      #16150f;
-      --code-border:  #26241d;
-      --acc:          #b8a27d;
-      --acc-d:        #d9ca9c;
-      --acc-ink:      #1a1408;
-      --chip-border:  #26241f;
-      --cat-release-bg: rgba(184,162,125,.14); --cat-release-fg: #b8a27d;
-      --cat-update-bg:  rgba(52,211,153,.12);  --cat-update-fg:  #34d399;
-      --cat-safety-bg:  rgba(248,113,113,.12); --cat-safety-fg:  #f87171;
-      --cat-notice-bg:  #1a1b18;               --cat-notice-fg:  #8b8d80;
-      --chrome-bg:    #0a0b0f;  --chrome-text: #9899a8;  --chrome-mut: #7c7e92;
-      --chrome-strong:#e8e9f0;  --chrome-border: rgba(255,255,255,0.06);
-      --input-bg:     #14130f;  --input-border: #2a2622;  --input-text: #e8e9f0;
-      --green:        #34d399;  --red:          #f87171;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --page-bg:      #faf9f5;
-        --ink:          #1c1710;
-        --ink-soft:     #6f695c;
-        --ink-faint:    #948b7b;
-        --subtitle:     #6f695c;
-        --hair:         #e7e1d2;
-        --strong:       #2a2418;
-        --code-bg:      #efece1;
-        --code-border:  #ddd6c5;
-        --acc:          #8a6a2f;
-        --acc-d:        #a07f45;
-        --acc-ink:      #fbf9f4;
-        --chip-border:  #ddd6c5;
-        --cat-release-bg: rgba(138,106,47,.13); --cat-release-fg: #8a6a2f;
-        --cat-update-bg:  rgba(16,140,95,.12);  --cat-update-fg:  #0f8c5f;
-        --cat-safety-bg:  rgba(200,50,50,.10);  --cat-safety-fg:  #c23232;
-        --cat-notice-bg:  #ece8dd;              --cat-notice-fg:  #857c6a;
-        --chrome-bg:    #f3f0e7;  --chrome-text: #6f695c;  --chrome-mut: #857c6a;
-        --chrome-strong:#1c1710;  --chrome-border: rgba(0,0,0,0.08);
-        --input-bg:     #ffffff;  --input-border: #ded8c8;  --input-text: #1c1710;
-        --green:        #0f8c5f;  --red:          #c23232;
-      }
+      --page-bg:      #faf9f5;
+      --ink:          #1c1710;
+      --ink-soft:     #6f695c;
+      --ink-faint:    #948b7b;
+      --subtitle:     #6f695c;
+      --hair:         #e7e1d2;
+      --strong:       #2a2418;
+      --code-bg:      #efece1;
+      --code-border:  #ddd6c5;
+      --acc:          #8a6a2f;
+      --acc-d:        #a07f45;
+      --acc-ink:      #fbf9f4;
+      --chip-border:  #ddd6c5;
+      --cat-release-bg: rgba(138,106,47,.13); --cat-release-fg: #8a6a2f;
+      --cat-update-bg:  rgba(26,92,53,.12);   --cat-update-fg:  #1a5c35;
+      --cat-safety-bg:  rgba(200,50,50,.10);  --cat-safety-fg:  #c23232;
+      --cat-notice-bg:  #ece8dd;              --cat-notice-fg:  #857c6a;
+      --chrome-bg:    #f3f0e7;  --chrome-text: #6f695c;  --chrome-mut: #857c6a;
+      --chrome-strong:#1c1710;  --chrome-border: rgba(0,0,0,0.08);
+      --input-bg:     #ffffff;  --input-border: #ded8c8;  --input-text: #1c1710;
+      --green:        #1a5c35;  --red:          #c23232;
     }
 
     body {
@@ -249,12 +224,13 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
+  <a href="/announcements" class="active">News</a>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">API Keys</a>
+    <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
@@ -1002,7 +978,42 @@
 </main>
 
 <footer>
-  <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
+        <p class="foot-note">Sennoric trains and hosts models on its own infrastructure.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Solan models</h4>
+        <a href="/fresco-13">Fresco 1.3</a>
+        <a href="/fresco-model">Fresco 1.2.5</a>
+        <a href="/glyph">Glyph 1.1</a>
+      </div>
+      <div class="foot-col">
+        <h4>Build</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/keys">API keys</a>
+        <a href="/usage">Usage</a>
+        <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">Sennoric CLI on npm</a>
+      </div>
+      <div class="foot-col">
+        <h4>Safety</h4>
+        <a href="/no-invisible-ink">No invisible ink</a>
+        <a href="/fresco-125-safety">Fresco 1.2.5 report</a>
+        <a href="/fresco-safety">Fresco 1.2.1 report</a>
+        <a href="/fresco-suspension">Model suspension</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="/announcements">Announcements</a>
+        <a href="/status">Status</a>
+        <a href="/help">Help center</a>
+        <a href="/tos">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script>

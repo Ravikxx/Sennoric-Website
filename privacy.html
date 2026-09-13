@@ -181,12 +181,13 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
+  <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">API Keys</a>
+    <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
@@ -200,10 +201,6 @@
 <main>
 
   <p class="last-updated">Last updated: July 26, 2026</p>
-
-  <div class="callout">
-    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Sennoric's hosted backend and model inference run on infrastructure operated for Sennoric by third-party providers. The default vision model and the safety-classification step are handled by external providers, described below. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
-  </div>
 
   <div class="policy-section">
     <h2>Overview</h2>
@@ -306,7 +303,49 @@
       <li>Disconnect any OAuth service with <code>/oauth revoke &lt;service&gt;</code>, or delete <code>~/.sennoric/oauth.json</code></li>
       <li>Use your own provider keys, or a local model via Ollama, to keep inference off Sennoric's backend entirely</li>
       <li>Opt out of contribution prompts with <code>/contribute optout</code>, and delete any local files in <code>~/.sennoric/donations/</code> yourself</li>
-      <li>Sennoric is open source, so you can audit exactly what it does at <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></p>
+      <li>Sennoric is open source, so you can audit exactly what it does at <a href="https://github.com/Ravikxx">github.com/Ravikxx</a></li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
+        <p class="foot-note">Sennoric trains and hosts models on its own infrastructure.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Solan models</h4>
+        <a href="/fresco-13">Fresco 1.3</a>
+        <a href="/fresco-model">Fresco 1.2.5</a>
+        <a href="/glyph">Glyph 1.1</a>
+      </div>
+      <div class="foot-col">
+        <h4>Build</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/keys">API keys</a>
+        <a href="/usage">Usage</a>
+        <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">Sennoric CLI on npm</a>
+      </div>
+      <div class="foot-col">
+        <h4>Safety</h4>
+        <a href="/no-invisible-ink">No invisible ink</a>
+        <a href="/fresco-125-safety">Fresco 1.2.5 report</a>
+        <a href="/fresco-safety">Fresco 1.2.1 report</a>
+        <a href="/fresco-suspension">Model suspension</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="/announcements">Announcements</a>
+        <a href="/status">Status</a>
+        <a href="/help">Help center</a>
+        <a href="/tos">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script src="/assets/profile.js"></script>
