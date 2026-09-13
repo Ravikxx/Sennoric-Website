@@ -292,6 +292,12 @@
     .modal-cancel:hover { background: var(--border2); color: var(--text); }
     .modal-create { background: var(--accent); color: var(--accent-ink); }
     .modal-create:hover { background: var(--accent-d); }
+    .modal-create:disabled { opacity: .5; cursor: default; }
+
+    .status-msg { font-size: 12.5px; margin-top: 8px; min-height: 1em; }
+    .status-msg.error { color: var(--red); }
+    .status-msg.success { color: var(--accent); }
+    .topup-preset-btn.selected { background: var(--accent) !important; color: var(--accent-ink) !important; border-color: var(--accent) !important; }
 
     .key-reveal {
       background: var(--bg); border: 1px solid var(--border2);
@@ -585,7 +591,11 @@
 <div class="main" id="main-panel" style="display:none">
   <div class="topbar" id="topbar">
     <span class="topbar-title" id="topbar-title">API Keys</span>
-    <div class="topbar-right" style="display:flex;gap:8px;align-items:center">
+    <div class="topbar-right" style="display:flex;gap:12px;align-items:center">
+      <div id="topbar-balance" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--muted2)">
+        <span>Balance: <strong id="topbar-balance-amount" style="color:var(--text)">$0.00</strong></span>
+        <button class="btn-new" onclick="openTopupModal()" style="background:var(--surface2);color:var(--muted2);border:1px solid var(--border2);padding:6px 12px;font-size:12.5px">Add to balance</button>
+      </div>
       <button class="btn-new" id="btn-invite-member" onclick="openInviteModal()" style="display:none;background:var(--surface2);color:var(--muted2);border:1px solid var(--border2)">Invite member</button>
       <button class="btn-new" onclick="openNewKeyModal()">+ New Key</button>
     </div>
@@ -616,8 +626,51 @@
     </div>
 
     <div class="usage-section" id="usage-section" style="display:none">
-      <h3>Account usage</h3>
+      <h3>API balance</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin:-8px 0 14px">API requests are billed against your balance as you go — there's no separate weekly or 5-hour allowance for API keys. (The Free/Pro allowance still applies to the chat interface.)</p>
       <div id="usage-bars"></div>
+      <div id="auto-topup-section" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="usage-bar-item" style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+          <div>
+            <div class="usage-bar-label" style="margin-bottom:2px"><span>Auto-topup</span></div>
+            <div style="font-size:12px;color:var(--muted)">Automatically add funds when your balance runs low.</div>
+          </div>
+          <input type="checkbox" id="auto-topup-toggle" onchange="onAutoTopupToggle()" style="width:20px;height:20px;flex-shrink:0">
+        </div>
+        <div id="auto-topup-settings" style="display:none;margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <label style="font-size:12.5px;color:var(--muted2)">When balance drops below
+            <input type="number" id="auto-topup-threshold" min="0" max="500" step="1" value="5" style="width:70px;margin:0 4px;padding:4px 6px;background:var(--bg);border:1px solid var(--border2);border-radius:5px;color:var(--text)">
+          </label>
+          <label style="font-size:12.5px;color:var(--muted2)">add
+            <input type="number" id="auto-topup-amount" min="5" max="500" step="1" value="20" style="width:70px;margin:0 4px;padding:4px 6px;background:var(--bg);border:1px solid var(--border2);border-radius:5px;color:var(--text)">
+          </label>
+          <button class="btn-new" onclick="saveAutoTopup()" style="background:var(--surface2);color:var(--muted2);border:1px solid var(--border2);padding:5px 12px;font-size:12.5px">Save</button>
+          <span class="status-msg" id="auto-topup-msg" style="font-size:12px"></span>
+        </div>
+        <div id="auto-topup-needs-payment" style="display:none;font-size:12px;color:var(--muted);margin-top:8px">Add to your balance once first — auto-topup needs a saved payment method.</div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="topup-modal">
+      <div class="modal">
+        <h3>Add to balance</h3>
+        <p>Choose an amount to add to your API balance.</p>
+        <div id="topup-amount-presets" style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0">
+          <button type="button" class="btn-new topup-preset-btn" data-amount="5" onclick="selectTopupAmount(5)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:8px 16px">$5</button>
+          <button type="button" class="btn-new topup-preset-btn" data-amount="10" onclick="selectTopupAmount(10)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:8px 16px">$10</button>
+          <button type="button" class="btn-new topup-preset-btn" data-amount="25" onclick="selectTopupAmount(25)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:8px 16px">$25</button>
+          <button type="button" class="btn-new topup-preset-btn" data-amount="50" onclick="selectTopupAmount(50)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:8px 16px">$50</button>
+        </div>
+        <div class="field">
+          <label>Or enter a custom amount ($5-$500)</label>
+          <input type="number" id="topup-custom-amount" min="5" max="500" step="1" placeholder="e.g. 15" oninput="onTopupCustomAmountInput()" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--bg);font-size:14px;color:var(--text);outline:none;font-family:inherit">
+        </div>
+        <div class="status-msg" id="topup-msg"></div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeTopupModal()">Cancel</button>
+          <button class="modal-create" id="btn-topup-continue" onclick="startTopupCheckout()">Continue to payment</button>
+        </div>
+      </div>
     </div>
 
     <div class="chart-section" id="chart-section" style="display:none">
@@ -772,7 +825,6 @@
   let sessionToken = localStorage.getItem('sennoric_token') || null;
   let keys = [];
   let accountState = null;
-  let usageCountdownTimer = null;
   let revokeTarget = null;
 
   // Auth
@@ -1022,6 +1074,7 @@
       }));
       renderKeys();
       renderUsage();
+      loadAutoTopupStatus();
     } catch (e) {
       if (e.message === 'Session expired') { logout(); return; }
       keys = []; accountState = null; renderKeys(); renderUsage();
@@ -1077,49 +1130,135 @@
     footer.style.display = '';
   }
 
+  function formatUsd(value) {
+    return '$' + Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
   function renderUsage() {
     const usageSection = document.getElementById('usage-section');
-    if (!accountState || currentOrg) { usageSection.style.display = 'none'; return; }
+    const topbarBalance = document.getElementById('topbar-balance');
+    if (!accountState || currentOrg) {
+      usageSection.style.display = 'none';
+      topbarBalance.style.display = 'none';
+      return;
+    }
     usageSection.style.display = '';
-    const weeklyPct = Math.min(Number(accountState.usage?.weekly_included_percent_used) || 0, 100);
-    const windowPct = Math.min(Number(accountState.usage?.window_included_percent_used) || 0, 100);
-    const windowHours = accountState.usage?.window_hours || 5;
     const creditBalance = Number(accountState.credits?.balance_usd) || 0;
-    const formatUsd = value => '$' + Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
-    // Periods are lazy-start server-side — no countdown exists until the
-    // account's own first chargeable request creates one.
-    const formatResetAt = (started, value) => {
-      if (!started) return 'Starts on your next message';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return 'Reset time unavailable';
-      const totalMinutes = Math.ceil((date.getTime() - Date.now()) / 60000);
-      if (totalMinutes <= 0) return 'Resetting now';
-      const days = Math.floor(totalMinutes / 1440);
-      const hours = Math.floor((totalMinutes % 1440) / 60);
-      const minutes = totalMinutes % 60;
-      const unit = (amount, name) => `${amount} ${name}${amount === 1 ? '' : 's'}`;
-      if (days > 0) return `Resets in ${unit(days, 'day')}${hours ? ` ${unit(hours, 'hour')}` : ''}`;
-      if (hours > 0) return `Resets in ${unit(hours, 'hour')}${minutes ? ` ${unit(minutes, 'minute')}` : ''}`;
-      return `Resets in ${unit(minutes, 'minute')}`;
-    };
-    const usageBar = (label, pct, started, resetAt) => {
-      const color = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--yellow)' : 'var(--accent)';
-      const resetLabel = formatResetAt(started, resetAt);
-      return `
-        <div class="usage-bar-item">
-          <div class="usage-bar-label">
-            <span>${label}</span>
-            <span>${pct}% used</span>
-          </div>
-          <div class="usage-bar-track"><div class="usage-bar-fill" style="width:${pct}%;background:${color}"></div></div>
-          ${resetLabel ? `<div class="usage-bar-reset">${resetLabel}</div>` : ''}
-        </div>`;
-    };
     document.getElementById('usage-bars').innerHTML =
-      usageBar(`${accountState.plan === 'pro' ? 'Pro' : 'Free'} weekly allowance`, weeklyPct, accountState.usage?.weekly_started, accountState.usage?.weekly_reset_at) +
-      usageBar(`${windowHours}-hour allowance`, windowPct, accountState.usage?.window_started, accountState.usage?.window_reset_at) +
-      `<div class="usage-bar-item"><div class="usage-bar-label"><span>Redeemable credits</span><span>${formatUsd(creditBalance)}</span></div></div>`;
-    if (!usageCountdownTimer) usageCountdownTimer = setInterval(renderUsage, 30000);
+      `<div class="usage-bar-item"><div class="usage-bar-label"><span>Balance</span><span>${formatUsd(creditBalance)}</span></div></div>`;
+    topbarBalance.style.display = 'flex';
+    document.getElementById('topbar-balance-amount').textContent = formatUsd(creditBalance);
+  }
+
+  // Add-to-balance modal
+  let selectedTopupAmount = null;
+
+  function openTopupModal() {
+    selectedTopupAmount = null;
+    document.getElementById('topup-custom-amount').value = '';
+    document.getElementById('topup-msg').textContent = '';
+    document.getElementById('topup-msg').className = 'status-msg';
+    document.querySelectorAll('.topup-preset-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('btn-topup-continue').disabled = false;
+    document.getElementById('topup-modal').classList.add('open');
+  }
+
+  function closeTopupModal() { document.getElementById('topup-modal').classList.remove('open'); }
+
+  function selectTopupAmount(amount) {
+    selectedTopupAmount = amount;
+    document.getElementById('topup-custom-amount').value = '';
+    document.querySelectorAll('.topup-preset-btn').forEach(b => {
+      b.classList.toggle('selected', Number(b.dataset.amount) === amount);
+    });
+  }
+
+  function onTopupCustomAmountInput() {
+    selectedTopupAmount = null;
+    document.querySelectorAll('.topup-preset-btn').forEach(b => b.classList.remove('selected'));
+  }
+
+  async function startTopupCheckout() {
+    const customValue = document.getElementById('topup-custom-amount').value.trim();
+    const amount = selectedTopupAmount != null ? selectedTopupAmount : Number(customValue);
+    const msg = document.getElementById('topup-msg');
+    if (!amount || Number.isNaN(amount) || amount < 5 || amount > 500) {
+      msg.textContent = 'Enter an amount between $5 and $500.';
+      msg.className = 'status-msg error';
+      return;
+    }
+    const btn = document.getElementById('btn-topup-continue');
+    btn.disabled = true;
+    msg.textContent = '';
+    msg.className = 'status-msg';
+    try {
+      const res = await sennoricFetch(API + '/billing/credits/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
+        body: JSON.stringify({ amount_usd: amount }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.error?.message || 'Could not start checkout.');
+      window.location.href = data.url;
+    } catch (e) {
+      msg.textContent = e.message || 'Could not start checkout.';
+      msg.className = 'status-msg error';
+      btn.disabled = false;
+    }
+  }
+
+  // Auto-topup
+  let autoTopupStatus = null;
+
+  async function loadAutoTopupStatus() {
+    if (!accountState || currentOrg) return;
+    try {
+      const res = await sennoricFetch(API + '/billing/auto-topup', { headers: { Authorization: `Bearer ${sessionToken}` } });
+      if (!res.ok) return;
+      autoTopupStatus = await res.json();
+      document.getElementById('auto-topup-toggle').checked = !!autoTopupStatus.enabled;
+      if (autoTopupStatus.threshold_usd != null) document.getElementById('auto-topup-threshold').value = autoTopupStatus.threshold_usd;
+      if (autoTopupStatus.amount_usd != null) document.getElementById('auto-topup-amount').value = autoTopupStatus.amount_usd;
+      document.getElementById('auto-topup-settings').style.display = autoTopupStatus.enabled ? 'flex' : 'none';
+      document.getElementById('auto-topup-needs-payment').style.display =
+        (!autoTopupStatus.enabled && !autoTopupStatus.has_payment_method) ? '' : 'none';
+    } catch (e) { /* leave defaults in place */ }
+  }
+
+  function onAutoTopupToggle() {
+    const toggle = document.getElementById('auto-topup-toggle');
+    if (toggle.checked && autoTopupStatus && !autoTopupStatus.has_payment_method) {
+      toggle.checked = false;
+      document.getElementById('auto-topup-needs-payment').style.display = '';
+      return;
+    }
+    document.getElementById('auto-topup-needs-payment').style.display = 'none';
+    document.getElementById('auto-topup-settings').style.display = toggle.checked ? 'flex' : 'none';
+    if (!toggle.checked) saveAutoTopup();
+  }
+
+  async function saveAutoTopup() {
+    const enabled = document.getElementById('auto-topup-toggle').checked;
+    const threshold = Number(document.getElementById('auto-topup-threshold').value);
+    const amount = Number(document.getElementById('auto-topup-amount').value);
+    const msg = document.getElementById('auto-topup-msg');
+    msg.textContent = '';
+    msg.className = 'status-msg';
+    try {
+      const res = await sennoricFetch(API + '/billing/auto-topup', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
+        body: JSON.stringify({ enabled, threshold_usd: threshold, amount_usd: amount }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error?.message || 'Could not save auto-topup settings.');
+      autoTopupStatus = data;
+      msg.textContent = 'Saved.';
+      msg.className = 'status-msg success';
+    } catch (e) {
+      msg.textContent = e.message || 'Could not save auto-topup settings.';
+      msg.className = 'status-msg error';
+    }
   }
 
   // New key modal
@@ -1197,6 +1336,7 @@
     if (e.key === 'Enter' && document.getElementById('new-key-modal').classList.contains('open') && document.getElementById('modal-step-1').style.display !== 'none') createKey();
   });
   document.getElementById('new-key-modal').addEventListener('click', function(e) { if (e.target === this) closeNewKeyModal(); });
+  document.getElementById('topup-modal').addEventListener('click', function(e) { if (e.target === this) closeTopupModal(); });
   document.getElementById('confirm-backdrop').addEventListener('click', function(e) { if (e.target === this) closeConfirm(); });
 
   // Daily chart
