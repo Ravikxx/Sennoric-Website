@@ -83,7 +83,7 @@
     /* Main */
     .main {
       flex: 1; min-width: 0; height: 100vh;
-      display: none; flex-direction: column; overflow-y: auto;
+      display: none; flex-direction: column; overflow: hidden;
     }
     .topbar {
       height: 52px; border-bottom: 1px solid var(--border);
@@ -91,43 +91,36 @@
       flex-shrink: 0; background: var(--surface);
     }
     .topbar-title { font-size: 15px; font-weight: 600; }
-    .settings-tabs-shell {
-      flex-shrink: 0; padding: 0 28px;
-      background: var(--surface); border-bottom: 1px solid var(--border);
+
+    /* Settings body: an inner sidebar of sections (mirrors the desktop
+       app's settings layout) beside a single, wider content pane — replaces
+       the old horizontal-tabs + 2-column-card-grid layout, which read as
+       cramped next to the desktop app's spacious single-column rows. */
+    .settings-body { flex: 1; min-height: 0; display: flex; }
+    .settings-nav {
+      width: 220px; flex-shrink: 0; padding: 24px 12px;
+      border-right: 1px solid var(--border); overflow-y: auto;
     }
-    .settings-tabs {
-      width: min(100%, 1100px); display: flex; gap: 4px;
-      overflow-x: auto; scrollbar-width: none;
-    }
-    .settings-tabs::-webkit-scrollbar { display: none; }
+    .settings-tabs { display: flex; flex-direction: column; gap: 2px; }
     .settings-tab {
-      position: relative; flex: 0 0 auto;
-      padding: 13px 14px 12px; border: 0;
-      background: transparent; color: var(--muted);
-      font: inherit; font-size: 13px; font-weight: 500;
-      cursor: pointer; transition: color .15s;
+      display: block; width: 100%; text-align: left;
+      padding: 9px 12px; border: 0; border-radius: 7px;
+      background: transparent; color: var(--muted2);
+      font: inherit; font-size: 13.5px; font-weight: 500;
+      cursor: pointer; transition: background .12s, color .12s;
     }
-    .settings-tab::after {
-      content: ''; position: absolute; right: 14px; bottom: -1px; left: 14px;
-      height: 2px; border-radius: 2px 2px 0 0;
-      background: var(--accent); transform: scaleX(0);
-      transition: transform .15s;
-    }
-    .settings-tab:hover { color: var(--text); }
-    .settings-tab:focus-visible {
-      outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 6px;
-    }
-    .settings-tab[aria-selected="true"] { color: var(--text); }
-    .settings-tab[aria-selected="true"]::after { transform: scaleX(1); }
+    .settings-tab:hover { background: var(--surface2); color: var(--text); }
+    .settings-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .settings-tab[aria-selected="true"] { background: var(--surface2); color: var(--text); }
     .content {
-      width: min(100%, 1156px); padding: 28px 28px 64px;
+      flex: 1; min-width: 0; overflow-y: auto; padding: 28px 32px 64px;
     }
     .settings-panel {
-      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px; align-items: stretch;
+      display: flex; flex-direction: column; gap: 20px;
+      max-width: 720px;
     }
     .settings-panel[hidden] { display: none; }
-    .span-full { grid-column: 1 / -1; }
+    .span-full { max-width: none; }
 
     /* Settings sections */
     .settings-section {
@@ -249,9 +242,7 @@
     #delete-confirm-row input:focus { border-color: var(--red); }
 
     @media (max-width: 1100px) {
-      .content { max-width: 900px; }
-      .settings-panel { display: block; }
-      .settings-panel[hidden] { display: none; }
+      .settings-panel { max-width: none; }
       .settings-section { margin-bottom: 20px; }
     }
 
@@ -259,7 +250,13 @@
       .sidebar { display: none !important; }
       body .main { padding: 0 !important; }
       .topbar { padding: 0 16px; }
-      .settings-tabs-shell { padding: 0 8px; }
+      .settings-body { flex-direction: column; }
+      .settings-nav {
+        width: 100%; border-right: 0; border-bottom: 1px solid var(--border);
+        padding: 8px 12px; overflow-x: auto; overflow-y: visible;
+      }
+      .settings-tabs { flex-direction: row; }
+      .settings-tab { white-space: nowrap; }
       body .content { padding: 16px 16px 48px !important; }
       .stat-cards { grid-template-columns: 1fr 1fr; }
       .profile-picture-row { align-items: flex-start; }
@@ -319,19 +316,24 @@
 
 <div class="main" id="main-panel">
   <div class="topbar"><span class="topbar-title">Settings</span></div>
-  <div class="settings-tabs-shell">
-    <div class="settings-tabs" role="tablist" aria-label="Settings sections">
-      <button class="settings-tab" id="settings-tab-account" type="button" role="tab" aria-controls="settings-panel-account" aria-selected="true" tabindex="0" data-settings-tab="account">Account</button>
-      <button class="settings-tab" id="settings-tab-general" type="button" role="tab" aria-controls="settings-panel-general" aria-selected="false" tabindex="-1" data-settings-tab="general">General</button>
-      <button class="settings-tab" id="settings-tab-billing" type="button" role="tab" aria-controls="settings-panel-billing" aria-selected="false" tabindex="-1" data-settings-tab="billing">Billing &amp; usage</button>
-    </div>
-  </div>
+  <div class="settings-body">
+    <nav class="settings-nav">
+      <div class="settings-tabs" role="tablist" aria-label="Settings sections" aria-orientation="vertical">
+        <button class="settings-tab" id="settings-tab-account" type="button" role="tab" aria-controls="settings-panel-account" aria-selected="true" tabindex="0" data-settings-tab="account">Profile</button>
+        <button class="settings-tab" id="settings-tab-connections" type="button" role="tab" aria-controls="settings-panel-connections" aria-selected="false" tabindex="-1" data-settings-tab="connections">Connections</button>
+        <button class="settings-tab" id="settings-tab-billing" type="button" role="tab" aria-controls="settings-panel-billing" aria-selected="false" tabindex="-1" data-settings-tab="billing">Usage &amp; billing</button>
+        <button class="settings-tab" id="settings-tab-permissions" type="button" role="tab" aria-controls="settings-panel-permissions" aria-selected="false" tabindex="-1" data-settings-tab="permissions">Permissions</button>
+        <button class="settings-tab" id="settings-tab-general" type="button" role="tab" aria-controls="settings-panel-general" aria-selected="false" tabindex="-1" data-settings-tab="general">General</button>
+        <button class="settings-tab" id="settings-tab-instructions" type="button" role="tab" aria-controls="settings-panel-instructions" aria-selected="false" tabindex="-1" data-settings-tab="instructions">Special instructions</button>
+        <button class="settings-tab" id="settings-tab-help" type="button" role="tab" aria-controls="settings-panel-help" aria-selected="false" tabindex="-1" data-settings-tab="help">Help</button>
+      </div>
+    </nav>
 
-  <div class="content">
+    <div class="content">
 
     <section class="settings-panel" id="settings-panel-account" role="tabpanel" aria-labelledby="settings-tab-account" data-settings-panel="account">
       <div class="settings-section">
-        <h2>Account</h2>
+        <h2>Profile</h2>
         <div class="profile-picture-row">
           <div class="profile-picture-preview" id="profile-picture-preview" aria-hidden="true">A</div>
           <div class="profile-picture-copy">
@@ -361,14 +363,6 @@
         <div class="status-msg" id="reset-msg"></div>
       </div>
 
-      <div class="settings-section">
-        <h2>Connected accounts</h2>
-        <p class="section-sub">Sign in faster next time with an account you already use.</p>
-        <div id="providers-list">
-          <div class="chart-empty">Loading…</div>
-        </div>
-      </div>
-
       <div class="danger-zone span-full">
         <h2>Delete account</h2>
         <p>Permanently deletes your account and API keys and removes your identifiers from retained safety logs. De-identified pending or confirmed safety records may remain for up to one year as described in the <a href="/privacy">Privacy Policy</a>. This can't be undone.</p>
@@ -382,6 +376,51 @@
           </div>
           <div class="status-msg" id="delete-msg"></div>
         </div>
+      </div>
+    </section>
+
+    <section class="settings-panel" id="settings-panel-connections" role="tabpanel" aria-labelledby="settings-tab-connections" data-settings-panel="connections" hidden>
+      <div class="settings-section span-full">
+        <h2>Connected accounts</h2>
+        <p class="section-sub">Sign in faster next time with an account you already use.</p>
+        <div id="providers-list">
+          <div class="chart-empty">Loading…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-panel" id="settings-panel-permissions" role="tabpanel" aria-labelledby="settings-tab-permissions" data-settings-panel="permissions" hidden>
+      <div class="settings-section span-full">
+        <h2>Code execution</h2>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Auto-run Python</div>
+            <div class="settings-row-desc">When Fresco wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
+          </div>
+          <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto" onchange="saveSandboxMode()">
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+          <span class="status-msg" id="sandbox-mode-msg"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-panel" id="settings-panel-instructions" role="tabpanel" aria-labelledby="settings-tab-instructions" data-settings-panel="instructions" hidden>
+      <div class="settings-section span-full">
+        <h2>Special instructions</h2>
+        <p class="section-sub">Extra guidance sent with every message in the web chat, like "Be concise" or "You are a helpful tutor." Synced to every device you're signed in on.</p>
+        <textarea id="chat-special-instructions" class="settings-textarea" rows="6" maxlength="8000" placeholder="Optional" oninput="queueSaveChatPrefs()"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+          <span class="status-msg" id="chat-prefs-msg"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-panel" id="settings-panel-help" role="tabpanel" aria-labelledby="settings-tab-help" data-settings-panel="help" hidden>
+      <div class="settings-section span-full">
+        <h2>Help</h2>
+        <p class="section-sub">Guides for getting set up and getting unstuck across the Desktop App, CLI, and Chrome Extension.</p>
+        <a class="btn-sm" href="/help">Open Help Center →</a>
       </div>
     </section>
 
@@ -414,20 +453,6 @@
         </div>
       </div>
 
-      <div class="settings-section">
-        <h2>Code execution</h2>
-        <div class="settings-row">
-          <div>
-            <div class="settings-row-label">Auto-run Python</div>
-            <div class="settings-row-desc">When Fresco wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
-          </div>
-          <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto" onchange="saveSandboxMode()">
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <span class="status-msg" id="sandbox-mode-msg"></span>
-        </div>
-      </div>
-
       <div class="settings-section span-full">
         <h2>Chat</h2>
         <p class="section-sub">Applied to new messages in the web chat, and synced to every device you're signed in on.</p>
@@ -454,16 +479,6 @@
             <option value="simplified-chinese">Simplified Chinese</option>
             <option value="traditional-chinese">Traditional Chinese</option>
           </select>
-        </div>
-        <div class="settings-row" style="align-items:flex-start">
-          <div style="flex:1;min-width:0">
-            <div class="settings-row-label">Special instructions</div>
-            <div class="settings-row-desc">Extra guidance sent with every message, like "Be concise" or "You are a helpful tutor."</div>
-            <textarea id="chat-special-instructions" class="settings-textarea" rows="3" maxlength="8000" placeholder="Optional" oninput="queueSaveChatPrefs()"></textarea>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <span class="status-msg" id="chat-prefs-msg"></span>
         </div>
       </div>
     </section>
@@ -505,6 +520,7 @@
         <a class="btn-sm" href="/keys">Manage API keys →</a>
       </div>
     </section>
+    </div>
   </div>
 </div>
 
@@ -537,7 +553,7 @@
   function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   // Settings tabs
-  const SETTINGS_TAB_NAMES = ['account', 'general', 'billing'];
+  const SETTINGS_TAB_NAMES = ['account', 'connections', 'billing', 'permissions', 'general', 'instructions', 'help'];
 
   function activateSettingsTab(name, updateHistory) {
     const next = SETTINGS_TAB_NAMES.includes(name) ? name : 'account';
@@ -561,8 +577,8 @@
       tab.addEventListener('click', () => activateSettingsTab(tab.dataset.settingsTab, true));
       tab.addEventListener('keydown', event => {
         let nextIndex = null;
-        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
-        if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        if (event.key === 'ArrowDown') nextIndex = (index + 1) % tabs.length;
+        if (event.key === 'ArrowUp') nextIndex = (index - 1 + tabs.length) % tabs.length;
         if (event.key === 'Home') nextIndex = 0;
         if (event.key === 'End') nextIndex = tabs.length - 1;
         if (nextIndex === null) return;
