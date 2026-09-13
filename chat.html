@@ -1986,6 +1986,23 @@
       }
     } catch {}
   }
+
+  // Which apps (Notion/GitHub, connected in Settings) the model can read
+  // from as tools — fetched once per session alongside sandbox mode, same
+  // "refresh before the first reply" pattern.
+  let connectedProviders = new Set()
+  let connectionsLoaded = false
+  async function ensureConnections() {
+    if (connectionsLoaded || !sessionToken) return
+    connectionsLoaded = true
+    try {
+      const res = await sennoricFetch(`${API}/connections`, { headers: authHeaders() })
+      if (res.ok) {
+        const data = await res.json()
+        connectedProviders = new Set((data.connections || []).map((c) => c.provider))
+      }
+    } catch {}
+  }
   const TOOL_STEP_LIMIT = 5
 
   const ACTIVE_GENERATION_STATUSES = new Set(['queued', 'running'])
@@ -3842,7 +3859,55 @@
 
   // Appends a tool card to the live message stream and returns a promise
   // that resolves with the tool-result string once the call is settled.
+  // Connection tools (Notion/GitHub) are read-only fetches of data the user
+  // already authorized when they connected the app in Settings — unlike
+  // run_code they execute immediately with no approve/deny card, mirroring
+  // how a search or read action needs no extra confirmation once the
+  // connection itself was the consent step.
+  async function executeConnectionTool(name, args) {
+    const endpoint = {
+      notion_search: '/connections/notion/search',
+      notion_read_page: '/connections/notion/read',
+      github_list_repos: '/connections/github/list-repos',
+      github_read_file: '/connections/github/read-file',
+    }[name]
+    try {
+      const res = await sennoricFetch(`${API}${endpoint}`, {
+        method: 'POST',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(args || {}),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) return `Error: ${data.error || 'that request failed.'}`
+      return JSON.stringify(data)
+    } catch {
+      return 'Error: could not reach Sennoric to complete that request.'
+    }
+  }
+
+  function renderConnectionToolCall(toolCall, wrap) {
+    let args = {}
+    try { args = JSON.parse(toolCall.function.arguments || '{}') } catch {}
+    const cardId = 'tool-' + (toolCall.id || Math.random().toString(36).slice(2))
+    const div = document.createElement('div')
+    div.className = 'msg'
+    div.innerHTML = `
+      <div class="msg-avatar assistant">${AVATAR}</div>
+      <div class="msg-body">
+        <div class="msg-role">Tool call — ${escHtml(toolCall.function.name)}</div>
+        <div class="tool-card"><div class="tool-card-actions" id="${cardId}-status"><span class="tool-status">Running…</span></div></div>
+      </div>`
+    wrap.appendChild(div)
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight
+    return executeConnectionTool(toolCall.function.name, args).then((result) => {
+      const statusEl = document.getElementById(`${cardId}-status`)
+      if (statusEl) statusEl.innerHTML = '<span class="tool-status">Done</span>'
+      return result
+    })
+  }
+
   function renderToolCall(toolCall, wrap, chatId) {
+    if (CONNECTION_TOOL_NAMES.has(toolCall.function.name)) return renderConnectionToolCall(toolCall, wrap)
     let code = '', language = 'python'
     try {
       const args = JSON.parse(toolCall.function.arguments || '{}')
@@ -3932,7 +3997,9 @@
       // plus its result, collapsed into one static card — no Run/Deny
       // buttons here, those only exist for the live, unresolved card.
       if (m.role === 'assistant' && m.tool_calls?.length) {
-        const cardsHtml = m.tool_calls.map(tc => {
+        const codeCalls = m.tool_calls.filter(tc => !CONNECTION_TOOL_NAMES.has(tc.function.name))
+        const connectionCalls = m.tool_calls.filter(tc => CONNECTION_TOOL_NAMES.has(tc.function.name))
+        const codeCardsHtml = codeCalls.map(tc => {
           let code = '', language = 'python'
           try {
             const args = JSON.parse(tc.function.arguments || '{}')
@@ -3948,12 +4015,24 @@
               ${cachedArtifacts ? `<div class="tool-artifacts">${artifactsHtml(cachedArtifacts)}</div>` : ''}
             </div>`
         }).join('')
-        const langs = [...new Set(m.tool_calls.map(tc => { try { return JSON.parse(tc.function.arguments || '{}').language || 'python' } catch { return 'python' } }))]
+        const connectionCardsHtml = connectionCalls.map(tc => {
+          const resultMsg = c.messages.find(mm => mm.role === 'tool' && mm.tool_call_id === tc.id)
+          return `<div class="tool-card">
+            <div class="msg-role">${escHtml(tc.function.name)}</div>
+            <pre class="tool-output">${escHtml(resultMsg ? resultMsg.content : '')}</pre>
+          </div>`
+        }).join('')
+        const langs = [...new Set(codeCalls.map(tc => { try { return JSON.parse(tc.function.arguments || '{}').language || 'python' } catch { return 'python' } }))]
+        const roleLabel = codeCalls.length && connectionCalls.length
+          ? `Tool calls — run_code (${escHtml(langs.join(', '))}), ${connectionCalls.map(tc => escHtml(tc.function.name)).join(', ')}`
+          : codeCalls.length
+            ? `Tool call — run_code (${escHtml(langs.join(', '))})`
+            : `Tool call — ${connectionCalls.map(tc => escHtml(tc.function.name)).join(', ')}`
         div.innerHTML = `
           <div class="msg-avatar assistant">${AVATAR}</div>
           <div class="msg-body">
-            <div class="msg-role">Tool call — run_code (${escHtml(langs.join(', '))})${tsHtml}</div>
-            ${cardsHtml}
+            <div class="msg-role">${roleLabel}${tsHtml}</div>
+            ${codeCardsHtml}${connectionCardsHtml}
           </div>`
         wrap.appendChild(div)
         return
@@ -4173,23 +4252,69 @@
   // omitting the tool makes another attempt structurally impossible rather
   // than relying on the model to obey wording. The lock is sticky across
   // turns; only "Re-enable" in the banner clears it.
-  function toolsForChat(c) {
-    if (!sessionToken || window.__toolAccessLocked[c.id]) return undefined
-    return [{
-      type: 'function',
-      function: {
-        name: 'run_code',
-        description: 'Execute code in an isolated sandbox tied to this conversation and return stdout/stderr. State persists across calls in this chat — installed packages (pip/npm install), any files you write, and (for Python only) top-level variables from earlier calls are all still there on the next call, so you can set something in one call and use it in a later one without redoing the work. JavaScript does NOT get variable persistence (only files/packages) — a top-level `let`/`var` in one JS call will not exist in the next JS call, so recompute it or read/write a file instead. This runs as a script, not a REPL — bare expressions produce no output; you must print() (or console.log()) any value you want to see, including the final answer to a calculation. IMPORTANT, read carefully: print()/console.log() ONLY shows text in this chat — it does NOT create a downloadable file, no matter what the text says. If the user asks you to "generate a file", "save a file", or "let me download" something, you MUST write actual bytes to disk under /home/daytona/output/ (e.g. open("/home/daytona/output/hello.txt", "w").write("...") in Python, or fs.writeFileSync("/home/daytona/output/hello.txt", "...") in JavaScript) — printing the content is never sufficient and will not give the user anything to download. Anything written under /home/daytona/output/ is automatically returned to the user as a downloadable/inline attachment after the call finishes.',
+  // Connection tools: only offered once /connections (fetched in
+  // ensureConnections) confirms the provider is actually connected — the
+  // model structurally cannot call notion_search unless Notion is
+  // connected, rather than relying on it to notice and decline.
+  const CONNECTION_TOOL_DEFS = {
+    notion: [
+      { type: 'function', function: {
+        name: 'notion_search',
+        description: "Search the user's connected Notion workspace by keyword and return matching page titles, ids, and URLs. Use notion_read_page with a result's id to read its content.",
+        parameters: { type: 'object', properties: { query: { type: 'string', description: 'Keywords to search for.' } }, required: ['query'] },
+      } },
+      { type: 'function', function: {
+        name: 'notion_read_page',
+        description: 'Read the text content of a Notion page the user has shared with this connection, given its page id (from notion_search).',
+        parameters: { type: 'object', properties: { page_id: { type: 'string' } }, required: ['page_id'] },
+      } },
+    ],
+    github: [
+      { type: 'function', function: {
+        name: 'github_list_repos',
+        description: "List the user's most recently updated GitHub repositories (name, description, visibility).",
+        parameters: { type: 'object', properties: {} },
+      } },
+      { type: 'function', function: {
+        name: 'github_read_file',
+        description: 'Read a file from one of the user\'s GitHub repositories.',
         parameters: {
           type: 'object',
           properties: {
-            code: { type: 'string', description: 'Code to execute. print()/console.log() only shows text in the chat and creates no downloadable file. To give the user an actual file, write it to disk under /home/daytona/output/, e.g. open("/home/daytona/output/name.ext", "w").write(...) in Python.' },
-            language: { type: 'string', enum: ['python', 'javascript'], description: 'Language to run the code as. Defaults to python.' },
+            repo: { type: 'string', description: 'owner/repo, e.g. "octocat/hello-world".' },
+            path: { type: 'string', description: 'File path within the repo, e.g. "README.md".' },
           },
-          required: ['code'],
+          required: ['repo', 'path'],
         },
-      },
-    }]
+      } },
+    ],
+  }
+  const CONNECTION_TOOL_NAMES = new Set(Object.values(CONNECTION_TOOL_DEFS).flat().map((t) => t.function.name))
+
+  function toolsForChat(c) {
+    if (!sessionToken) return undefined
+    const tools = []
+    if (!window.__toolAccessLocked[c.id]) {
+      tools.push({
+        type: 'function',
+        function: {
+          name: 'run_code',
+          description: 'Execute code in an isolated sandbox tied to this conversation and return stdout/stderr. State persists across calls in this chat — installed packages (pip/npm install), any files you write, and (for Python only) top-level variables from earlier calls are all still there on the next call, so you can set something in one call and use it in a later one without redoing the work. JavaScript does NOT get variable persistence (only files/packages) — a top-level `let`/`var` in one JS call will not exist in the next JS call, so recompute it or read/write a file instead. This runs as a script, not a REPL — bare expressions produce no output; you must print() (or console.log()) any value you want to see, including the final answer to a calculation. IMPORTANT, read carefully: print()/console.log() ONLY shows text in this chat — it does NOT create a downloadable file, no matter what the text says. If the user asks you to "generate a file", "save a file", or "let me download" something, you MUST write actual bytes to disk under /home/daytona/output/ (e.g. open("/home/daytona/output/hello.txt", "w").write("...") in Python, or fs.writeFileSync("/home/daytona/output/hello.txt", "...") in JavaScript) — printing the content is never sufficient and will not give the user anything to download. Anything written under /home/daytona/output/ is automatically returned to the user as a downloadable/inline attachment after the call finishes.',
+          parameters: {
+            type: 'object',
+            properties: {
+              code: { type: 'string', description: 'Code to execute. print()/console.log() only shows text in the chat and creates no downloadable file. To give the user an actual file, write it to disk under /home/daytona/output/, e.g. open("/home/daytona/output/name.ext", "w").write(...) in Python.' },
+              language: { type: 'string', enum: ['python', 'javascript'], description: 'Language to run the code as. Defaults to python.' },
+            },
+            required: ['code'],
+          },
+        },
+      })
+    }
+    for (const provider of connectedProviders) {
+      if (CONNECTION_TOOL_DEFS[provider]) tools.push(...CONNECTION_TOOL_DEFS[provider])
+    }
+    return tools.length ? tools : undefined
   }
 
   // Builds the assistant bubble that a reply streams into.
@@ -4303,7 +4428,7 @@
       return
     }
     if (depth === 0) stopRequested = false
-    await ensureSandboxMode()
+    await Promise.all([ensureSandboxMode(), ensureConnections()])
     setSendingState(true)
     abortCtrl = new AbortController()
 
