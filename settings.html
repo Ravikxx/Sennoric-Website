@@ -393,24 +393,23 @@
             <div class="settings-row-label">Usage alerts</div>
             <div class="settings-row-desc">Email me when my account hits 80% of its weekly included usage.</div>
           </div>
-          <input type="checkbox" class="settings-toggle" id="pref-limit">
+          <input type="checkbox" class="settings-toggle" id="pref-limit" onchange="saveNotificationPrefs()">
         </div>
         <div class="settings-row">
           <div>
             <div class="settings-row-label">Announcements</div>
             <div class="settings-row-desc">Email me about new releases and updates.</div>
           </div>
-          <input type="checkbox" class="settings-toggle" id="pref-announcements">
+          <input type="checkbox" class="settings-toggle" id="pref-announcements" onchange="saveNotificationPrefs()">
         </div>
         <div class="settings-row">
           <div>
             <div class="settings-row-label">Scheduled tasks</div>
             <div class="settings-row-desc">Email me when a scheduled task finishes or fails, since I'm not watching the chat when it runs.</div>
           </div>
-          <input type="checkbox" class="settings-toggle" id="pref-scheduled">
+          <input type="checkbox" class="settings-toggle" id="pref-scheduled" onchange="saveNotificationPrefs()">
         </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <button class="btn-sm" onclick="savePrefs()">Save</button>
           <span class="status-msg" id="prefs-msg"></span>
         </div>
       </div>
@@ -422,23 +421,22 @@
             <div class="settings-row-label">Auto-run Python</div>
             <div class="settings-row-desc">When Fresco wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
           </div>
-          <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto">
+          <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto" onchange="saveSandboxMode()">
         </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <button class="btn-sm" onclick="saveSandboxMode()">Save</button>
           <span class="status-msg" id="sandbox-mode-msg"></span>
         </div>
       </div>
 
       <div class="settings-section span-full">
         <h2>Chat</h2>
-        <p class="section-sub">Applied to new messages in the web chat. Stored on this device.</p>
+        <p class="section-sub">Applied to new messages in the web chat, and synced to every device you're signed in on.</p>
         <div class="settings-row" style="align-items:flex-start">
           <div>
             <div class="settings-row-label">Response language</div>
             <div class="settings-row-desc">The language the assistant replies in.</div>
           </div>
-          <select id="chat-response-language" class="settings-select">
+          <select id="chat-response-language" class="settings-select" onchange="saveChatPrefs()">
             <option value="auto">Match my message</option>
             <option value="english">English</option>
             <option value="spanish">Spanish</option>
@@ -461,11 +459,10 @@
           <div style="flex:1;min-width:0">
             <div class="settings-row-label">Special instructions</div>
             <div class="settings-row-desc">Extra guidance sent with every message, like "Be concise" or "You are a helpful tutor."</div>
-            <textarea id="chat-special-instructions" class="settings-textarea" rows="3" maxlength="8000" placeholder="Optional"></textarea>
+            <textarea id="chat-special-instructions" class="settings-textarea" rows="3" maxlength="8000" placeholder="Optional" oninput="queueSaveChatPrefs()"></textarea>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <button class="btn-sm" onclick="saveChatPrefs()">Save</button>
           <span class="status-msg" id="chat-prefs-msg"></span>
         </div>
       </div>
@@ -673,37 +670,10 @@
     void uploadProfilePicture(file);
   });
 
-  // Notifications
-  async function loadPrefs() {
-    try {
-      const res = await fetchT(API + '/account/preferences', { headers: authHeaders });
-      const p = await res.json();
-      document.getElementById('pref-limit').checked = p.notify_limit !== 0;
-      document.getElementById('pref-announcements').checked = p.notify_announcements !== 0;
-      document.getElementById('pref-scheduled').checked = p.notify_scheduled !== 0;
-      document.getElementById('pref-sandbox-auto').checked = p.sandbox_mode === 'auto';
-    } catch {}
-  }
-  async function savePrefs() {
-    const msg = document.getElementById('prefs-msg');
-    const body = {
-      notify_limit: document.getElementById('pref-limit').checked,
-      notify_announcements: document.getElementById('pref-announcements').checked,
-      notify_scheduled: document.getElementById('pref-scheduled').checked,
-    };
-    try {
-      const res = await fetchT(API + '/account/preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...authHeaders },
-        body: JSON.stringify(body),
-      });
-      msg.textContent = res.ok ? 'Saved' : 'Failed to save';
-      msg.className = 'status-msg ' + (res.ok ? 'ok' : 'err');
-    } catch {
-      msg.textContent = 'Failed to save'; msg.className = 'status-msg err';
-    }
-    setTimeout(() => { msg.textContent = ''; }, 2500);
-  }
+  // Notifications, code execution, and chat preferences — one auto-saving
+  // group. Every field commits to the server the moment it changes (a
+  // textarea debounces so it doesn't fire on every keystroke); there is no
+  // separate Save button anywhere in this group.
   const RESPONSE_LANGUAGE_LABELS = {
     auto: 'Match my message', english: 'English', spanish: 'Spanish', french: 'French',
     german: 'German', italian: 'Italian', portuguese: 'Portuguese', dutch: 'Dutch',
@@ -716,38 +686,57 @@
       return "Reply in the same language as the user's latest message unless they explicitly request another language.";
     return `Reply in ${RESPONSE_LANGUAGE_LABELS[language]} unless the user explicitly requests another language.`;
   }
-  function loadChatPrefs() {
-    const sel = document.getElementById('chat-response-language');
-    const savedLang = localStorage.getItem('sennoric_response_language') || 'english';
-    if (sel) sel.value = RESPONSE_LANGUAGE_LABELS[savedLang] ? savedLang : 'english';
-    const ta = document.getElementById('chat-special-instructions');
-    if (ta) ta.value = localStorage.getItem('sennoric_special_instructions') || '';
+  async function loadPrefs() {
+    try {
+      const res = await fetchT(API + '/account/preferences', { headers: authHeaders });
+      const p = await res.json();
+      document.getElementById('pref-limit').checked = p.notify_limit !== 0;
+      document.getElementById('pref-announcements').checked = p.notify_announcements !== 0;
+      document.getElementById('pref-scheduled').checked = p.notify_scheduled !== 0;
+      document.getElementById('pref-sandbox-auto').checked = p.sandbox_mode === 'auto';
+      const sel = document.getElementById('chat-response-language');
+      if (sel) sel.value = RESPONSE_LANGUAGE_LABELS[p.response_language] ? p.response_language : 'english';
+      const ta = document.getElementById('chat-special-instructions');
+      if (ta) ta.value = p.special_instructions || '';
+    } catch {}
   }
-  function saveChatPrefs() {
-    const msg = document.getElementById('chat-prefs-msg');
-    const lang = document.getElementById('chat-response-language')?.value || 'english';
-    const instr = document.getElementById('chat-special-instructions')?.value || '';
-    localStorage.setItem('sennoric_response_language', lang);
-    localStorage.setItem('sennoric_special_instructions', instr);
-    msg.textContent = 'Saved'; msg.className = 'status-msg ok';
-    setTimeout(() => { msg.textContent = ''; }, 2500);
-  }
-
-  async function saveSandboxMode() {
-    const msg = document.getElementById('sandbox-mode-msg');
-    const body = { sandbox_mode: document.getElementById('pref-sandbox-auto').checked ? 'auto' : 'ask' };
+  async function autosavePrefs(msgId, body) {
+    const msg = document.getElementById(msgId);
+    if (msg) { msg.textContent = 'Saving…'; msg.className = 'status-msg'; }
     try {
       const res = await fetchT(API + '/account/preferences', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(body),
       });
-      msg.textContent = res.ok ? 'Saved' : 'Failed to save';
-      msg.className = 'status-msg ' + (res.ok ? 'ok' : 'err');
+      if (msg) { msg.textContent = res.ok ? 'Saved' : 'Failed to save'; msg.className = 'status-msg ' + (res.ok ? 'ok' : 'err'); }
     } catch {
-      msg.textContent = 'Failed to save'; msg.className = 'status-msg err';
+      if (msg) { msg.textContent = 'Failed to save'; msg.className = 'status-msg err'; }
     }
-    setTimeout(() => { msg.textContent = ''; }, 2500);
+    if (msg) setTimeout(() => { msg.textContent = ''; }, 2000);
+  }
+  function saveNotificationPrefs() {
+    void autosavePrefs('prefs-msg', {
+      notify_limit: document.getElementById('pref-limit').checked,
+      notify_announcements: document.getElementById('pref-announcements').checked,
+      notify_scheduled: document.getElementById('pref-scheduled').checked,
+    });
+  }
+  function saveSandboxMode() {
+    void autosavePrefs('sandbox-mode-msg', {
+      sandbox_mode: document.getElementById('pref-sandbox-auto').checked ? 'auto' : 'ask',
+    });
+  }
+  function saveChatPrefs() {
+    void autosavePrefs('chat-prefs-msg', {
+      response_language: document.getElementById('chat-response-language')?.value || 'english',
+      special_instructions: document.getElementById('chat-special-instructions')?.value || '',
+    });
+  }
+  let chatPrefsDebounce = null;
+  function queueSaveChatPrefs() {
+    clearTimeout(chatPrefsDebounce);
+    chatPrefsDebounce = setTimeout(saveChatPrefs, 600);
   }
 
   // Usage & billing (real data — /account/keys + /account/keys/daily)
@@ -1054,7 +1043,6 @@
       SennoricAccountProfile.cachedAvatar(),
     );
     loadPrefs();
-    loadChatPrefs();
     loadUsage();
     loadProviders();
     loadPlan();
