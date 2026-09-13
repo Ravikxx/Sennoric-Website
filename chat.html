@@ -1966,6 +1966,11 @@
 
   // Sandbox tool-call mode: 'ask' requires a click before running model-requested
   // code, 'auto' runs immediately. Fetched once per session load and cached.
+  // The same request also refreshes responseLanguagePref/specialInstructionsPref
+  // (declared below) from the server, so a change made in Settings on another
+  // device — or another tab — takes effect on this one's next reply without
+  // requiring a reload; the localStorage-seeded defaults are just the
+  // pre-fetch fallback for the very first message of a session.
   let sandboxMode = 'ask'
   let sandboxModeLoaded = false
   async function ensureSandboxMode() {
@@ -1973,7 +1978,12 @@
     sandboxModeLoaded = true
     try {
       const res = await sennoricFetch(`${API}/account/preferences`, { headers: authHeaders() })
-      if (res.ok) { const data = await res.json(); sandboxMode = data.sandbox_mode === 'auto' ? 'auto' : 'ask' }
+      if (res.ok) {
+        const data = await res.json()
+        sandboxMode = data.sandbox_mode === 'auto' ? 'auto' : 'ask'
+        if (typeof data.response_language === 'string' && data.response_language) responseLanguagePref = data.response_language
+        if (typeof data.special_instructions === 'string') specialInstructionsPref = data.special_instructions
+      }
     } catch {}
   }
   const TOOL_STEP_LIMIT = 5
