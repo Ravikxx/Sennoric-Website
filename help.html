@@ -72,23 +72,6 @@
     .cat-card .cat-links { display: flex; flex-direction: column; gap: 6px; }
     .cat-card .cat-links a { font-size: 12.5px; color: var(--muted2); }
     .cat-card .cat-links a:hover { color: var(--accent); }
-    .cat-card .cat-status {
-      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .08em;
-      text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
-      background: var(--surface2); color: var(--muted); margin-bottom: 10px;
-    }
-    .cat-card .cat-status.written { background: rgba(52,211,153,.12); color: var(--green, #34d399); }
-
-    .note {
-      max-width: 1080px; margin: 0 auto 32px; padding: 0 32px;
-    }
-    .note .callout {
-      border-radius: 8px; padding: 13px 16px; font-size: 13px; line-height: 1.65;
-      background: rgba(184,162,125,.07); border: 1px solid rgba(184,162,125,.2);
-      border-left: 3px solid var(--accent); color: var(--muted2);
-    }
-    .note .callout strong { color: var(--accent); }
-
     footer { background: var(--surface); border-top: 1px solid var(--border); text-align: center; padding: 24px 32px; font-size: 13px; color: var(--muted); }
     footer a { color: var(--muted2); }
     footer a:hover { color: var(--text); }
@@ -123,13 +106,7 @@
   <h1>Help Center</h1>
   <p>Guides for getting set up and getting unstuck across the Desktop App, CLI, and Chrome Extension.</p>
   <div class="search-box">
-    <input type="text" placeholder="Search help articles (coming soon)…" disabled>
-  </div>
-</div>
-
-<div class="note">
-  <div class="callout">
-    <strong>Still growing.</strong> Most categories now have real articles, but a few sections (billing, account deletion, changelog format) are flagged as gaps where nothing's confirmed yet — see those pages directly.
+    <input type="text" placeholder="Search help guides (coming soon)…" disabled>
   </div>
 </div>
 
@@ -137,59 +114,51 @@
   <div class="cat-grid">
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Getting Started</div>
       <div class="cat-desc">New to Sennoric? Start here — what each product does and how to get your first result.</div>
-      <div class="cat-links"><a href="/help-getting-started">View articles →</a></div>
+      <div class="cat-links"><a href="/help-getting-started">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Account & Billing</div>
       <div class="cat-desc">Signing in, connecting providers, OAuth connections, and managing your account.</div>
-      <div class="cat-links"><a href="/help-account">View articles →</a></div>
+      <div class="cat-links"><a href="/help-account">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Sennoric CLI</div>
       <div class="cat-desc">Installing and using the command-line agent — commands, MCP servers, models.</div>
-      <div class="cat-links"><a href="/help-cli">View articles →</a></div>
+      <div class="cat-links"><a href="/help-cli">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Sennoric Desktop App</div>
       <div class="cat-desc">Installing and using the desktop chat app, workspace access, and settings.</div>
-      <div class="cat-links"><a href="/help-desktop">View articles →</a></div>
+      <div class="cat-links"><a href="/help-desktop">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Chrome Extension</div>
       <div class="cat-desc">Installing the extension, importing a key, and what it can do on a page.</div>
-      <div class="cat-links"><a href="/help-extension">View articles →</a></div>
+      <div class="cat-links"><a href="/help-extension">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Cross-Product Topics</div>
       <div class="cat-desc">How your data is stored, syncing state between products, and supported models.</div>
-      <div class="cat-links"><a href="/help-cross-product">View articles →</a></div>
+      <div class="cat-links"><a href="/help-cross-product">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status written">Written</div>
       <div class="cat-title">Troubleshooting & FAQ</div>
       <div class="cat-desc">Common problems, how to report a bug, and answers to frequent questions.</div>
-      <div class="cat-links"><a href="/help-troubleshooting">View articles →</a></div>
+      <div class="cat-links"><a href="/help-troubleshooting">View guide →</a></div>
     </div>
 
     <div class="cat-card">
-      <div class="cat-status">Scaffold</div>
       <div class="cat-title">What's New</div>
       <div class="cat-desc">Release notes and changes across Sennoric products.</div>
-      <div class="cat-links"><a href="/help-changelog">View articles →</a></div>
+      <div class="cat-links"><a href="/help-changelog">View guide →</a></div>
     </div>
 
   </div>
