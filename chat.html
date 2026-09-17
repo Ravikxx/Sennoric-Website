@@ -2161,7 +2161,7 @@
     const liveIds = [...availableModels.keys()]
     const ids = ['fresco13', ...liveIds, ...FALLBACK_MODEL_IDS.filter(id => !availableModels.has(id))]
     if (!availableModels.has(selectedModel)) {
-      selectedModel = liveIds[0] || 'lumen'
+      selectedModel = liveIds[0] || 'fresco'
       localStorage.setItem('sennoric_chat_model', selectedModel)
     }
 
