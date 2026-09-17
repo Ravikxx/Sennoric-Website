@@ -40,6 +40,7 @@
 
   --page: 1200px;
   --gut: 40px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -85,7 +86,18 @@ nav .brand {
   font-family: var(--disp); font-weight: 700; font-size: 20px;
   letter-spacing: -.01em; display: flex; align-items: center; gap: 8px;
 }
-nav .brand img { height: 22px; width: auto; display: block; }
+nav .brand img { height: 22px; width: auto; display: block; transition: transform .5s var(--ease); }
+nav .brand:hover img { transform: rotate(90deg); }
+/* Once the paper has scrolled under the nav it casts a soft shadow, so the
+   bar reads as sitting on top of the page rather than printed into it. */
+nav { transition: box-shadow .3s var(--ease); }
+nav.scrolled { box-shadow: 0 1px 0 var(--rule), 0 12px 32px -20px rgba(23, 20, 13, .45); }
+/* The current page carries a marigold tick under its nav link. */
+nav a.active:not(.brand):not(.nav-cta) { position: relative; }
+nav a.active:not(.brand):not(.nav-cta)::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -8px; height: 2px;
+  background: var(--marigold); border-radius: 1px;
+}
 /* Filled buttons are excluded: they set their own ink against their own fill,
    and this generic rule would otherwise outrank a bare `.nav-btn` (0,2,2 beats
    0,1,2) and leave dark text on a dark fill. */
@@ -98,6 +110,10 @@ nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px
   background: var(--ink); color: var(--paper); transition: background .15s;
 }
 .nav-cta:hover { background: var(--forest); }
+.nav-cta, .btn { transition: background .15s, border-color .15s, color .15s, transform .2s var(--ease), box-shadow .2s var(--ease); }
+.nav-cta:hover, .btn:hover { transform: translateY(-1px); }
+.nav-cta:active, .btn:active { transform: translateY(0); transition-duration: .05s; }
+.btn-solid:hover { box-shadow: 0 10px 22px -14px rgba(18, 48, 28, .7); }
 .nav-ghost {
   font-size: 13.5px; padding: 8px 14px; border-radius: 4px;
   border: 1px solid var(--rule-2); transition: border-color .15s, background .15s;
@@ -113,7 +129,7 @@ nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px
   display: inline-block; padding: 13px 24px; border-radius: 4px;
   font-size: 15px; font-weight: 600; border: 1px solid transparent;
   font-family: var(--sans);
-  transition: background .15s, border-color .15s, color .15s;
+  transition: background .15s, border-color .15s, color .15s, transform .2s var(--ease), box-shadow .2s var(--ease);
 }
 .btn-solid { background: var(--ink); color: var(--paper); }
 .btn-solid:hover { background: var(--forest); }
@@ -132,7 +148,22 @@ nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px
 .band-head { display: flex; align-items: baseline; justify-content: space-between; gap: 32px; margin-bottom: 40px; flex-wrap: wrap; }
 .band-head h2 { font-size: clamp(26px, 3vw, 34px); }
 .band-more { font-size: 14.5px; color: var(--green); font-weight: 500; }
-.band-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Green links underline by drawing in from the left, then carry an arrow
+   that nudges on hover. One rule for every "read more" on the shell. */
+.band-more, .m-go, .arrow-link { position: relative; display: inline-block; }
+.band-more::before, .m-go::before, .arrow-link::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease);
+}
+.band-more:hover::before, .m-go:hover::before, .arrow-link:hover::before,
+.fam-row:hover .m-go::before, .news li:hover .go::before, .card:hover .arrow-link::before { transform: scaleX(1); }
+.band-more::after, .m-go::after, .arrow-link::after, .news .go::after {
+  content: '\2192'; display: inline-block; margin-left: .35em; transition: transform .3s var(--ease);
+}
+.band-more:hover::after, .m-go:hover::after, .arrow-link:hover::after,
+.fam-row:hover .m-go::after, .news li:hover .go::after, .card:hover .arrow-link::after { transform: translateX(4px); }
+/* A small mono kicker above a band heading. */
+.kicker { display: block; margin-bottom: 14px; color: var(--green); }
 .band-lede { font-size: 17px; line-height: 1.62; color: var(--ink-2); max-width: 62ch; margin-top: 12px; }
 
 /* ── Model table ──────────────────────────────────────────────────────── */
@@ -150,7 +181,10 @@ nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px
 .m-base { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
 .m-tbd { font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
 .m-go { color: var(--green); font-size: 14.5px; font-weight: 500; white-space: nowrap; }
-.m-go:hover { text-decoration: underline; text-underline-offset: 3px; }
+.models tbody tr { transition: background .2s; }
+.models tbody tr:hover td { background: color-mix(in srgb, var(--paper-2) 70%, transparent); }
+.models tbody tr:hover .m-go::before { transform: scaleX(1); }
+.models tbody tr:hover .m-go::after { transform: translateX(4px); }
 /* Unreleased tiers sit quieter without dropping below AA: the row is
    de-emphasised by surface tint, never by fading the text. */
 .models tr.upcoming td { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
@@ -172,6 +206,20 @@ nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px
 .code .c { color: var(--code-comment); }
 .code .p { color: var(--code-prompt); }
 .code .s { color: var(--code-str); }
+/* Copy button, added by paper-motion.js. Lives inside the block so hidden
+   tab panels take their button with them. */
+.code { position: relative; }
+.code .copy {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+  padding: 6px 10px; border-radius: 3px; cursor: pointer; white-space: normal; line-height: 1;
+  color: #dfe6d9; background: rgba(243, 240, 230, .08); border: 1px solid rgba(243, 240, 230, .22);
+  opacity: 0; transition: opacity .2s, background .2s, color .2s, border-color .2s;
+}
+.code:hover .copy, .code .copy:focus-visible, .code .copy.done { opacity: 1; }
+.code .copy:hover { background: rgba(243, 240, 230, .16); }
+.code .copy.done { background: var(--marigold); color: var(--forest); border-color: var(--marigold); }
+@media (hover: none) { .code .copy { opacity: 1; } }
 
 /* ── Footer ───────────────────────────────────────────────────────────── */
 footer { border-top: 1px solid var(--rule); padding: 64px 0 48px; }
@@ -189,6 +237,19 @@ footer { border-top: 1px solid var(--rule); padding: 64px 0 48px; }
   font-size: 13.5px; color: var(--ink-2);
 }
 .foot-base a:hover { color: var(--green); }
+.foot-live { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12.5px; }
+.to-top { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.to-top img { height: 16px; width: auto; transition: transform .6s var(--ease); }
+.to-top:hover img { transform: rotate(-180deg); }
+
+/* ── Reveal on entry (paper-motion.js) ────────────────────────────────── */
+/* Hidden only when the script that reveals them is present. */
+html.js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .8s var(--ease); }
+html.js [data-reveal].in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] { opacity: 1; transform: none; transition: none; }
+  nav .brand img, .nav-cta, .btn { transition: none; }
+}
 
 /* ── Responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 1000px) {
@@ -208,6 +269,7 @@ footer { border-top: 1px solid var(--rule); padding: 64px 0 48px; }
   .models td { display: block; padding: 3px 0; border: 0; }
   .models .m-num, .models .m-base, .models .m-tbd { display: inline-block; margin-right: 14px; }
   .foot-grid { grid-template-columns: minmax(0, 1fr); }
+  .code .copy { opacity: 1; }
 
   /* Mobile drawer. site-nav.js wraps the links in .nav-links and toggles
      .nav-links-visible on <nav>; pages on this shell don't load mobile.css,

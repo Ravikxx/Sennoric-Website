@@ -98,7 +98,11 @@
 
     .uptime-bars { display: flex; gap: 3px; position: relative; }
     .uptime-bars .bar { flex: 1; height: 32px; padding: 0; border: 0; border-radius: 2px; background: var(--border); cursor: pointer; transition: opacity .1s; }
-    .uptime-bars .bar:hover { opacity: 0.8; }
+    .uptime-bars .bar:hover { opacity: 0.8; transform: scaleY(1.12); }
+    /* Each day's bar rises from the baseline, left to right, once rendered. */
+    html.js .uptime-bars .bar { transform-origin: bottom; animation: bar-in .55s var(--ease) both; animation-delay: calc(var(--i, 0) * 14ms); transition: opacity .1s, transform .2s var(--ease); }
+    @keyframes bar-in { from { transform: scaleY(0); opacity: 0; } to { transform: none; opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { html.js .uptime-bars .bar { animation: none; } }
     .uptime-bars .bar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .uptime-bars .bar.operational { background: var(--green); }
     .uptime-bars .bar.degraded { background: var(--yellow); }
@@ -168,8 +172,9 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/profile.css">
   <link rel="stylesheet" href="assets/mobile.css">
+  <script src="/assets/paper-motion.js" defer></script>
 </head>
-<body>
+<body data-reveal-auto=".banner, .service, .incident">
 
 <nav>
   <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
@@ -332,7 +337,7 @@
     const el = document.getElementById('services')
     el.innerHTML = services.map(function (s, si) {
       var bars = s.days.map(function (d, di) {
-        return '<button type="button" class="bar ' + d.status + '" data-service="' + si + '" data-day="' + di + '" onclick="openDayPopover(this)" aria-label="' + s.label + ', ' + d.date + ': ' + d.status.replace('_', ' ') + '"></button>'
+        return '<button type="button" class="bar ' + d.status + '" style="--i:' + di + '" data-service="' + si + '" data-day="' + di + '" onclick="openDayPopover(this)" aria-label="' + s.label + ', ' + d.date + ': ' + d.status.replace('_', ' ') + '"></button>'
       }).join('')
       var uptime = s.uptime_pct == null ? 'no data' : s.uptime_pct.toFixed(2) + '% uptime'
       var stateLabel = s.status === 'operational' ? 'Operational' : s.status === 'down' ? 'Down' : s.status === 'degraded' ? 'Degraded' : 'Unknown'

@@ -19,16 +19,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/paper-motion.js" defer></script>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <style>
     .timeline { list-style: none; border-top: 1px solid var(--rule); }
-    .timeline li { display: flex; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--rule); }
-    .timeline .when { flex-shrink: 0; width: 110px; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--green); padding-top: 2px; }
+    .timeline li { display: flex; gap: 24px; padding: 18px 16px; margin: 0 -16px; border-bottom: 1px solid var(--rule); border-radius: 4px; transition: background .2s; position: relative; }
+    .timeline li:hover { background: var(--paper-2); }
+    .timeline .when { flex-shrink: 0; width: 110px; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--green); padding-top: 2px; display: flex; align-items: center; gap: 10px; align-self: flex-start; }
+    .timeline .when::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); flex: none; transition: background .2s, transform .3s var(--ease); }
+    .timeline li:hover .when::before { background: var(--marigold); transform: scale(1.4); }
+    .timeline li:last-child .when::before { background: var(--green); }
+    .band-copy { margin-top: 16px; font-size: 16px; color: var(--ink-2); line-height: 1.62; max-width: 62ch; }
     .timeline .what { font-size: 15px; color: var(--ink-2); line-height: 1.55; }
     code { font-family: var(--mono); font-size: 13px; background: var(--paper-2); padding: 2px 7px; border-radius: 3px; }
     @media (max-width: 700px) {
-      .timeline li { flex-direction: column; gap: 4px; }
+      .timeline li { flex-direction: column; gap: 4px; margin: 0; padding: 18px 0; }
       .timeline .when { width: auto; }
     }
   </style>
@@ -47,27 +53,29 @@
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="wrap">
+<div class="wrap" id="top">
 
   <div class="page-head">
-    <span class="label">Solan family</span>
+    <span class="label kicker">Solan family</span>
     <h1>Glyph 1.1</h1>
     <p class="lede">Sennoric's small, fast model. Runs on dedicated inference capacity separate from Fresco.</p>
   </div>
 
-  <section class="band">
+  <section class="band" data-reveal>
+    <span class="label kicker">01</span>
     <h2>What Glyph is</h2>
-    <p style="margin-top:16px;font-size:16px;color:var(--ink-2);line-height:1.62;max-width:62ch">Glyph 1.1 is a fine-tuned Llama model built for speed and brevity. It was the first model Sennoric shipped — before Fresco existed — and the lessons from fine-tuning and evaluating it shaped the approach taken with Fresco 1.2.5.</p>
+    <p class="band-copy">Glyph 1.1 is a fine-tuned Llama model built for speed and brevity. It was the first model Sennoric shipped — before Fresco existed — and the lessons from fine-tuning and evaluating it shaped the approach taken with Fresco 1.2.5.</p>
   </section>
 
-  <section class="band">
+  <section class="band" data-reveal>
+    <span class="label kicker">02</span>
     <h2>Where it fits</h2>
-    <p style="margin-top:16px;font-size:16px;color:var(--ink-2);line-height:1.62;max-width:62ch">Fresco is the default model — built for general chat, writing, and code. Glyph is smaller and faster, suited to short exchanges where response time matters more than depth.</p>
+    <p class="band-copy">Fresco is the default model — built for general chat, writing, and code. Glyph is smaller and faster, suited to short exchanges where response time matters more than depth.</p>
   </section>
 
   <section class="band">
-    <h2>Timeline</h2>
-    <ul class="timeline" style="margin-top:24px">
+    <div data-reveal><span class="label kicker">03</span><h2>Timeline</h2></div>
+    <ul class="timeline" style="margin-top:24px" data-reveal-group="90">
       <li><span class="when">Jul 25, 2026</span><span class="what">Marked deprecated and briefly taken offline while its compute was reallocated to the Project Crucible 600M rerun.</span></li>
       <li><span class="when">Jul 30, 2026</span><span class="what">Back online and answering requests as normal.</span></li>
       <li><span class="when">Aug 2026</span><span class="what">Moved onto dedicated inference capacity separate from Fresco.</span></li>
@@ -75,22 +83,57 @@
     </ul>
   </section>
 
-  <section class="band">
+  <section class="band" data-reveal>
+    <span class="label kicker">04</span>
     <h2>Using it</h2>
-    <p style="margin-top:16px;font-size:16px;color:var(--ink-2);line-height:1.62;max-width:62ch">Glyph is available at the same OpenAI-compatible endpoint as Fresco. The model id is <code>glyph</code>; the legacy id <code>veil</code> still resolves.</p>
+    <p class="band-copy">Glyph is available at the same OpenAI-compatible endpoint as Fresco. The model id is <code>glyph</code>; the legacy id <code>veil</code> still resolves.</p>
     <div class="code" style="margin-top:24px;max-width:62ch">curl https://api.sennoric.com/v1/chat/completions \
   -H "Authorization: Bearer $KEY" \
   -d '{"model":"glyph","messages":[{"role":"user","content":"Hello"}]}'</div>
-    <p style="margin-top:24px;font-size:15px"><a href="/fresco-125" style="color:var(--green);font-weight:500">Fresco 1.2.5 details →</a></p>
+    <p style="margin-top:24px;font-size:15px"><a class="band-more" href="/fresco-125">Fresco 1.2.5 details</a></p>
   </section>
 
 </div>
 
 <footer>
   <div class="wrap">
-    <div class="foot-base" style="margin-top:0;padding-top:0;border-top:0">
-      <span>© 2026 Sennoric</span>
-      <span><a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a></span>
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
+        <p class="foot-note">Sennoric trains and hosts models on its own infrastructure.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Solan models</h4>
+        <a href="/fresco-13">Fresco 1.3</a>
+        <a href="/fresco-125">Fresco 1.2.5</a>
+        <a href="/glyph">Glyph 1.1</a>
+      </div>
+      <div class="foot-col">
+        <h4>Build</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/keys">API keys</a>
+        <a href="/usage">Usage</a>
+        <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">Sennoric CLI on npm</a>
+      </div>
+      <div class="foot-col">
+        <h4>Safety</h4>
+        <a href="/no-invisible-ink">No invisible ink</a>
+        <a href="/fresco-125-safety">Fresco 1.2.5 report</a>
+        <a href="/fresco-safety">Fresco 1.2.1 report</a>
+        <a href="/fresco-suspension">Model suspension</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="/announcements">Announcements</a>
+        <a href="/status">Status</a>
+        <a href="/help">Help center</a>
+        <a href="/tos">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 Sennoric · Independent AI models</span>
+      <a class="to-top" href="#top"><img src="/assets/logo-spiral.svg" alt="">Back to top</a>
     </div>
   </div>
 </footer>
