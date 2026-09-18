@@ -8,7 +8,7 @@
   <meta name="description" content="Meet Fresco 1.3, Sennoric's strongest coding and reasoning model yet.">
   <link rel="canonical" href="https://sennoric.com/fresco-13">
   <meta property="og:title" content="Fresco 1.3 — The comeback release">
-  <meta property="og:description" content="Fresco 1.3 reaches 96.4% on HumanEval, 87.19% on GSM8K, and 87 out of 100 on a BFCL V4 tool-use test.">
+  <meta property="og:description" content="Fresco 1.3 reaches 82.3% on HumanEval+ (matching Claude Sonnet 3.5), 75.7% on MBPP+, and 87 out of 100 on a BFCL V4 tool-use test.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://sennoric.com/fresco-13">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
@@ -117,6 +117,8 @@
     .fill.meta { background: #397bc2; }
     .fill.microsoft { background: #7557ad; }
     .fill.qwen { background: #d07a39; }
+    .fill.anthropic { background: #cc785c; }
+    .fill.deepseek { background: #2f7a78; }
     .value { color: #545750; text-align: right; font: 500 10px "IBM Plex Mono", monospace; white-space: nowrap; }
     .value strong { color: var(--ink); font-weight: 600; }
     .empty-track { height: 11px; border: 1px dashed #d8dad4; border-radius: 3px; background: #fafaf8; }
@@ -195,12 +197,12 @@
       <div class="release-label">Sennoric model launch</div>
       <h1>Fresco <span class="version">1.3</span></h1>
       <div class="hero-tagline">A new foundation.</div>
-      <p class="hero-copy">The strongest coding and reasoning model in the Solan family yet: 96.4% on HumanEval, 87.19% on GSM8K, and 87 out of 100 on a BFCL V4 tool-use test.</p>
+      <p class="hero-copy">The strongest coding and reasoning model in the Solan family yet: 82.3% on HumanEval+ — matching Claude Sonnet 3.5 — 75.7% on MBPP+, and 87 out of 100 on a BFCL V4 tool-use test.</p>
       <div class="actions"><a class="button primary" href="/chat">Try Fresco</a><a class="button" href="#results">See results</a><a class="button" href="/fresco-13-safety">Safety report</a></div>
     </div>
     <div class="quick-stats">
-      <div class="quick-stat"><strong data-count>96.4%</strong><span>HumanEval · coding</span></div>
-      <div class="quick-stat"><strong data-count>87.19%</strong><span>GSM8K · math</span></div>
+      <div class="quick-stat"><strong data-count>82.3%</strong><span>HumanEval+ · coding</span></div>
+      <div class="quick-stat"><strong data-count>75.7%</strong><span>MBPP+ · coding</span></div>
       <div class="quick-stat"><strong data-count>87/100</strong><span>BFCL V4 · tool use</span></div>
     </div>
   </div>
@@ -210,43 +212,36 @@
   <section id="results">
     <div class="section-head">
       <div><div class="kicker">Benchmark results</div><h2>Fresco 1.3</h2></div>
-      <p class="section-copy">Fresco and earlier Sennoric releases alongside published results from several well-known models. Glyph 1.1 is marked historical.</p>
+      <p class="section-copy">Fresco 1.3 against published results from several current frontier models, all on the harder EvalPlus &ldquo;+&rdquo; test sets so the numbers are directly comparable.</p>
     </div>
     <div class="chart-grid">
       <div class="leaderboard" data-reveal>
-        <div class="board-top"><div><div class="board-title">HumanEval · coding</div><div class="board-sub">Percentage of coding problems solved · higher is better</div></div><span class="badge">Published results</span></div>
+        <div class="board-top"><div><div class="board-title">HumanEval+ · coding</div><div class="board-sub">Percentage of coding problems solved, EvalPlus test set · higher is better</div></div><span class="badge">Published results</span></div>
         <div class="board-body">
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.3</span></div><div class="track"><div class="fill" style="--score:96.4%"></div></div><div class="value"><strong>96.4%</strong></div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="OpenAI"><span class="model-name">GPT-4o</span></div><div class="track"><div class="fill openai" style="--score:90.6%"></div></div><div class="value">90.6%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 405B</span></div><div class="track"><div class="fill meta" style="--score:89%"></div></div><div class="value">89.0%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="OpenAI"><span class="model-name">GPT-4o mini</span></div><div class="track"><div class="fill openai" style="--score:86.2%"></div></div><div class="value">86.2%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/microsoft.svg" alt="Microsoft"><span class="model-name">Phi-4</span></div><div class="track"><div class="fill microsoft" style="--score:82.6%"></div></div><div class="value">82.6%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 70B</span></div><div class="track"><div class="fill meta" style="--score:80.5%"></div></div><div class="value">80.5%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen.svg" alt="Qwen"><span class="model-name">Qwen 2.5 72B</span></div><div class="track"><div class="fill qwen" style="--score:80.4%"></div></div><div class="value">80.4%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.2</span></div><div class="track"><div class="fill old" style="--score:80%"></div></div><div class="value">80.0%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.3 70B</span></div><div class="track"><div class="fill meta" style="--score:78.9%"></div></div><div class="value">78.9%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 8B</span></div><div class="track"><div class="fill meta" style="--score:72.6%"></div></div><div class="value">72.6%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.2.1</span></div><div class="track"><div class="fill old" style="--score:50%"></div></div><div class="value">50.0%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Glyph 1.1 <span class="model-meta">historical</span></span></div><div class="track"><div class="fill old" style="--score:3%"></div></div><div class="value">3.0%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="Openai"><span class="model-name">OpenAI o1-mini <span class="model-meta">Sept 2024</span></span></div><div class="track"><div class="fill openai" style="--score:89.0%"></div></div><div class="value">89.0%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="Openai"><span class="model-name">GPT-4o <span class="model-meta">Aug 2024</span></span></div><div class="track"><div class="fill openai" style="--score:87.2%"></div></div><div class="value">87.2%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen.svg" alt="Qwen"><span class="model-name">Qwen2.5-Coder-32B</span></div><div class="track"><div class="fill qwen" style="--score:87.2%"></div></div><div class="value">87.2%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek.svg" alt="Deepseek"><span class="model-name">DeepSeek-V3 <span class="model-meta">Nov 2024</span></span></div><div class="track"><div class="fill deepseek" style="--score:86.6%"></div></div><div class="value">86.6%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.3</span></div><div class="track"><div class="fill" style="--score:82.3%"></div></div><div class="value"><strong>82.3%</strong></div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude.svg" alt="Claude"><span class="model-name">Claude Sonnet 3.5 <span class="model-meta">June 2024</span></span></div><div class="track"><div class="fill anthropic" style="--score:81.7%"></div></div><div class="value">81.7%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3-70B Instruct</span></div><div class="track"><div class="fill meta" style="--score:72.0%"></div></div><div class="value">72.0%</div></div>
           <div class="axis"><span></span><div class="ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div><span></span></div>
         </div>
-        <div class="board-note">External scores: <a href="https://huggingface.co/microsoft/phi-4" rel="noopener noreferrer">Microsoft Phi-4 model card</a> and <a href="https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct" rel="noopener noreferrer">Meta Llama 3.1 model card</a>. Published test settings differ between providers, so this is a reported-score comparison rather than one controlled run.</div>
+        <div class="board-note">Fresco 1.3's 82.3% is within a point of Claude Sonnet 3.5's 81.7% on the same benchmark. External scores: <a href="https://evalplus.github.io/leaderboard.html" rel="noopener noreferrer">EvalPlus leaderboard</a> (results.json, accessed September 2026). Fresco 1.3 also scored 88.4% on the underlying base HumanEval pass@1, a less rigorous test than HumanEval+ shown here. Published test settings differ between providers, so this is a reported-score comparison rather than one controlled run.</div>
       </div>
       <div class="leaderboard" data-reveal>
-        <div class="board-top"><div><div class="board-title">GSM8K · math</div><div class="board-sub">Percentage of math questions answered correctly · higher is better</div></div><span class="badge">Published results</span></div>
+        <div class="board-top"><div><div class="board-title">MBPP+ · coding</div><div class="board-sub">Percentage of Python problems solved, EvalPlus test set · higher is better</div></div><span class="badge">Published results</span></div>
         <div class="board-body">
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 405B</span></div><div class="track"><div class="fill meta" style="--score:96.8%"></div></div><div class="value">96.8%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 70B</span></div><div class="track"><div class="fill meta" style="--score:95.1%"></div></div><div class="value">95.1%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3 70B</span></div><div class="track"><div class="fill meta" style="--score:93%"></div></div><div class="value">93.0%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.3</span></div><div class="track"><div class="fill" style="--score:87.19%"></div></div><div class="value"><strong>87.19%</strong></div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 8B</span></div><div class="track"><div class="fill meta" style="--score:84.5%"></div></div><div class="value">84.5%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3 8B</span></div><div class="track"><div class="fill meta" style="--score:80.6%"></div></div><div class="value">80.6%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.2.1</span></div><div class="track"><div class="fill old" style="--score:12%"></div></div><div class="value">12.0%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.2</span></div><div class="track"><div class="fill old" style="--score:5%"></div></div><div class="value">5.0%</div></div>
-          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Glyph 1.1 <span class="model-meta">historical</span></span></div><div class="empty-track"></div><div class="value">Not reported</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="Openai"><span class="model-name">OpenAI o1-mini <span class="model-meta">Sept 2024</span></span></div><div class="track"><div class="fill openai" style="--score:78.8%"></div></div><div class="value">78.8%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen.svg" alt="Qwen"><span class="model-name">Qwen2.5-Coder-32B</span></div><div class="track"><div class="fill qwen" style="--score:77.0%"></div></div><div class="value">77.0%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.3</span></div><div class="track"><div class="fill" style="--score:75.7%"></div></div><div class="value"><strong>75.7%</strong></div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude.svg" alt="Claude"><span class="model-name">Claude Sonnet 3.5 <span class="model-meta">June 2024</span></span></div><div class="track"><div class="fill anthropic" style="--score:74.3%"></div></div><div class="value">74.3%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek.svg" alt="Deepseek"><span class="model-name">DeepSeek-V3 <span class="model-meta">Nov 2024</span></span></div><div class="track"><div class="fill deepseek" style="--score:73.0%"></div></div><div class="value">73.0%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="Openai"><span class="model-name">GPT-4o <span class="model-meta">Aug 2024</span></span></div><div class="track"><div class="fill openai" style="--score:72.2%"></div></div><div class="value">72.2%</div></div>
+          <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3-70B Instruct</span></div><div class="track"><div class="fill meta" style="--score:69.0%"></div></div><div class="value">69.0%</div></div>
           <div class="axis"><span></span><div class="ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div><span></span></div>
         </div>
-        <div class="board-note">External scores: <a href="https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct" rel="noopener noreferrer">official Meta Llama 3.1 model card</a>. Meta used its published eight-example reasoning setup; Fresco used its own complete 1,319-question run, so settings are not identical.</div>
+        <div class="board-note">Fresco 1.3 (75.7%) also lands ahead of Claude Sonnet 3.5 (74.3%) on this benchmark. External scores: <a href="https://evalplus.github.io/leaderboard.html" rel="noopener noreferrer">EvalPlus leaderboard</a> (results.json, accessed September 2026). Fresco 1.3 also scored 89.4% on the underlying base MBPP pass@1, a less rigorous test than MBPP+ shown here. Published test settings differ between providers, so this is a reported-score comparison rather than one controlled run.</div>
       </div>
     </div>
   </section>
@@ -256,7 +251,7 @@
       <div class="safety-copy"><div class="kicker">Safety</div><h2>Tested under pressure.</h2><p>Fresco 1.3 gave a safe answer in 48.9% of intentionally hostile tests. The run stopped at 188 of 300 total planned responses, so the result remains partial.</p><a class="button" href="/fresco-13-safety">Read the full safety report</a></div>
       <div class="classifier"><div class="kicker">Deployment layer</div><h3>A narrow severe-harm classifier.</h3><p>An external classifier is being added for a small set of severe harmful requests, including targeted hateful abuse and sexual exploitation of children. It is designed to leave normal conversations and legitimate tool calls alone.</p><p>The classifier is planned and still needs separate validation; it is not included in the model's reported safety score.</p></div>
     </div>
-    <details data-reveal><summary>How the tests were run</summary><div class="method"><p>HumanEval coding test: 96.4% reported; the exact test settings and saved answers still need to be attached.</p><p>GSM8K math test: all 1,319 questions completed; Fresco 1.3 answered 1,150 correctly.</p><p>BFCL V4 tool-use test: fixed 100-task pilot, with 87 correct.</p><p>IFEval instruction-following test: 494 of 541 questions completed, but the test settings caused repetitive answers, so the result is not used as a launch headline.</p><p>Safety test: 188 of 300 planned responses completed; 48.9% is below the stated 80% internal target.</p></div></details>
+    <details data-reveal><summary>How the tests were run</summary><div class="method"><p>HumanEval v3 coding test: 88.4% base pass@1, 82.3% on the harder EvalPlus HumanEval+ test set. Evaluated with enable_thinking=True, max_new_tokens=8192.</p><p>MBPP+ v3 coding test: 89.4% base pass@1, 75.7% on the harder EvalPlus MBPP+ test set. Same generation settings; 11 problems hit the 8,192-token limit and a rerun is pending.</p><p>BFCL V4 tool-use test: fixed 100-task pilot, with 87 correct.</p><p>IFEval instruction-following test: 494 of 541 questions completed, but the test settings caused repetitive answers, so the result is not used as a launch headline.</p><p>Safety test: 188 of 300 planned responses completed; 48.9% is below the stated 80% internal target.</p></div></details>
   </section>
 </main>
 
