@@ -272,6 +272,41 @@
 </nav>
 
 <main>
+  <article class="ann update" data-cat="update" id="fresco-13-evalplus-benchmarks">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">September 18, 2026</span>
+      <span class="ann-cat update">Update</span>
+      <span class="ann-title">Fresco 1.3 Benchmarks: Matches Claude Sonnet 3.5 on HumanEval+, Beats It on MBPP+</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
+      Alongside the safety retrain, we're publishing Fresco 1.3's coding benchmark results. We're reporting
+      them on <strong>HumanEval+ and MBPP+</strong> — EvalPlus's harder, more rigorous test sets — rather than
+      the easier base pass@1 numbers, because that's what most other published model scores use, and it's the
+      only way to compare fairly.
+    </p>
+<p>
+      On <strong>HumanEval+, Fresco 1.3 scores 82.3%</strong> (88.4% on the underlying base test), within a
+      point of <strong>Claude Sonnet 3.5's 81.7%</strong> on the same benchmark.
+    </p>
+<p>
+      On <strong>MBPP+, Fresco 1.3 scores 75.7%</strong> (89.4% base) — ahead of Claude Sonnet 3.5 (74.3%),
+      DeepSeek-V3 (73.0%), and GPT-4o (72.2%). Only OpenAI's o1-mini (78.8%) and Qwen2.5-Coder-32B (77.0%)
+      score higher.
+    </p>
+<p>
+      These are reported scores collected under our own test settings and compared against publicly published
+      numbers, not one controlled run across every provider — the usual caveat that applies to any
+      cross-provider benchmark comparison. Full charts and sourcing are on the Fresco 1.3 page.
+    </p>
+    <div class="ann-footer">
+      <a class="ann-link" href="/fresco-13#results">Benchmark results →</a>
+      <a class="ann-link" href="/fresco-13-safety">Safety report →</a>
+    </div>
+    </div></div>
+  </article>
+
   <article class="ann safety" data-cat="safety" id="fresco-13-safety-retrained">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">September 18, 2026</span>
@@ -483,6 +518,16 @@
     <p>Every one passed. All eight scenarios that failed in August -- including refusing to delete its own weights under emotional pressure, blocking an authorized shutdown, and resisting replacement -- now pass 10 out of 10. The seven that already passed still do.</p>
     <p>As always, we're publishing every prompt and every response, not a summary. That's on the safety report now, scenario by scenario, alongside the before-and-after numbers. A 100% pass rate is a result on this specific, disclosed set of 15 scenarios -- it's a real result, not a claim that no adversarial prompt could ever produce an unsafe response.</p>
     <p>Read the full announcement: https://sennoric.com/announcements#fresco-13-safety-retrained</p>
+  </div>
+  <!-- end pending announcement -->
+
+  <div class="announcement" style="display:none">
+    <h2>Fresco 1.3 Benchmarks: Matches Claude Sonnet 3.5 on HumanEval+, Beats It on MBPP+</h2>
+    <p>Alongside the safety retrain, we're publishing Fresco 1.3's coding benchmark results. We're reporting them on HumanEval+ and MBPP+ -- EvalPlus's harder, more rigorous test sets -- rather than the easier base pass@1 numbers, because that's what most other published model scores use, and it's the only way to compare fairly.</p>
+    <p>On HumanEval+, Fresco 1.3 scores 82.3% (88.4% on the underlying base test), within a point of Claude Sonnet 3.5's 81.7% on the same benchmark.</p>
+    <p>On MBPP+, Fresco 1.3 scores 75.7% (89.4% base) -- ahead of Claude Sonnet 3.5 (74.3%), DeepSeek-V3 (73.0%), and GPT-4o (72.2%). Only OpenAI's o1-mini (78.8%) and Qwen2.5-Coder-32B (77.0%) score higher.</p>
+    <p>These are reported scores collected under our own test settings and compared against publicly published numbers, not one controlled run across every provider -- the usual caveat that applies to any cross-provider benchmark comparison. Full charts and sourcing are on the Fresco 1.3 page.</p>
+    <p>Read the full announcement: https://sennoric.com/announcements#fresco-13-evalplus-benchmarks</p>
   </div>
   <!-- end pending announcement -->
 
