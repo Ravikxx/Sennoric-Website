@@ -18,6 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/paper-motion.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -282,7 +283,7 @@
     <div class="doc-section" id="free-models">
       <h2>Fresco &amp; Glyph</h2>
       <p class="lead">Free to chat with after creating a Sennoric account. Browser chat does not require an API key.</p>
-      <div class="model-grid">
+      <div class="model-grid" data-reveal-group="80">
         <div class="model-card">
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Fresco 1.2.5</div>
@@ -444,7 +445,7 @@
     <div class="doc-section" id="models">
       <h2>Models & API Keys</h2>
       <p class="lead">Sennoric supports multiple providers. Switch between them at any time with <code>/model</code>.</p>
-      <div class="model-grid">
+      <div class="model-grid" data-reveal-group="80">
         <div class="model-card">
           <div class="model-card-badge badge-key">Requires key</div>
           <div class="model-card-name">Claude</div>

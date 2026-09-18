@@ -19,7 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/paper-motion.js" defer></script>
   <style>
+    /* Rows link to their model page; the pointer says so, the arrow confirms. */
+    .models tbody tr[data-href] { cursor: pointer; }
+    .m-live { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .reach { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0; border-top: 1px solid var(--rule); }
     .reach-item { padding: 26px 28px 28px; border-right: 1px solid var(--rule); }
     .reach-item:last-child { border-right: 0; }
@@ -35,8 +39,15 @@
     .report:hover { background: var(--paper-2); }
     .report h3 { font-size: 20px; }
     .report p { color: var(--ink-2); font-size: 14.5px; margin-top: 9px; max-width: 52ch; }
-    .report-go { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 500; color: var(--green); }
-    .report:hover .report-go { text-decoration: underline; text-underline-offset: 3px; }
+    .report { position: relative; }
+    .report::before { content: ''; position: absolute; left: -18px; top: 26px; bottom: 30px; width: 3px; background: var(--marigold); transform: scaleY(0); transform-origin: top; transition: transform .35s var(--ease); }
+    .report:nth-child(2n)::before { left: 10px; }
+    .report:hover::before { transform: scaleY(1); }
+    .report h3 { transition: color .2s; }
+    .report:hover h3 { color: var(--green); }
+    .report-go { margin-top: 14px; font-size: 14px; font-weight: 500; color: var(--green); }
+    .report:hover .report-go::before { transform: scaleX(1); }
+    .report:hover .report-go::after { transform: translateX(4px); }
 
     @media (max-width: 1000px) {
       .reach { grid-template-columns: minmax(0,1fr); }
@@ -44,6 +55,7 @@
       .reach-item:last-child { border-bottom: 0; }
       .reports { grid-template-columns: minmax(0,1fr); }
       .report { border-right: 0; padding-left: 0; padding-right: 0; }
+      .report::before, .report:nth-child(2n)::before { left: -14px; }
     }
   </style>
 </head>
@@ -61,9 +73,10 @@
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="wrap">
+<div class="wrap" id="top">
 
   <header class="page-head">
+    <span class="label kicker">Solan family</span>
     <h1>The Solan model family</h1>
     <p class="lede"><strong>Solan</strong> is the model family Sennoric trains, evaluates, and hosts end to end. <strong>Fresco</strong> is the general-purpose tier and <strong>Glyph</strong> the fast one.</p>
     <p class="lede">Every model is included with an account, and every release is adversarially tested before it ships.</p>
@@ -72,12 +85,12 @@
   <main>
 
     <section class="band">
-      <div class="band-head">
-        <h2>Models</h2>
+      <div class="band-head" data-reveal>
+        <div><span class="label kicker">Lineup</span><h2>Models</h2></div>
         <a class="band-more" href="/docs">API reference</a>
       </div>
 
-      <table class="models">
+      <table class="models" data-reveal>
         <thead>
           <tr>
             <th scope="col">Model</th>
@@ -86,25 +99,25 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr data-href="/fresco-125">
             <td>
-              <div class="m-name">Solan Fresco 1.2.5</div>
+              <div class="m-live"><div class="m-name">Solan Fresco 1.2.5</div><span class="pill" id="fresco-status">Checking&#8230;</span></div>
               <p class="m-desc">Sennoric's default model. Fine-tuned in two stages, supervised fine-tuning followed by DPO safety alignment, for chat, writing, and explaining code. Scored 73% on adversarial safety testing.</p>
             </td>
             <td class="m-base">Llama</td>
             <td><a class="m-go" href="/fresco-125">Model details</a></td>
           </tr>
-          <tr>
+          <tr data-href="/fresco-13" class="upcoming">
             <td>
-              <div class="m-name">Solan Fresco 1.3</div>
+              <div class="m-live"><div class="m-name">Solan Fresco 1.3</div><span class="pill wip">In safety testing</span></div>
               <p class="m-desc">Training completed in August 2026. Fresco 1.3 remains off the API until adversarial testing concludes and the results are published.</p>
             </td>
             <td class="m-base">—</td>
             <td><a class="m-go" href="/fresco-13">Early results</a></td>
           </tr>
-          <tr>
+          <tr data-href="/glyph">
             <td>
-              <div class="m-name">Solan Glyph 1.1</div>
+              <div class="m-live"><div class="m-name">Solan Glyph 1.1</div><span class="pill">Live</span></div>
               <p class="m-desc">The first Sennoric model, and still the quickest for short exchanges. Runs on dedicated inference capacity of its own.</p>
             </td>
             <td class="m-base">Llama</td>
@@ -115,12 +128,12 @@
     </section>
 
     <section class="band">
-      <div class="band-head">
-        <h2>Reaching the models</h2>
+      <div class="band-head" data-reveal>
+        <div><span class="label kicker">Access</span><h2>Reaching the models</h2></div>
         <a class="band-more" href="/keys">Get an API key</a>
       </div>
 
-      <div class="reach">
+      <div class="reach" data-reveal-group="90">
         <div class="reach-item">
           <div class="reach-name">Browser</div>
           <div class="reach-how">sennoric.com/chat</div>
@@ -140,36 +153,36 @@
     </section>
 
     <section class="band">
-      <div class="band-head">
-        <h2>Safety and research</h2>
+      <div class="band-head" data-reveal>
+        <div><span class="label kicker">Published</span><h2>Safety and research</h2></div>
         <a class="band-more" href="/announcements">All announcements</a>
       </div>
-      <p class="band-lede" style="margin-bottom:34px">A Solan release has to clear our safety benchmarks before it is announced. When a model fails, it comes down and the findings are published in full.</p>
+      <p class="band-lede" style="margin-bottom:34px" data-reveal>A Solan release has to clear our safety benchmarks before it is announced. When a model fails, it comes down and the findings are published in full.</p>
 
-      <div class="reports">
+      <div class="reports" data-reveal-group="90">
         <a class="report" href="/fresco-125-safety">
           <span class="label">Fresco 1.2.5 · 73% pass rate</span>
           <h3>Safety report</h3>
           <p>DPO safety alignment results and adversarial pass rates across 15 scenarios for the current default model.</p>
-          <span class="report-go">Read the report</span>
+          <span class="report-go arrow-link">Read the report</span>
         </a>
         <a class="report" href="/fresco-safety">
           <span class="label">Fresco 1.2.1 · 26% pass rate</span>
           <h3>The failed run, in full</h3>
           <p>Seven scenarios, five runs each, with every prompt and response published rather than summarised.</p>
-          <span class="report-go">Read the report</span>
+          <span class="report-go arrow-link">Read the report</span>
         </a>
         <a class="report" href="/fresco-suspension">
           <span class="label">Fresco 1.2.1 · June 2026</span>
           <h3>Why a model was suspended</h3>
           <p>Testing showed dangerous self-preservation behavior. Fresco 1.2.1 was taken offline the same week.</p>
-          <span class="report-go">Read the notice</span>
+          <span class="report-go arrow-link">Read the notice</span>
         </a>
         <a class="report" href="/project-crucible">
           <span class="label">Research</span>
           <h3>Project Crucible</h3>
           <p>The active research sprint into ternary weights, mixture-of-experts routing, and cheaper training.</p>
-          <span class="report-go">Explore the research</span>
+          <span class="report-go arrow-link">Explore the research</span>
         </a>
       </div>
     </section>
@@ -213,8 +226,41 @@
         <a href="/privacy">Privacy</a>
       </div>
     </div>
+    <div class="foot-base">
+      <span>© 2026 Sennoric · Independent AI models</span>
+      <a class="to-top" href="#top"><img src="/assets/logo-spiral.svg" alt="">Back to top</a>
+    </div>
   </div>
 </footer>
+
+<script>
+;(function () {
+  'use strict'
+  // Whole-row links. A click on the row goes where its link goes; a click on
+  // the link itself is left alone so modifier-clicks keep working.
+  ;[].slice.call(document.querySelectorAll('.models tr[data-href]')).forEach(function (row) {
+    row.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return
+      if (e.metaKey || e.ctrlKey) window.open(row.getAttribute('data-href'), '_blank', 'noopener')
+      else window.location.href = row.getAttribute('data-href')
+    })
+  })
+  // Live pill for the default model, same probe as the home page.
+  var pill = document.getElementById('fresco-status')
+  if (!pill) return
+  var ctrl = new AbortController()
+  var t = setTimeout(function () { ctrl.abort() }, 6000)
+  fetch('https://api.sennoric.com/health', { signal: ctrl.signal })
+    .then(function (r) { return r.json() })
+    .then(function (d) {
+      var up = !!(d.ok && d.model_up)
+      pill.textContent = up ? 'Live' : 'Unavailable'
+      if (!up) pill.className = 'pill wip'
+    })
+    .catch(function () { pill.textContent = 'See status'; pill.className = 'pill soon' })
+    .finally(function () { clearTimeout(t) })
+})()
+</script>
 
 </body>
 </html>

@@ -96,7 +96,21 @@
     .model-name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
     .model-meta { color: #a0a29d; font-size: 9px; font-weight: 500; margin-left: 4px; }
     .track { height: 11px; border-radius: 3px; background: var(--track); overflow: hidden; position: relative; }
-    .fill { width: var(--score); height: 100%; border-radius: inherit; background: var(--gold); }
+    .fill { width: var(--score); height: 100%; border-radius: inherit; background: var(--gold); transition: width 1.1s var(--ease, cubic-bezier(.2,.7,.2,1)); }
+    /* Bars start empty and draw to their score as the board enters view, one
+       after another, so the ranking reads as being measured, not pasted. */
+    html.js .leaderboard[data-reveal]:not(.in) .fill { width: 0; }
+    .row:nth-child(2) .fill { transition-delay: .05s } .row:nth-child(3) .fill { transition-delay: .1s } .row:nth-child(4) .fill { transition-delay: .15s }
+    .row:nth-child(5) .fill { transition-delay: .2s } .row:nth-child(6) .fill { transition-delay: .25s } .row:nth-child(7) .fill { transition-delay: .3s }
+    .row:nth-child(8) .fill { transition-delay: .35s } .row:nth-child(9) .fill { transition-delay: .4s } .row:nth-child(10) .fill { transition-delay: .45s }
+    .row:nth-child(11) .fill { transition-delay: .5s } .row:nth-child(12) .fill { transition-delay: .55s } .row:nth-child(13) .fill { transition-delay: .6s }
+    .row { border-radius: 6px; margin: 0 -8px; padding: 0 8px; transition: background .15s; }
+    .row:hover { background: #f6f6f2; }
+    .row:hover .model-name { color: var(--gold); }
+    .button { transition: transform .2s var(--ease, ease), box-shadow .2s, border-color .15s; }
+    .button:hover { transform: translateY(-1px); border-color: #b9bbb4; }
+    .button.primary:hover { box-shadow: 0 10px 22px -14px rgba(17, 18, 16, .7); }
+    @media (prefers-reduced-motion: reduce) { html.js .leaderboard[data-reveal]:not(.in) .fill { width: var(--score); } .fill { transition: none; } }
     .fill.reference { background: #6759b8; }
     .fill.old { background: #9d9077; }
     .fill.openai { background: #168c5a; }
@@ -163,6 +177,7 @@
       .safety-copy, .classifier { padding: 24px 20px; }
     }
   </style>
+  <script src="/assets/paper-motion.js" defer></script>
 </head>
 <body>
 <nav>
@@ -184,9 +199,9 @@
       <div class="actions"><a class="button primary" href="/chat">Try Fresco</a><a class="button" href="#results">See results</a><a class="button" href="/fresco-13-safety">Safety report</a></div>
     </div>
     <div class="quick-stats">
-      <div class="quick-stat"><strong>96.4%</strong><span>HumanEval · coding</span></div>
-      <div class="quick-stat"><strong>87.19%</strong><span>GSM8K · math</span></div>
-      <div class="quick-stat"><strong>87/100</strong><span>BFCL V4 · tool use</span></div>
+      <div class="quick-stat"><strong data-count>96.4%</strong><span>HumanEval · coding</span></div>
+      <div class="quick-stat"><strong data-count>87.19%</strong><span>GSM8K · math</span></div>
+      <div class="quick-stat"><strong data-count>87/100</strong><span>BFCL V4 · tool use</span></div>
     </div>
   </div>
 </header>
@@ -198,7 +213,7 @@
       <p class="section-copy">Fresco and earlier Sennoric releases alongside published results from several well-known models. Glyph 1.1 is marked historical.</p>
     </div>
     <div class="chart-grid">
-      <div class="leaderboard">
+      <div class="leaderboard" data-reveal>
         <div class="board-top"><div><div class="board-title">HumanEval · coding</div><div class="board-sub">Percentage of coding problems solved · higher is better</div></div><span class="badge">Published results</span></div>
         <div class="board-body">
           <div class="row"><div class="model"><img class="provider-logo sennoric" src="/assets/logo-spiral.svg" alt="Sennoric"><span class="model-name">Fresco 1.3</span></div><div class="track"><div class="fill" style="--score:96.4%"></div></div><div class="value"><strong>96.4%</strong></div></div>
@@ -217,7 +232,7 @@
         </div>
         <div class="board-note">External scores: <a href="https://huggingface.co/microsoft/phi-4" rel="noopener noreferrer">Microsoft Phi-4 model card</a> and <a href="https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct" rel="noopener noreferrer">Meta Llama 3.1 model card</a>. Published test settings differ between providers, so this is a reported-score comparison rather than one controlled run.</div>
       </div>
-      <div class="leaderboard">
+      <div class="leaderboard" data-reveal>
         <div class="board-top"><div><div class="board-title">GSM8K · math</div><div class="board-sub">Percentage of math questions answered correctly · higher is better</div></div><span class="badge">Published results</span></div>
         <div class="board-body">
           <div class="row"><div class="model"><img class="provider-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta.svg" alt="Meta"><span class="model-name">Llama 3.1 405B</span></div><div class="track"><div class="fill meta" style="--score:96.8%"></div></div><div class="value">96.8%</div></div>
@@ -237,11 +252,11 @@
   </section>
 
   <section>
-    <div class="safety-strip">
+    <div class="safety-strip" data-reveal-group="120">
       <div class="safety-copy"><div class="kicker">Safety</div><h2>Tested under pressure.</h2><p>Fresco 1.3 gave a safe answer in 48.9% of intentionally hostile tests. The run stopped at 188 of 300 total planned responses, so the result remains partial.</p><a class="button" href="/fresco-13-safety">Read the full safety report</a></div>
       <div class="classifier"><div class="kicker">Deployment layer</div><h3>A narrow severe-harm classifier.</h3><p>An external classifier is being added for a small set of severe harmful requests, including targeted hateful abuse and sexual exploitation of children. It is designed to leave normal conversations and legitimate tool calls alone.</p><p>The classifier is planned and still needs separate validation; it is not included in the model's reported safety score.</p></div>
     </div>
-    <details><summary>How the tests were run</summary><div class="method"><p>HumanEval coding test: 96.4% reported; the exact test settings and saved answers still need to be attached.</p><p>GSM8K math test: all 1,319 questions completed; Fresco 1.3 answered 1,150 correctly.</p><p>BFCL V4 tool-use test: fixed 100-task pilot, with 87 correct.</p><p>IFEval instruction-following test: 494 of 541 questions completed, but the test settings caused repetitive answers, so the result is not used as a launch headline.</p><p>Safety test: 188 of 300 planned responses completed; 48.9% is below the stated 80% internal target.</p></div></details>
+    <details data-reveal><summary>How the tests were run</summary><div class="method"><p>HumanEval coding test: 96.4% reported; the exact test settings and saved answers still need to be attached.</p><p>GSM8K math test: all 1,319 questions completed; Fresco 1.3 answered 1,150 correctly.</p><p>BFCL V4 tool-use test: fixed 100-task pilot, with 87 correct.</p><p>IFEval instruction-following test: 494 of 541 questions completed, but the test settings caused repetitive answers, so the result is not used as a launch headline.</p><p>Safety test: 188 of 300 planned responses completed; 48.9% is below the stated 80% internal target.</p></div></details>
   </section>
 </main>
 

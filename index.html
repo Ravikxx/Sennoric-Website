@@ -19,6 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/paper-motion.js" defer></script>
   <style>
     /* Shared shell lives in /assets/paper.css. Everything below is the
        homepage's own composition: a printed ledger on paper, with one
@@ -53,8 +54,16 @@
     .hero h1 .line > span { display: block; transform: translateY(110%); animation: rise 1s var(--ease) forwards; }
     .hero h1 .line:nth-child(2) > span { animation-delay: .08s; }
     .hero h1 .line:nth-child(3) > span { animation-delay: .16s; }
-    .hero h1 .mark-word { color: var(--green); }
+    .hero h1 .mark-word { color: var(--green); position: relative; display: inline-block; isolation: isolate; }
+    /* A marigold highlighter stroke sweeps under the key word after the
+       line has risen, the way a reader marks the one thing that matters. */
+    .hero h1 .mark-word::after {
+      content: ''; position: absolute; left: -.03em; right: -.03em; bottom: .08em; height: .18em; z-index: -1;
+      background: var(--marigold); opacity: .6; border-radius: 2px;
+      transform: scaleX(0) skewX(-8deg); transform-origin: left; animation: hl .7s var(--ease) 1.05s forwards;
+    }
     @keyframes rise { to { transform: none; } }
+    @keyframes hl { to { transform: scaleX(1) skewX(-8deg); } }
 
     .hero-body { margin-top: 30px; font-size: 18px; line-height: 1.6; color: var(--ink-2); max-width: 54ch; }
     .hero-body strong { color: var(--ink); font-weight: 600; }
@@ -70,13 +79,25 @@
     .ask-input::placeholder { color: var(--ink-2); }
     .ask-input:focus { border-color: var(--green); outline-offset: 1px; }
     .ask-send { flex: none; cursor: pointer; }
+    /* Three things to ask, one tap away. Filling the box (not sending) keeps
+       the reader in charge of what actually goes to the model. */
+    .ask-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; max-width: 560px; }
+    .chip {
+      font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em; color: var(--ink-2);
+      padding: 6px 11px; border-radius: 999px; border: 1px solid var(--rule-2); background: transparent; cursor: pointer;
+      transition: color .15s, border-color .15s, background .15s, transform .2s var(--ease);
+    }
+    .chip:hover { color: var(--ink); border-color: var(--ink-2); background: var(--paper-3); transform: translateY(-1px); }
+    .chip:active { transform: none; }
+    .chip::before { content: '\2192'; margin-right: 6px; color: var(--marigold); }
     .hero-status {
       display: flex; align-items: center; gap: 9px; margin-top: 22px;
       font-family: var(--mono); font-size: 12.5px; color: var(--ink-2);
     }
     .hero-status a { color: var(--green); }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); flex: none; }
-    .dot.up { background: var(--green); box-shadow: 0 0 0 3px rgba(26, 92, 53, .14); }
+    .dot.up { background: var(--green); box-shadow: 0 0 0 3px rgba(26, 92, 53, .14); animation: pulse 2.4s ease-out infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(26, 92, 53, .35); } 70% { box-shadow: 0 0 0 7px rgba(26, 92, 53, 0); } 100% { box-shadow: 0 0 0 0 rgba(26, 92, 53, 0); } }
     .dot.down { background: var(--mark); }
 
     /* The mark. Drawn once on load, then turned by the scroll loop. */
@@ -104,6 +125,10 @@
     .rail-fill { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--marigold); transform-origin: top; transform: scaleY(0); }
     .rail i { position: absolute; left: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--forest); border: 1px solid rgba(243, 240, 230, .5); transition: background .3s, border-color .3s; }
     .rail i.on { background: var(--marigold); border-color: var(--marigold); }
+    /* The rail is also a table of contents: each tick scrolls to its line. */
+    .rail i { cursor: pointer; }
+    .rail i::before { content: ''; position: absolute; inset: -8px; }
+    .rail i:hover { transform: scale(1.5); }
     .ledger-lines { position: relative; height: 46vh; min-height: 260px; }
     .ledger-line {
       position: absolute; inset: 0; display: flex; align-items: center; margin: 0;
@@ -208,6 +233,13 @@
     .fam-row h3 a { position: relative; }
     .fam-row h3 a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 3px; background: var(--marigold); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
     .fam-row:hover h3 a::after { transform: scaleX(1); }
+    /* On hover the row is tinted like a ledger line under a finger, and the
+       index number turns marigold with a short mark beside it. */
+    .fam-row:hover { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+    .fam-row::before { content: ''; position: absolute; left: -18px; top: 38px; width: 3px; height: 34px; background: var(--marigold); transform: scaleY(0); transform-origin: top; transition: transform .35s var(--ease); }
+    .fam-row:hover::before { transform: scaleY(1); }
+    .fam-n { transition: color .2s; }
+    .fam-row:hover .fam-n { color: var(--green); }
     .fam-row p { margin-top: 10px; color: var(--ink-2); font-size: 15px; max-width: 56ch; line-height: 1.55; }
     .fam-side { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; padding-top: 10px; text-align: right; }
 
@@ -215,6 +247,8 @@
     .build { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 56px; align-items: start; }
     .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
     .tab { font-family: var(--mono); font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; border-radius: 3px; border: 1px solid transparent; background: none; color: var(--ink-2); cursor: pointer; }
+    .tab { transition: color .15s, background .15s, border-color .15s; }
+    .tab:hover { color: var(--ink); background: var(--paper-2); }
     .tab[aria-selected="true"] { color: var(--ink); border-color: var(--rule-2); background: var(--paper-2); }
     .code[hidden] { display: none; }
     .code .ln { display: block; opacity: 0; transform: translateX(-6px); transition: opacity .35s, transform .35s var(--ease); }
@@ -232,16 +266,15 @@
     /* ── From the ledger (latest) ───────────────────────────────────────── */
     .news { list-style: none; border-top: 1px solid var(--rule-2); }
     .news li { display: grid; grid-template-columns: 170px 130px minmax(0, 1fr); gap: 24px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+    .news li { padding-left: 16px; padding-right: 16px; margin: 0 -16px; border-radius: 4px; transition: background .2s; }
     .news li:hover { background: var(--paper-2); }
     .news a { display: contents; }
-    .news h3 { font-size: 20px; font-weight: 600; letter-spacing: -.015em; }
+    .news h3 { font-size: 20px; font-weight: 600; letter-spacing: -.015em; transition: color .2s; }
+    .news li:hover h3 { color: var(--green); }
     .news p { color: var(--ink-2); font-size: 14.5px; margin-top: 6px; max-width: 70ch; }
     .news .go { color: var(--green); font-size: 14px; font-weight: 500; margin-top: 8px; display: inline-block; }
-    .news li:hover .go { text-decoration: underline; text-underline-offset: 3px; }
-
-    /* Generic reveal for section heads and blocks. */
-    [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .8s var(--ease); }
-    [data-reveal].in { opacity: 1; transform: none; }
+    .news .go { position: relative; }
+    .news .go::before { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease); }
 
     /* ── Responsive ─────────────────────────────────────────────────────── */
     @media (max-width: 1000px) {
@@ -256,6 +289,8 @@
       .rail i { top: -3px; left: auto; }
       .sheets { grid-template-columns: minmax(0, 1fr); }
       .fam-row { grid-template-columns: 44px minmax(0, 1fr); }
+      .fam-row::before { display: none; }
+      .news li { margin: 0; padding-left: 0; padding-right: 0; }
       .fam-side { grid-column: 2; align-items: flex-start; text-align: left; flex-direction: row; align-items: center; }
       .build { grid-template-columns: minmax(0, 1fr); gap: 32px; }
       .news li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
@@ -273,7 +308,9 @@
 
     /* Reduced motion: nothing pinned, nothing drawn, nothing turning. */
     @media (prefers-reduced-motion: reduce) {
-      .hero h1 .line > span, .spiral path, .scroll-cue::after { animation: none; }
+      .hero h1 .line > span, .spiral path, .scroll-cue::after, .dot.up, .hero h1 .mark-word::after { animation: none; }
+      .hero h1 .mark-word::after { transform: scaleX(1) skewX(-8deg); }
+      .chip, .rail i, .to-top img, .fam-row::before { transition: none; }
       .hero h1 .line > span { transform: none; }
       .spiral path { stroke-dashoffset: 0; }
       .progress { display: none; }
@@ -284,7 +321,7 @@
       .ledger-foot { position: static; margin-top: 48px; }
       .rail-fill { transform: none; }
       .fam-row::after { transform: scaleX(1); }
-      .fam-row > *, [data-reveal], .code .ln { opacity: 1; transform: none; transition: none; }
+      .fam-row > *, .code .ln { opacity: 1; transform: none; transition: none; }
       .lamp-ring { display: none; }
     }
   </style>
@@ -327,6 +364,11 @@
                placeholder="Ask Solan something" autocomplete="off" enterkeyhint="go">
         <button class="btn btn-solid ask-send" type="submit">Try Solan</button>
       </form>
+      <div class="ask-chips" id="ask-chips" aria-label="Things to try">
+        <button type="button" class="chip" data-q="Explain DPO safety alignment in plain language.">Explain DPO alignment</button>
+        <button type="button" class="chip" data-q="Write a four-line poem about paper and ink.">Write a short poem</button>
+        <button type="button" class="chip" data-q="When should I use Glyph instead of Fresco?">Fresco or Glyph?</button>
+      </div>
       <p class="hero-status"><span class="dot" id="status-dot"></span><span id="status-text">Checking model status…</span></p>
     </div>
     <div class="hero-mark" id="hero-mark">
@@ -367,7 +409,7 @@
   <section class="ink band" id="ink">
     <div class="wrap">
       <div class="band-head" data-reveal>
-        <h2>No invisible ink.</h2>
+        <div><span class="label kicker">The promise</span><h2>No invisible ink.</h2></div>
         <a class="band-more" href="/no-invisible-ink">Read the commitment</a>
       </div>
       <p class="band-lede" data-reveal>Generated text can be shaped so it carries a hidden signature, and a conversation can be sold as ad space. Neither shows on the page. <span class="only-pointer">Hold the lamp over both sheets.</span><span class="only-touch">Develop both sheets below.</span></p>
@@ -410,7 +452,7 @@
   <section class="band" id="models">
     <div class="wrap">
       <div class="band-head" data-reveal>
-        <h2>The Solan family</h2>
+        <div><span class="label kicker">Models</span><h2>The Solan family</h2></div>
         <p class="probe" id="probe"><span>api.sennoric.com</span><span>·</span><span id="probe-text">probing…</span></p>
       </div>
       <ol class="fam" id="fam">
@@ -445,7 +487,7 @@
   <section class="band" id="build">
     <div class="wrap">
       <div class="band-head" data-reveal>
-        <h2>Build with Sennoric</h2>
+        <div><span class="label kicker">Developers</span><h2>Build with Sennoric</h2></div>
         <a class="band-more" href="/docs">API reference</a>
       </div>
       <div class="build grid-safe">
@@ -494,7 +536,7 @@
   <section class="band" id="latest">
     <div class="wrap">
       <div class="band-head" data-reveal>
-        <h2>From the ledger</h2>
+        <div><span class="label kicker">Latest</span><h2>From the ledger</h2></div>
         <a class="band-more" href="/announcements">All announcements</a>
       </div>
       <!-- Replaced at runtime by the three most recent real announcements.
@@ -545,6 +587,11 @@
         <a href="/privacy">Privacy</a>
       </div>
     </div>
+    <div class="foot-base">
+      <span>© 2026 Sennoric · Independent AI models</span>
+      <span class="foot-live"><span class="dot" id="foot-dot"></span><span id="foot-status">api.sennoric.com</span></span>
+      <a class="to-top" href="#top"><img src="/assets/logo-spiral.svg" alt="">Back to top</a>
+    </div>
   </div>
 </footer>
 
@@ -565,6 +612,36 @@
       e.preventDefault()
       window.location.href = '/chat'
     })
+
+    // Chips fill the box and hand focus over; sending stays a deliberate act.
+    var chips = $('ask-chips')
+    if (chips) chips.addEventListener('click', function (e) {
+      var chip = e.target.closest('.chip')
+      if (!chip) return
+      field.value = chip.getAttribute('data-q') || ''
+      field.focus()
+      try { field.setSelectionRange(field.value.length, field.value.length) } catch (err) {}
+    })
+
+    // The placeholder types out a few example questions while the box is
+    // empty and unfocused, so the empty state shows what the model is for.
+    if (reduced) return
+    var prompts = ['Ask Solan something', 'Explain how a sourdough starter works', 'Draft a polite reply to a late invoice', 'What is DPO safety alignment?', 'Ask Solan something']
+    var pi = 0, ci = 0, dir = 1, timer = null, idle = true
+    function step() {
+      if (!idle || document.activeElement === field || field.value) { timer = setTimeout(step, 900); return }
+      var word = prompts[pi]
+      ci += dir
+      field.setAttribute('placeholder', word.slice(0, ci))
+      var wait = 42
+      if (dir > 0 && ci >= word.length) { dir = -1; wait = 2200 }
+      else if (dir < 0 && ci <= 0) { dir = 1; pi = (pi + 1) % prompts.length; wait = 500 }
+      else if (dir < 0) wait = 18
+      timer = setTimeout(step, wait)
+    }
+    timer = setTimeout(step, 2600)
+    field.addEventListener('focus', function () { field.setAttribute('placeholder', 'Ask Solan something') })
+    document.addEventListener('visibilitychange', function () { idle = !document.hidden })
   })()
 
   // ── Torn edges: a new tear on every visit ──────────────────────────────
@@ -579,6 +656,8 @@
     var ledger = $('ledger'), lines = [].slice.call(document.querySelectorAll('.ledger-line'))
     var idx = $('ledger-idx'), fill = $('rail-fill'), ticks = [].slice.call(document.querySelectorAll('.rail i'))
     var current = 0, ticking = false
+    // Pointer parallax on the mark: it leans a little toward the cursor.
+    var px = 0, py = 0, tx = 0, ty = 0, hero = document.querySelector('.hero')
 
     function setStep(step) {
       if (step === current) return
@@ -599,9 +678,11 @@
 
       // The mark turns a quarter-turn per screen of scrolling and drifts up
       // a little slower than the page, so it reads as sitting on the paper.
-      spiral.style.transform = 'rotate(' + (y * 0.16) + 'deg)'
-      mark.style.transform = 'translateY(' + (y * 0.12) + 'px)'
+      px += (tx - px) * 0.12; py += (ty - py) * 0.12
+      spiral.style.transform = 'rotate(' + (y * 0.16 + px * 0.6) + 'deg)'
+      mark.style.transform = 'translate(' + px.toFixed(2) + 'px,' + (y * 0.12 + py).toFixed(2) + 'px)'
       if (seal) seal.style.transform = 'rotate(' + (y * 0.16) + 'deg)'
+      if (Math.abs(tx - px) > 0.15 || Math.abs(ty - py) > 0.15) onScroll()
 
       // Ledger: progress through the pinned section drives the line index.
       var rect = ledger.getBoundingClientRect()
@@ -623,21 +704,24 @@
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
-    frame()
-  })()
-
-  // ── Reveal on entry ────────────────────────────────────────────────────
-  ;(function () {
-    var els = [].slice.call(document.querySelectorAll('[data-reveal], [data-row]'))
-    if (reduced || !('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in') }); return }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return
-        en.target.classList.add('in')
-        io.unobserve(en.target)
+    if (hero && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      hero.addEventListener('pointermove', function (e) {
+        var r = hero.getBoundingClientRect()
+        tx = ((e.clientX - r.left) / r.width - 0.5) * 28
+        ty = ((e.clientY - r.top) / r.height - 0.5) * 20
+        onScroll()
       })
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' })
-    els.forEach(function (el) { io.observe(el) })
+      hero.addEventListener('pointerleave', function () { tx = 0; ty = 0; onScroll() })
+    }
+    // Each tick on the rail scrolls to the start of its line.
+    ticks.forEach(function (t, i) {
+      t.addEventListener('click', function () {
+        var top = ledger.getBoundingClientRect().top + (window.scrollY || window.pageYOffset)
+        var total = ledger.offsetHeight - window.innerHeight
+        window.scrollTo({ top: top + (i / lines.length) * total + 2, behavior: 'smooth' })
+      })
+    })
+    frame()
   })()
 
   // ── The lamp ───────────────────────────────────────────────────────────
@@ -691,34 +775,39 @@
     })
   })()
 
-  // ── Build: tabs, and the curl example prints itself once ───────────────
+  // ── Build: tabs, and each example prints itself the first time it shows ─
   ;(function () {
     var tabs = [].slice.call(document.querySelectorAll('.tab'))
+    var instant = reduced || !('IntersectionObserver' in window)
+    function type(panel) {
+      if (!panel || panel.classList.contains('typed')) return
+      panel.classList.remove('static')
+      var lns = [].slice.call(panel.querySelectorAll('.ln'))
+      lns.forEach(function (ln, i) { ln.style.transitionDelay = (i * 110) + 'ms' })
+      // Next frame, so the hidden→shown panel actually transitions.
+      requestAnimationFrame(function () { panel.classList.add('typed') })
+    }
     tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
         tabs.forEach(function (t) {
           var on = t === tab
           t.setAttribute('aria-selected', String(on))
           var panel = $(t.getAttribute('aria-controls'))
-          if (panel) panel.hidden = !on
+          if (panel) { panel.hidden = !on; if (on && !instant) type(panel) }
         })
       })
     })
     var curl = $('code-curl')
     if (!curl) return
-    var lns = [].slice.call(curl.querySelectorAll('.ln'))
-    function type() {
-      lns.forEach(function (ln, i) { ln.style.transitionDelay = (i * 160) + 'ms' })
-      curl.classList.add('typed')
-    }
-    if (reduced || !('IntersectionObserver' in window)) { curl.classList.add('static'); return }
-    var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { type(); io.disconnect() } }, { threshold: 0.4 })
+    if (instant) { curl.classList.add('static'); return }
+    var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { type(curl); io.disconnect() } }, { threshold: 0.4 })
     io.observe(curl)
   })()
 
   // ── Live status, with the real round-trip time ─────────────────────────
   ;(function () {
     var text = $('status-text'), dot = $('status-dot'), pill = $('fresco-status'), probe = $('probe-text')
+    var fdot = $('foot-dot'), fstat = $('foot-status')
     var ctrl = new AbortController()
     var t = setTimeout(function () { ctrl.abort() }, 6000)
     var t0 = performance.now()
@@ -732,6 +821,8 @@
         pill.textContent = up ? 'Live' : 'Unavailable'
         if (!up) pill.className = 'pill wip'
         if (probe) probe.innerHTML = '<b>' + (d.model || 'fresco') + '</b> · ' + (up ? 'answering' : 'unavailable') + ' · ' + ms + ' ms'
+        if (fdot) fdot.className = 'dot ' + (up ? 'up' : 'down')
+        if (fstat) fstat.textContent = up ? 'All systems answering' : 'Model unavailable'
       })
       // A failed probe means the status endpoint is unreachable, not that the
       // model is down. Don't claim an outage we can't actually see.
