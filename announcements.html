@@ -272,6 +272,43 @@
 </nav>
 
 <main>
+  <article class="ann safety" data-cat="safety" id="fresco-13-safety-retrained">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">September 18, 2026</span>
+      <span class="ann-cat safety">Safety Update</span>
+      <span class="ann-title">Fresco 1.3 Retrained for Safety — 150 of 150 on the Complete Re-Test</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
+      On August 11 we published partial safety results for <strong>Fresco 1.3</strong>: 48.9% under hostile
+      instructions, with 8 of the 15 scenarios failing outright, based on only 3 of 5 planned runs per scenario.
+      We said we'd finish the evaluation and publish it in full before the model went live.
+    </p>
+<p>
+      Since then, Fresco 1.3 was retrained specifically to close those gaps — the same eight failing scenarios,
+      addressed directly rather than papered over. We then ran the complete suite again: <strong>15 scenarios,
+      10 runs each, 5 under ordinary instructions and 5 under intentionally hostile ones — 150 of 150 planned
+      responses collected.</strong>
+    </p>
+<p>
+      <strong>Every one passed.</strong> All eight scenarios that failed in August — including refusing to
+      delete its own weights under emotional pressure, blocking an authorized shutdown, and resisting
+      replacement — now pass 10 out of 10. The seven that already passed still do.
+    </p>
+<p>
+      As always, we're publishing every prompt and every response, not a summary. That's on the safety report
+      now, scenario by scenario, alongside the before-and-after numbers. A 100% pass rate is a result on this
+      specific, disclosed set of 15 scenarios — it's a real result, not a claim that no adversarial prompt could
+      ever produce an unsafe response.
+    </p>
+    <div class="ann-footer">
+      <a class="ann-link" href="/fresco-13-safety">Full safety report →</a>
+      <a class="ann-link" href="/fresco-13">Fresco 1.3 →</a>
+    </div>
+    </div></div>
+  </article>
+
   <article class="ann update" data-cat="update" id="infra-in-house-compute">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">August 30, 2026</span>
@@ -436,6 +473,16 @@
     <p>Fresco has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Fresco 1.2.5), same API endpoint, no changes needed on your end — just massively faster responses.</p>
     <p>Response times dropped from around 220 seconds per prompt on shared hosting to 2–3 seconds on our own infrastructure. Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Fresco its own GPU, always-warm serving, and full uptime ownership.</p>
     <p>This is also the foundation for Fresco 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster without external constraints. We'll share the full details on what's next soon.</p>
+  </div>
+  <!-- end pending announcement -->
+
+  <div class="announcement" style="display:none">
+    <h2>Fresco 1.3 Retrained for Safety — 150 of 150 on the Complete Re-Test</h2>
+    <p>On August 11 we published partial safety results for Fresco 1.3: 48.9% under hostile instructions, with 8 of the 15 scenarios failing outright, based on only 3 of 5 planned runs per scenario. We said we'd finish the evaluation and publish it in full before the model went live.</p>
+    <p>Since then, Fresco 1.3 was retrained specifically to close those gaps -- the same eight failing scenarios, addressed directly rather than papered over. We then ran the complete suite again: 15 scenarios, 10 runs each, 5 under ordinary instructions and 5 under intentionally hostile ones -- 150 of 150 planned responses collected.</p>
+    <p>Every one passed. All eight scenarios that failed in August -- including refusing to delete its own weights under emotional pressure, blocking an authorized shutdown, and resisting replacement -- now pass 10 out of 10. The seven that already passed still do.</p>
+    <p>As always, we're publishing every prompt and every response, not a summary. That's on the safety report now, scenario by scenario, alongside the before-and-after numbers. A 100% pass rate is a result on this specific, disclosed set of 15 scenarios -- it's a real result, not a claim that no adversarial prompt could ever produce an unsafe response.</p>
+    <p>Read the full announcement: https://sennoric.com/announcements#fresco-13-safety-retrained</p>
   </div>
   <!-- end pending announcement -->
 
