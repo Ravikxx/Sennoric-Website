@@ -26,6 +26,8 @@ h3,
    background, padding) but rely on this file for the pieces that markup
    shared with models.html needs: the CTA pushed to the right, its button
    styling, and the full footer grid. */
+nav .brand { display: flex; align-items: center; gap: 8px; }
+nav .brand img { height: 22px; width: auto; display: block; }
 nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 nav .nav-cta {
   font-size: 13.5px; font-weight: 600; padding: 8px 16px; border-radius: 4px;

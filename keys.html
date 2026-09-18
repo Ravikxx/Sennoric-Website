@@ -687,13 +687,13 @@
         <span class="prompt">$ </span>curl https://api.sennoric.com/v1/chat/completions \<br>
         &nbsp;&nbsp;-H "Authorization: Bearer sennoric-sk-…" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hello"}]}'
+        &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hello"}]}'
       </div>
       <div class="code-block">
         <span class="comment"># Python — openai library</span><br>
         from openai import OpenAI<br>
         client = OpenAI(api_key="sennoric-sk-…", base_url="https://api.sennoric.com/v1")<br>
-        resp = client.chat.completions.create(model="lumen", messages=[{"role":"user","content":"Hello"}])
+        resp = client.chat.completions.create(model="fresco", messages=[{"role":"user","content":"Hello"}])
       </div>
       <div class="code-block">
         <span class="comment"># Sennoric CLI</span><br>
