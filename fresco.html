@@ -8,27 +8,29 @@
   <title>Fresco — Sennoric</title>
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://sennoric.com/chat">
+  <meta name="theme-color" content="#f3f0e6">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/paper.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
-      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      background: var(--bg); color: var(--text);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 16px; padding: 24px; text-align: center;
+      gap: 16px; padding: 24px 20px; text-align: center;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .logo { height: 64px; width: auto; margin-bottom: 8px; }
-    h1 { font-size: 24px; font-weight: 600; }
-    p { color: var(--muted); max-width: 400px; line-height: 1.6; }
+    .logo { height: 56px; width: auto; margin-bottom: 10px; animation: turn 2.4s var(--ease) infinite; }
+    @keyframes turn { to { transform: rotate(360deg); } }
+    h1 { font-size: clamp(28px, 6vw, 38px); }
+    p { color: var(--ink-2); max-width: 42ch; line-height: 1.6; }
+    a { color: var(--green); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { .logo { animation: none; } }
   </style>
 </head>
 <body>
   <img src="/assets/logo-spiral.svg" alt="Sennoric" class="logo">
-  <h1>Fresco 1.2.5</h1>
+  <h1>Redirecting to Fresco 1.2.5…</h1>
   <p>The chat interface has moved. You're being redirected to sign in or create a Sennoric account.</p>
   <p><a href="/chat">Click here</a> if you aren't redirected automatically.</p>
   <script src="/assets/profile.js"></script>

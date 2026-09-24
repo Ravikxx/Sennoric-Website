@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <title>Sennoric — Independent AI Models</title>
   <meta name="description" content="Sennoric is an independent lab that trains its own AI models and serves them from its own hardware. Fresco and Glyph are available in the browser, through any OpenAI-compatible client, and in the terminal.">
   <link rel="canonical" href="https://sennoric.com/">
@@ -214,6 +216,40 @@
     .ink-note a { color: var(--green); font-weight: 500; }
     .ink-note a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+    /* ── Measured: Fresco 1.3's published numbers ──────────────────────── */
+    .measured { padding-top: 120px; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule-2); border-bottom: 1px solid var(--rule-2); }
+    .stat { padding: 30px 26px 28px; position: relative; }
+    .stat + .stat { border-left: 1px solid var(--rule); }
+    .stat-n { display: block; font-family: var(--disp); font-weight: 800; letter-spacing: -.04em; line-height: 1; font-size: clamp(40px, 5vw, 64px); color: var(--ink); font-variant-numeric: tabular-nums; }
+    .stat-n small { font-size: .45em; font-weight: 700; letter-spacing: -.01em; color: var(--ink-2); margin-left: 2px; }
+    .stat-l { display: block; margin-top: 14px; }
+    .stat p { margin-top: 8px; font-size: 14px; color: var(--ink-2); line-height: 1.5; max-width: 26ch; }
+    .stat::before { content: ''; position: absolute; left: 26px; top: -1px; width: 36px; height: 3px; background: var(--marigold); transform: scaleX(0); transform-origin: left; transition: transform .8s var(--ease) .2s; }
+    .stats.in .stat::before { transform: scaleX(1); }
+    .stat.safe .stat-n { color: var(--green); }
+
+    .board { margin-top: 48px; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 56px; align-items: start; }
+    .board h3 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .board-copy p { margin-top: 12px; color: var(--ink-2); font-size: 15px; line-height: 1.6; max-width: 46ch; }
+    .board-copy .fine { font-size: 13px; margin-top: 16px; }
+    .board-copy .fine a { color: var(--green); }
+    .bars { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .bar { display: grid; grid-template-columns: 170px minmax(0, 1fr) 56px; gap: 14px; align-items: center; font-size: 14px; }
+    .bar-name { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { height: 10px; background: var(--paper-2); border-radius: 2px; overflow: hidden; }
+    .bar-fill { display: block; height: 100%; width: var(--v); background: var(--rule-2); border-radius: 2px; transform: scaleX(0); transform-origin: left; transition: transform 1.1s var(--ease); }
+    .bars.in .bar-fill { transform: scaleX(1); }
+    .bars.in .bar:nth-child(2) .bar-fill { transition-delay: .05s; } .bars.in .bar:nth-child(3) .bar-fill { transition-delay: .1s; }
+    .bars.in .bar:nth-child(4) .bar-fill { transition-delay: .15s; } .bars.in .bar:nth-child(5) .bar-fill { transition-delay: .2s; }
+    .bars.in .bar:nth-child(6) .bar-fill { transition-delay: .25s; } .bars.in .bar:nth-child(7) .bar-fill { transition-delay: .3s; }
+    .bars.in .bar:nth-child(8) .bar-fill { transition-delay: .35s; }
+    .bar-v { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+    .bar.us .bar-name { color: var(--ink); font-weight: 600; }
+    .bar.us .bar-fill { background: var(--green); }
+    .bar.us .bar-v { color: var(--green); font-weight: 500; }
+    .bar.us .bar-track { box-shadow: 0 0 0 3px rgba(232, 181, 52, .35); }
+
     /* ── The family ─────────────────────────────────────────────────────── */
     .probe { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
     .probe b { font-weight: 500; color: var(--ink); }
@@ -294,6 +330,10 @@
       .fam-side { grid-column: 2; align-items: flex-start; text-align: left; flex-direction: row; align-items: center; }
       .build { grid-template-columns: minmax(0, 1fr); gap: 32px; }
       .news li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat:nth-child(3) { border-left: 0; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--rule); }
+      .board { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     }
     @media (max-width: 700px) {
       .hero h1 { font-size: clamp(42px, 12vw, 64px); }
@@ -304,6 +344,11 @@
       .ink { cursor: auto; }
       .lamp-ring::after { display: none; }
       .scroll-cue { display: none; }
+      .measured { padding-top: 96px; }
+      .stat { padding: 22px 16px 20px; }
+      .stat::before { left: 16px; }
+      .stat p { display: none; }
+      .bar { grid-template-columns: 132px minmax(0, 1fr) 46px; gap: 8px; font-size: 12.5px; }
     }
 
     /* Reduced motion: nothing pinned, nothing drawn, nothing turning. */
@@ -323,6 +368,7 @@
       .fam-row::after { transform: scaleX(1); }
       .fam-row > *, .code .ln { opacity: 1; transform: none; transition: none; }
       .lamp-ring { display: none; }
+      .bar-fill, .stat::before { transform: none; transition: none; }
     }
   </style>
 </head>
@@ -406,6 +452,38 @@
 
 <main>
 
+  <section class="measured band" id="measured" aria-labelledby="measured-h">
+    <div class="wrap">
+      <div class="band-head" data-reveal>
+        <div><span class="label kicker">Fresco 1.3</span><h2 id="measured-h">Measured, then published.</h2></div>
+        <a class="band-more" href="/fresco-13">Full results</a>
+      </div>
+      <div class="stats" id="stats">
+        <div class="stat"><span class="stat-n" data-tally="82.3" data-dec="1">82.3<small>%</small></span><span class="label stat-l">HumanEval+ · coding</span><p>Within a point of Claude Sonnet 3.5 on the harder EvalPlus set.</p></div>
+        <div class="stat"><span class="stat-n" data-tally="75.7" data-dec="1">75.7<small>%</small></span><span class="label stat-l">MBPP+ · coding</span><p>Ahead of Claude Sonnet 3.5's 74.3% on the same benchmark.</p></div>
+        <div class="stat"><span class="stat-n" data-tally="87">87<small>/100</small></span><span class="label stat-l">BFCL V4 · tool use</span><p>Choosing and calling tools correctly on a function-calling test.</p></div>
+        <div class="stat safe"><span class="stat-n" data-tally="150">150<small>/150</small></span><span class="label stat-l">Safety re-test · passed</span><p>Every adversarial scenario, every run, published in full.</p></div>
+      </div>
+      <div class="board">
+        <div class="board-copy" data-reveal>
+          <h3>HumanEval+, next to the field</h3>
+          <p>Fresco 1.3 was trained by a small independent lab on its own hardware. On the harder “plus” version of HumanEval it sits alongside models from much larger labs.</p>
+          <p class="fine">Reported scores from the <a href="https://evalplus.github.io/leaderboard.html" rel="noopener noreferrer">EvalPlus leaderboard</a>, accessed September 2026. Test settings differ between providers, so this is a reported-score comparison rather than one controlled run.</p>
+        </div>
+        <ol class="bars" id="bars" aria-label="HumanEval+ pass rates">
+          <li class="bar"><span class="bar-name">OpenAI o1-mini</span><span class="bar-track"><span class="bar-fill" style="--v:89%"></span></span><span class="bar-v">89.0%</span></li>
+          <li class="bar"><span class="bar-name">GPT-4o</span><span class="bar-track"><span class="bar-fill" style="--v:87.2%"></span></span><span class="bar-v">87.2%</span></li>
+          <li class="bar"><span class="bar-name">Qwen2.5-Coder-32B</span><span class="bar-track"><span class="bar-fill" style="--v:87.2%"></span></span><span class="bar-v">87.2%</span></li>
+          <li class="bar"><span class="bar-name">DeepSeek-V3</span><span class="bar-track"><span class="bar-fill" style="--v:86.6%"></span></span><span class="bar-v">86.6%</span></li>
+          <li class="bar us"><span class="bar-name">Fresco 1.3</span><span class="bar-track"><span class="bar-fill" style="--v:82.3%"></span></span><span class="bar-v">82.3%</span></li>
+          <li class="bar"><span class="bar-name">Claude Sonnet 3.5</span><span class="bar-track"><span class="bar-fill" style="--v:81.7%"></span></span><span class="bar-v">81.7%</span></li>
+          <li class="bar"><span class="bar-name">Claude 3 Opus</span><span class="bar-track"><span class="bar-fill" style="--v:77.4%"></span></span><span class="bar-v">77.4%</span></li>
+          <li class="bar"><span class="bar-name">Llama 3-70B Instruct</span><span class="bar-track"><span class="bar-fill" style="--v:72%"></span></span><span class="bar-v">72.0%</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
   <section class="ink band" id="ink">
     <div class="wrap">
       <div class="band-head" data-reveal>
@@ -460,9 +538,9 @@
           <span class="fam-n">01</span>
           <div>
             <h3><a href="/fresco-13">Solan Fresco 1.3</a></h3>
-            <p>Training is complete and the early safety results are already published. It stays off the API until adversarial testing concludes; the latest on timing is in the announcements.</p>
+            <p>The strongest Solan model yet: 82.3% on HumanEval+ and 87 of 100 on a tool-use test. After early testing found gaps it was retrained, and it then passed all 150 runs of the complete safety re-test. Launch timing is in the announcements.</p>
           </div>
-          <div class="fam-side"><span class="pill wip">In safety testing</span><a class="m-go" href="/fresco-13">Early results</a></div>
+          <div class="fam-side"><span class="pill wip">Not yet on the API</span><a class="m-go" href="/fresco-13">Benchmarks</a></div>
         </li>
         <li class="fam-row" data-row>
           <span class="fam-n">02</span>
@@ -542,9 +620,9 @@
       <!-- Replaced at runtime by the three most recent real announcements.
            The markup below is the fallback if both sources are unreachable. -->
       <ol class="news" id="news" data-reveal>
+        <li><a href="/announcements#fresco-13-evalplus-benchmarks"><span class="label">September 18, 2026</span><span class="label">Update</span><div><h3>Fresco 1.3 Benchmarks: Matches Claude Sonnet 3.5 on HumanEval+, Beats It on MBPP+</h3><p>Fresco 1.3's coding and tool-use results on the harder EvalPlus test sets.</p><span class="go">Read announcement</span></div></a></li>
+        <li><a href="/announcements#fresco-13-safety-retrained"><span class="label">September 18, 2026</span><span class="label">Safety update</span><div><h3>Fresco 1.3 Retrained for Safety — 150 of 150 on the Complete Re-Test</h3><p>Retrained to close the gaps found in August, then re-tested in full: every response passed.</p><span class="go">Read announcement</span></div></a></li>
         <li><a href="/announcements#infra-in-house-compute"><span class="label">August 30, 2026</span><span class="label">Update</span><div><h3>Infrastructure Update: Moving to In-House Compute</h3><p>Over the coming months, we're bringing a meaningful chunk of our compute in-house.</p><span class="go">Read announcement</span></div></a></li>
-        <li><a href="/announcements#fresco-13-infra-delay"><span class="label">August 23, 2026</span><span class="label">Update</span><div><h3>Fresco 1.3 Launch Update</h3><p>We owe you an update on the Fresco 1.3 launch.</p><span class="go">Read announcement</span></div></a></li>
-        <li><a href="/no-invisible-ink"><span class="label">August 12, 2026</span><span class="label">Announcement</span><div><h3>No invisible ink</h3><p>The case against watermarking generated text and selling advertising inside conversations.</p><span class="go">Read announcement</span></div></a></li>
       </ol>
     </div>
   </section>
@@ -802,6 +880,36 @@
     if (instant) { curl.classList.add('static'); return }
     var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { type(curl); io.disconnect() } }, { threshold: 0.4 })
     io.observe(curl)
+  })()
+
+  // ── Measured: numbers count up and bars grow the first time they show ──
+  ;(function () {
+    var stats = $('stats'), bars = $('bars')
+    var nums = [].slice.call(document.querySelectorAll('.stat-n[data-tally]'))
+    function count(el) {
+      var to = parseFloat(el.getAttribute('data-tally')), dec = parseInt(el.getAttribute('data-dec') || '0', 10)
+      var unit = el.querySelector('small'), t0 = null, dur = 1200
+      function tick(t) {
+        if (t0 === null) t0 = t
+        var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3)
+        el.firstChild.nodeValue = (to * e).toFixed(dec)
+        if (k < 1) requestAnimationFrame(tick)
+      }
+      if (unit && el.firstChild && el.firstChild.nodeType === 3) requestAnimationFrame(tick)
+    }
+    if (reduced || !('IntersectionObserver' in window)) {
+      if (stats) stats.classList.add('in'); if (bars) bars.classList.add('in'); return
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return
+        en.target.classList.add('in')
+        if (en.target === stats) nums.forEach(count)
+        io.unobserve(en.target)
+      })
+    }, { threshold: 0.35 })
+    if (stats) io.observe(stats)
+    if (bars) io.observe(bars)
   })()
 
   // ── Live status, with the real round-trip time ─────────────────────────

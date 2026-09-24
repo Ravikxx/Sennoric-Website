@@ -13,201 +13,360 @@
   <meta property="og:url" content="https://sennoric.com/help-account">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/assets/theme-adaptive.css">
-  <link rel="stylesheet" href="/assets/site-shell.css">
-  <script src="/assets/site-nav.js" defer></script>
-  <link rel="stylesheet" href="/assets/enhance.css">
+  <meta name="theme-color" content="#f3f0e6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/paper.css">
+  <link rel="stylesheet" href="/assets/profile.css">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/assets/profile.css">
+  <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/paper-motion.js" defer></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      background: var(--bg); color: var(--text);
-      line-height: 1.6; font-size: 14px;
+    /* Help center. One block, copied identically into help.html and every
+       help-*.html article, so the index and the guides stay in step. All
+       colour comes from paper.css tokens; --amber is the one local value
+       (the same ink paper.css gives .pill.wip, 5.6:1 on paper). */
+    :root { --amber: #7d5409; }
+
+    /* ── Shared head ──────────────────────────────────────────────────── */
+    .help-head { padding: 64px 0 48px; }
+    .help-head h1 { max-width: 20ch; }
+    .breadcrumb {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2);
+      margin-bottom: 22px;
     }
-    a { color: inherit; text-decoration: none; }
-    nav {
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      padding: 0 32px;
-      display: flex; align-items: center; height: 56px; gap: 24px;
-      position: sticky; top: 0; z-index: 100;
+    .breadcrumb a { color: var(--green); transition: color .15s; }
+    .breadcrumb a:hover { color: var(--ink); }
+
+    /* ── Index: search ────────────────────────────────────────────────── */
+    .search-box { position: relative; max-width: 620px; margin-top: 32px; }
+    .search-box svg {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 17px; height: 17px; color: var(--ink-2); pointer-events: none;
     }
-    .nav-logo { font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px; }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 4px; margin-left: 16px; }
-    .nav-link { padding: 5px 10px; border-radius: 5px; font-size: 13px; color: var(--muted2); transition: color .12s, background .12s; }
-    .nav-link:hover { color: var(--text); background: var(--surface2); }
-    .nav-link.active { color: var(--text); }
-    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
-    .nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; background: var(--accent); color: var(--accent-ink); transition: background .15s; display: inline-block; }
-    .nav-btn:hover { background: var(--accent-d); }
-    .nav-btn-ghost { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted2); border: 1px solid var(--border2); transition: color .12s, border-color .12s; }
-    .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+    .search-box input {
+      width: 100%; height: 54px; padding: 0 56px 0 46px;
+      font-family: var(--sans); font-size: 16px; color: var(--ink);
+      background: var(--paper-3); border: 1px solid var(--rule-2); border-radius: 4px;
+      transition: border-color .15s, box-shadow .2s var(--ease);
+      -webkit-appearance: none; appearance: none;
+    }
+    .search-box input::placeholder { color: var(--ink-2); }
+    .search-box input:hover { border-color: var(--ink-2); }
+    .search-box input:focus {
+      outline: none; border-color: var(--green);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 14%, transparent);
+    }
+    /* Escape clears the field (see the script), so the native blue cancel
+       glyph is dropped rather than left clashing with the paper palette. */
+    .search-box input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .search-box kbd {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--ink-2);
+      background: var(--paper-2); border: 1px solid var(--rule-2); border-bottom-width: 2px;
+      border-radius: 3px; padding: 5px 8px; pointer-events: none;
+    }
+    .search-box input:focus + kbd { display: none; }
 
-    .breadcrumb { max-width: 900px; margin: 0 auto; padding: 20px 32px 0; font-size: 12.5px; color: var(--muted); }
-    .breadcrumb a { color: var(--muted2); }
-    .breadcrumb a:hover { color: var(--accent); }
+    /* ── Index: guide grid ────────────────────────────────────────────── */
+    .help-guides { padding: 0 0 104px; }
+    .help-empty { display: none; color: var(--ink-2); font-size: 16px; padding: 28px 0; border-top: 1px solid var(--rule); }
+    .help-empty.on { display: block; }
+    .help-empty a { color: var(--green); text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+    .help-empty a:hover { text-decoration-color: var(--green); }
+    .cat-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 48px; counter-reset: guide;
+    }
+    .cat-card {
+      position: relative; counter-increment: guide;
+      display: flex; flex-direction: column;
+      padding: 28px 0 36px; border-top: 1px solid var(--rule);
+    }
+    .cat-card[hidden] { display: none; }
+    .cat-card::before {
+      content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 2px;
+      background: var(--marigold); transform: scaleX(0); transform-origin: left;
+      transition: transform .4s var(--ease);
+    }
+    .cat-card:hover::before, .cat-card:focus-within::before { transform: scaleX(1); }
+    .cat-card::after {
+      content: counter(guide, decimal-leading-zero);
+      order: -1; margin-bottom: 18px;
+      font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; color: var(--ink-2);
+    }
+    .cat-card .cat-title { font-size: 22px; letter-spacing: -.015em; line-height: 1.15; transition: color .2s; }
+    .cat-card:hover .cat-title { color: var(--green); }
+    .cat-card .cat-desc { color: var(--ink-2); font-size: 14.5px; line-height: 1.55; margin-top: 10px; max-width: 38ch; flex: 1; }
+    .cat-card .cat-links { margin-top: 18px; }
+    .cat-card .cat-links a { color: var(--green); font-size: 14.5px; font-weight: 500; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+    /* The whole card is the target: the link's box stretches over it. */
+    .cat-card .cat-links a::before { content: ''; position: absolute; inset: 0; z-index: 1; }
+    .cat-card .cat-links a::after { content: '\2192'; display: inline-block; margin-left: .35em; transition: transform .3s var(--ease); }
+    .cat-card:hover .cat-links a { text-decoration-line: underline; }
+    .cat-card:hover .cat-links a::after { transform: translateX(4px); }
+    .cat-card .cat-links a:focus-visible { outline: none; }
+    .cat-card .cat-links a:focus-visible::before { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 2px; }
+    .cat-card mark {
+      background: color-mix(in srgb, var(--marigold) 42%, transparent);
+      color: inherit; border-radius: 2px; padding: 0 1px;
+    }
 
-    .page-header { max-width: 900px; margin: 0 auto; padding: 16px 32px 32px; }
-    .page-header .tag { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-    .page-header h1 { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
-    .page-header p { color: var(--muted2); font-size: 15px; max-width: 640px; }
-
-    .toc { max-width: 900px; margin: 0 auto; padding: 0 32px 24px; display: flex; flex-wrap: wrap; gap: 6px; }
+    /* ── Article: layout ──────────────────────────────────────────────── */
+    .help-body {
+      display: grid; grid-template-columns: 232px minmax(0, 1fr);
+      gap: 72px; align-items: start;
+      padding: 56px 0 112px; border-top: 1px solid var(--rule);
+    }
+    .toc-wrap { position: sticky; top: 98px; }
+    .toc-label { display: block; margin-bottom: 14px; }
+    .toc { display: flex; flex-direction: column; counter-reset: toc; border-left: 1px solid var(--rule); }
     .toc a {
-      font-size: 12px; padding: 5px 11px; border-radius: 999px;
-      background: var(--surface); border: 1px solid var(--border); color: var(--muted2);
+      counter-increment: toc; position: relative;
+      display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 4px;
+      padding: 8px 0 8px 16px; margin-left: -1px;
+      font-size: 14px; line-height: 1.4; color: var(--ink-2);
+      border-left: 2px solid transparent;
+      transition: color .15s, border-color .2s;
     }
-    .toc a:hover { color: var(--accent); border-color: var(--accent); }
+    .toc a::before {
+      content: counter(toc, decimal-leading-zero);
+      font-family: var(--mono); font-size: 11px; letter-spacing: .06em; padding-top: 2px; color: var(--ink-2);
+    }
+    .toc a:hover { color: var(--ink); border-left-color: var(--rule-2); }
+    .toc a.on { color: var(--ink); border-left-color: var(--marigold); }
+    .toc a.on::before { color: var(--green); }
 
-    .content { max-width: 900px; margin: 0 auto; padding: 0 32px 96px; }
-    .doc-section { margin-bottom: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--border); scroll-margin-top: 80px; }
-    .doc-section:last-child { border-bottom: none; margin-bottom: 0; }
-    .doc-section h2 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 10px; }
-    .doc-section p { font-size: 14px; color: var(--muted2); margin-bottom: 12px; line-height: 1.7; }
+    /* ── Article: prose ───────────────────────────────────────────────── */
+    .content { max-width: 720px; counter-reset: section; }
+    .doc-section {
+      counter-increment: section; scroll-margin-top: 96px;
+      padding-bottom: 52px; margin-bottom: 52px; border-bottom: 1px solid var(--rule);
+    }
+    .doc-section:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+    .doc-section h2 { font-size: clamp(24px, 2.6vw, 30px); line-height: 1.12; margin-bottom: 18px; }
+    .doc-section h2::before {
+      content: counter(section, decimal-leading-zero);
+      display: block; margin-bottom: 12px;
+      font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; color: var(--green);
+    }
+    .doc-section p { font-size: 16px; line-height: 1.7; color: var(--ink); margin-bottom: 16px; }
     .doc-section p:last-child { margin-bottom: 0; }
-    .doc-section ul, .doc-section ol { margin: 8px 0 14px 18px; }
-    .doc-section li { font-size: 13px; color: var(--muted2); line-height: 1.65; margin-bottom: 5px; }
-    .doc-section li strong { color: var(--text); }
-
-    .code-block {
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 8px; padding: 14px 18px;
-      font-family: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
-      font-size: 12.5px; color: var(--muted2);
-      overflow-x: auto; line-height: 1.8; margin: 12px 0;
-      white-space: pre;
+    .doc-section ul, .doc-section ol { margin: 4px 0 18px; padding-left: 22px; }
+    .doc-section li { font-size: 16px; line-height: 1.65; color: var(--ink); margin-bottom: 8px; padding-left: 4px; }
+    .doc-section li::marker { color: var(--ink-2); font-family: var(--mono); font-size: 13px; }
+    .doc-section strong { font-weight: 600; color: var(--ink); }
+    .doc-section p a, .doc-section li a, .callout a {
+      color: var(--green); font-weight: 500;
+      text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--green) 35%, transparent);
+      text-decoration-thickness: 1px; text-underline-offset: 3px;
+      transition: text-decoration-color .15s;
     }
-    code {
-      font-family: "IBM Plex Mono", "SF Mono", "Fira Code", Consolas, monospace;
-      font-size: 12px; background: var(--surface2); color: var(--muted2);
-      padding: 2px 6px; border-radius: 4px;
+    .doc-section p a:hover, .doc-section li a:hover, .callout a:hover { text-decoration-color: var(--green); }
+    .doc-section code {
+      font-family: var(--mono); font-size: .86em; color: var(--ink);
+      background: var(--paper-2); border: 1px solid var(--rule);
+      border-radius: 3px; padding: 1px 5px; overflow-wrap: anywhere;
     }
+    .doc-section .code { margin: 20px 0; }
 
+    /* Callouts: a tinted panel with a single rule on the left. */
     .callout {
-      border-radius: 8px; padding: 13px 16px;
-      margin: 14px 0; font-size: 13px; line-height: 1.65;
+      margin: 22px 0; padding: 16px 20px 17px;
+      font-size: 15px; line-height: 1.65; color: var(--ink);
+      background: var(--paper-2); border-left: 3px solid var(--green); border-radius: 0 4px 4px 0;
     }
-    .callout.tip {
-      background: rgba(184,162,125,.07); border: 1px solid rgba(184,162,125,.2);
-      border-left: 3px solid var(--accent); color: var(--muted2);
-    }
-    .callout.tip strong { color: var(--accent); }
-    .callout.warn {
-      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.22);
-      border-left: 3px solid var(--yellow, #fbbf24); color: var(--muted2);
-    }
-    .callout.warn strong { color: var(--yellow, #fbbf24); }
-    .callout.gap {
-      background: var(--surface); border: 1px solid var(--border2);
-      border-left: 3px solid var(--muted); color: var(--muted2);
-    }
-    .callout.gap strong { color: var(--muted2); }
+    .callout strong { display: block; margin-bottom: 3px; font-weight: 600; }
+    .callout.tip strong { color: var(--green); }
+    .callout.warn { border-left-color: var(--amber); }
+    .callout.warn strong { color: var(--amber); }
+    .callout.gap { background: transparent; border: 1px dashed var(--rule-2); border-left: 3px solid var(--ink-2); }
+    .callout.gap strong { color: var(--ink-2); font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
 
-    .cmd-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    /* Command tables, in the same rules-only style as the model table. */
+    .cmd-table { width: 100%; border-collapse: collapse; margin: 20px 0 24px; }
     .cmd-table th {
-      text-align: left; padding: 8px 12px;
-      font-size: 10px; font-weight: 700; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--muted);
-      border-bottom: 1px solid var(--border); background: var(--surface);
+      text-align: left; padding: 0 20px 10px 0; border-bottom: 1px solid var(--rule-2);
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2);
     }
-    .cmd-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; background: var(--surface); }
-    .cmd-table tr:last-child td { border-bottom: none; }
-    .cmd-table td:first-child { white-space: nowrap; }
-    .cmd-table .desc { color: var(--muted2); font-size: 12px; }
+    .cmd-table td { padding: 12px 20px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+    .cmd-table tr:last-child td { border-bottom: 0; }
+    .cmd-table td:first-child { white-space: nowrap; width: 1%; }
+    .cmd-table td:last-child, .cmd-table th:last-child { padding-right: 0; }
+    .cmd-table .desc { color: var(--ink-2); font-size: 15px; line-height: 1.55; }
 
-    footer { background: var(--surface); border-top: 1px solid var(--border); text-align: center; padding: 24px 32px; font-size: 13px; color: var(--muted); }
-    footer a { color: var(--muted2); }
-    footer a:hover { color: var(--text); }
-
-    @media (max-width: 600px) {
-      nav { padding: 0 16px; }
-      .nav-links { display: none; }
-      .page-header, .breadcrumb, .content, .toc { padding-left: 16px; padding-right: 16px; }
-      .page-header h1 { font-size: 24px; }
+    /* ── Responsive ───────────────────────────────────────────────────── */
+    @media (max-width: 1000px) {
+      .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; }
+      .help-body { grid-template-columns: minmax(0, 1fr); gap: 44px; padding-top: 36px; }
+      .toc-wrap { position: static; padding: 20px 22px 16px; background: var(--paper-2); border-radius: 4px; }
+      .toc { border-left: 0; }
+      .toc a { padding: 9px 0; margin-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
+      .toc a:first-child { border-top: 0; }
+      .content { max-width: none; }
+    }
+    @media (max-width: 700px) {
+      .help-head { padding: 44px 0 36px; }
+      .help-head h1 { font-size: clamp(34px, 10vw, 44px); }
+      .search-box kbd { display: none; }
+      .search-box input { padding-right: 16px; }
+      .cat-grid { grid-template-columns: minmax(0, 1fr); }
+      .cat-card { padding: 24px 0 28px; }
+      .cat-card .cat-desc { max-width: none; }
+      .help-guides { padding-bottom: 72px; }
+      .help-body { padding: 28px 0 80px; gap: 40px; }
+      .doc-section { padding-bottom: 40px; margin-bottom: 40px; }
+      .doc-section .code { margin-left: calc(-1 * var(--gut)); margin-right: calc(-1 * var(--gut)); border-radius: 0; padding: 46px var(--gut) 20px; }
+      /* Tables fold into stacked rows so long commands wrap instead of
+         pushing the page sideways. */
+      .cmd-table tr:first-child:has(th) { display: none; }
+      .cmd-table, .cmd-table tbody, .cmd-table tr, .cmd-table td { display: block; width: auto; }
+      .cmd-table tr { padding: 12px 0; border-bottom: 1px solid var(--rule); }
+      .cmd-table tr:last-child { border-bottom: 0; }
+      .cmd-table td { padding: 2px 0; border: 0; }
+      .cmd-table td:first-child { white-space: normal; }
     }
   </style>
-  <link rel="stylesheet" href="/assets/mobile.css">
-  <script src="/assets/paper-motion.js" defer></script>
 </head>
 <body data-reveal-auto=".doc-section">
 
 <nav>
-  <a href="/" class="nav-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Sennoric</span></a>
-  <div class="nav-links">
-    <a href="/models" class="nav-link">Models</a>
-    <a href="/chat" class="nav-link">Chat</a>
-    <a href="/docs" class="nav-link">Docs</a>
-    <a href="/help" class="nav-link active">Help</a>
-  </div>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</a>
+  <a href="/models">Models</a>
+  <a href="/chat">Chat</a>
+  <a href="/docs">Docs</a>
+  <a href="/announcements">News</a>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">API Keys</a>
+    <a href="/chat" class="nav-cta">Try Solan</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="breadcrumb"><a href="/help">Help Center</a> / Account & Billing</div>
+<div class="wrap" id="top">
 
-<div class="page-header">
-  <div class="tag">Help</div>
-  <h1>Account & Billing</h1>
-  <p>Signing in, connecting providers, OAuth connections, and managing your account.</p>
-</div>
+  <header class="page-head help-head">
+    <div class="breadcrumb"><a href="/help">Help Center</a><span aria-hidden="true">/</span><span>Account & Billing</span></div>
+    <h1>Account & Billing</h1>
+    <p class="lede">Signing in, connecting providers, OAuth connections, and managing your account.</p>
+  </header>
 
-<div class="toc">
-  <a href="#sign-in">Signing in / signing out</a>
-  <a href="#connected-providers">Managing connected providers</a>
-  <a href="#oauth-connections">OAuth connections (GitHub, Google, Notion, Slack)</a>
-  <a href="#billing">Usage limits and billing</a>
-  <a href="#delete-account">Deleting your account / data</a>
-</div>
+  <div class="help-body grid-safe">
+    <aside class="toc-wrap" aria-label="On this page">
+      <span class="label toc-label">On this page</span>
+      <div class="toc">
+        <a href="#sign-in">Signing in / signing out</a>
+        <a href="#connected-providers">Managing connected providers</a>
+        <a href="#oauth-connections">OAuth connections (GitHub, Google, Notion, Slack)</a>
+        <a href="#billing">Usage limits and billing</a>
+        <a href="#delete-account">Deleting your account / data</a>
+      </div>
+    </aside>
 
-<div class="content">
-  <div class="doc-section" id="sign-in">
-    <h2>Signing in / signing out</h2>
-    <p>The Desktop App and sennoric.com both sign in through the same account, supporting email/password, Google, GitHub, or Discord. In the Desktop App, sign-in uses OAuth 2.0 with PKCE in a sandboxed in-app window — your session token is kept only in the app's main process, never exposed to the chat UI itself.</p>
-  </div>
+    <main class="content">
+      <div class="doc-section" id="sign-in">
+        <h2>Signing in / signing out</h2>
+        <p>The Desktop App and sennoric.com both sign in through the same account, supporting email/password, Google, GitHub, or Discord. In the Desktop App, sign-in uses OAuth 2.0 with PKCE in a sandboxed in-app window — your session token is kept only in the app's main process, never exposed to the chat UI itself.</p>
+      </div>
 
-  <div class="doc-section" id="connected-providers">
-    <h2>Managing connected providers</h2>
-    <p>Provider API keys (Anthropic, OpenAI, Gemini, Groq, Mistral, and others) are managed per-installation, not tied to your Sennoric account login. Set or update one with:</p>
-    <div class="code-block">/api claude sk-ant-...
+      <div class="doc-section" id="connected-providers">
+        <h2>Managing connected providers</h2>
+        <p>Provider API keys (Anthropic, OpenAI, Gemini, Groq, Mistral, and others) are managed per-installation, not tied to your Sennoric account login. Set or update one with:</p>
+        <div class="code">/api claude sk-ant-...
 /api gpt sk-...
 /api gemini AI...</div>
-    <p>Custom OpenAI-compatible endpoints (OpenRouter, LM Studio, Together AI, self-hosted) are added with <code>/endpoint</code> — see the <a href="/help-cli#models" style="color:var(--accent)">CLI models guide</a>.</p>
-  </div>
+        <p>Custom OpenAI-compatible endpoints (OpenRouter, LM Studio, Together AI, self-hosted) are added with <code>/endpoint</code> — see the <a href="/help-cli#models">CLI models guide</a>.</p>
+      </div>
 
-  <div class="doc-section" id="oauth-connections">
-    <h2>OAuth connections (GitHub, Google, Notion, Slack)</h2>
-    <p>Separate from account sign-in, the CLI can connect third-party services so the agent can act on your behalf — for example reading a GitHub repo or creating a Google Calendar event:</p>
-    <div class="code-block">/oauth connect github
+      <div class="doc-section" id="oauth-connections">
+        <h2>OAuth connections (GitHub, Google, Notion, Slack)</h2>
+        <p>Separate from account sign-in, the CLI can connect third-party services so the agent can act on your behalf — for example reading a GitHub repo or creating a Google Calendar event:</p>
+        <div class="code">/oauth connect github
 /oauth connect google
 /oauth connect notion
 /oauth connect slack
 /oauth list
-/oauth revoke <service></div>
-    <div class="callout tip"><strong>These are two different things.</strong> Signing in to your Sennoric account (above) and connecting a service via <code>/oauth</code> are separate grants — revoking one doesn't affect the other.</div>
-  </div>
+/oauth revoke &lt;service&gt;</div>
+        <div class="callout tip"><strong>These are two different things.</strong> Signing in to your Sennoric account (above) and connecting a service via <code>/oauth</code> are separate grants — revoking one doesn't affect the other.</div>
+      </div>
 
-  <div class="doc-section" id="billing">
-    <h2>Usage limits and billing</h2>
-    <div class="callout gap"><strong>Not documented yet.</strong> There's no confirmed usage-limits or billing system in the product today — this section will be filled in once that exists. If you're using your own provider API keys (Anthropic, OpenAI, etc.), billing happens directly with that provider, not through Sennoric.</div>
-  </div>
+      <div class="doc-section" id="billing">
+        <h2>Usage limits and billing</h2>
+        <div class="callout gap"><strong>Not documented yet.</strong> There's no confirmed usage-limits or billing system in the product today — this section will be filled in once that exists. If you're using your own provider API keys (Anthropic, OpenAI, etc.), billing happens directly with that provider, not through Sennoric.</div>
+      </div>
 
-  <div class="doc-section" id="delete-account">
-    <h2>Deleting your account / data</h2>
-    <div class="callout gap"><strong>Not documented yet.</strong> A self-serve account/data deletion flow isn't confirmed to exist yet. Until it's documented here, treat this as something to ask about directly rather than something you can assume works a certain way.</div>
+      <div class="doc-section" id="delete-account">
+        <h2>Deleting your account / data</h2>
+        <div class="callout gap"><strong>Not documented yet.</strong> A self-serve account/data deletion flow isn't confirmed to exist yet. Until it's documented here, treat this as something to ask about directly rather than something you can assume works a certain way.</div>
+      </div>
+    </main>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/help">Help Center</a> · <a href="/docs">Docs</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a></p>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="/assets/logo-spiral.svg" alt="">Sennoric</div>
+        <p class="foot-note">Sennoric trains and hosts models on its own infrastructure.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Solan models</h4>
+        <a href="/fresco-13">Fresco 1.3</a>
+        <a href="/fresco-125">Fresco 1.2.5</a>
+        <a href="/glyph">Glyph 1.1</a>
+      </div>
+      <div class="foot-col">
+        <h4>Build</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/keys">API keys</a>
+        <a href="/usage">Usage</a>
+        <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">Sennoric CLI on npm</a>
+      </div>
+      <div class="foot-col">
+        <h4>Safety</h4>
+        <a href="/no-invisible-ink">No invisible ink</a>
+        <a href="/fresco-125-safety">Fresco 1.2.5 report</a>
+        <a href="/fresco-safety">Fresco 1.2.1 report</a>
+        <a href="/fresco-suspension">Model suspension</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="/announcements">Announcements</a>
+        <a href="/status">Status</a>
+        <a href="/help">Help center</a>
+        <a href="/tos">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 Sennoric · Independent AI models</span>
+      <a class="to-top" href="#top"><img src="/assets/logo-spiral.svg" alt="">Back to top</a>
+    </div>
+  </div>
 </footer>
 
-<script src="/assets/enhance.js"></script>
+<script>
+;(function () {
+  'use strict'
+  // Marks the "On this page" entry for the section being read.
+  var links = [].slice.call(document.querySelectorAll('.toc a[href^="#"]'))
+  if (!links.length || !('IntersectionObserver' in window)) return
+  var byId = {}
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a })
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return
+      links.forEach(function (a) { a.classList.toggle('on', a === byId[en.target.id]) })
+    })
+  }, { rootMargin: '-15% 0px -70% 0px' })
+  Object.keys(byId).forEach(function (id) { var s = document.getElementById(id); if (s) io.observe(s) })
+})()
+</script>
 <script src="/assets/profile.js"></script>
 
 </body>
