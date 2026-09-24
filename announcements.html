@@ -13,221 +13,174 @@
   <meta property="og:url" content="https://sennoric.com/announcements">
   <meta property="og:image" content="https://sennoric.com/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/assets/theme-adaptive.css">
-  <link rel="stylesheet" href="/assets/site-shell.css">
+  <meta name="theme-color" content="#f3f0e6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/paper.css">
   <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/paper-motion.js" defer></script>
   <script src="/assets/fetch-timeout.js"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/assets/profile.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* Content theme tokens. Dark by default; the media query below flips the
-       page to a cream light theme when the visitor's system prefers light.
-       Chrome (nav / subscribe bar / footer) intentionally stays dark in both
-       modes for this pilot. */
+    /* paper.css has no red or amber token, so the page owns them here.
+       --red is also read by the subscribe script for its error message. */
     :root {
-      --page-bg:      #faf9f5;
-      --ink:          #1c1710;
-      --ink-soft:     #6f695c;
-      --ink-faint:    #948b7b;
-      --subtitle:     #6f695c;
-      --hair:         #e7e1d2;
-      --strong:       #2a2418;
-      --code-bg:      #efece1;
-      --code-border:  #ddd6c5;
-      --acc:          #8a6a2f;
-      --acc-d:        #a07f45;
-      --acc-ink:      #fbf9f4;
-      --chip-border:  #ddd6c5;
-      --cat-release-bg: rgba(138,106,47,.13); --cat-release-fg: #8a6a2f;
-      --cat-update-bg:  rgba(26,92,53,.12);   --cat-update-fg:  #1a5c35;
-      --cat-safety-bg:  rgba(200,50,50,.10);  --cat-safety-fg:  #c23232;
-      --cat-notice-bg:  #ece8dd;              --cat-notice-fg:  #857c6a;
-      --chrome-bg:    #f3f0e7;  --chrome-text: #6f695c;  --chrome-mut: #857c6a;
-      --chrome-strong:#1c1710;  --chrome-border: rgba(0,0,0,0.08);
-      --input-bg:     #ffffff;  --input-border: #ded8c8;  --input-text: #1c1710;
-      --green:        #1a5c35;  --red:          #c23232;
+      --red:   #a3301f;  /* 6.1:1 on paper */
+      --amber: #7d5409;  /* 5.9:1 on paper — same ink as .pill.wip */
+      --when-w: 150px;   /* date + category column; the body indents past it */
+      --head-gap: 20px;
     }
 
-    body {
-      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      background: var(--page-bg);
-      color: var(--ink);
-      line-height: 1.6;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      transition: background .2s ease, color .2s ease;
-    }
-
-    /* Chrome (fixed dark) */
-    nav {
-      background: var(--chrome-bg);
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      height: 56px;
-      gap: 24px;
-    }
-    nav a { color: var(--chrome-text); text-decoration: none; font-size: 14px; transition: color 0.2s; }
-    nav a:hover { color: var(--chrome-strong); }
-    nav a.brand { color: var(--chrome-strong); font-weight: 600; font-size: 16px; margin-right: 16px; }
+    /* ── Header + subscribe ──────────────────────────────────────────── */
+    .news-top { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 56px; align-items: end; }
+    .news-top .page-head { padding-bottom: 0; }
 
     .subscribe-bar {
-      background: var(--chrome-bg);
-      border-bottom: 1px solid var(--chrome-border);
-      padding: 14px 32px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
+      padding: 24px 24px 22px; border-radius: 8px;
+      background: var(--paper-2); border: 1px solid var(--rule);
+      display: flex; flex-direction: column; gap: 12px;
     }
-    .subscribe-bar > span { color: var(--chrome-mut); font-size: 13px; }
-    .subscribe-form { display: flex; gap: 8px; flex: 1; min-width: 260px; max-width: 420px; }
+    .sub-kicker { margin-bottom: 0; }
+    .sub-lede { font-size: 14.5px; color: var(--ink-2); line-height: 1.5; }
+    .subscribe-form { display: flex; gap: 8px; }
     .subscribe-form input {
-      flex: 1; padding: 8px 12px; border-radius: 7px;
-      border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text);
-      font-size: 13px; outline: none; transition: border-color .15s;
+      flex: 1; min-width: 0; padding: 11px 13px; border-radius: 4px;
+      border: 1px solid var(--rule-2); background: var(--paper-3); color: var(--ink);
+      font: inherit; font-size: 14.5px; outline: none; transition: border-color .15s, box-shadow .15s;
     }
-    .subscribe-form input:focus { border-color: var(--acc); }
-    .subscribe-form button {
-      padding: 8px 18px; border-radius: 7px; border: none;
-      background: var(--acc); color: var(--acc-ink); font-size: 13px;
-      font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s;
-    }
-    .subscribe-form button { transition: background .15s, transform .2s var(--ease); }
-    .subscribe-form button:hover { background: var(--acc-d); transform: translateY(-1px); }
-    .sub-consent { display:flex; align-items:center; gap:6px; width:100%; font-size:12px; color:var(--chrome-mut); }
-    .sub-consent input { width:14px; height:14px; accent-color: var(--acc); cursor:pointer; }
-    .sub-consent a { color: #b8a27d; text-decoration: underline; }
-    .sub-msg { font-size: 12px; color: var(--green); display: none; }
+    .subscribe-form input::placeholder { color: var(--ink-2); opacity: .8; }
+    .subscribe-form input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26, 92, 53, .14); }
+    .subscribe-form button { padding: 11px 18px; font-size: 14px; cursor: pointer; white-space: nowrap; }
+    .sub-consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+    .sub-consent input { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 1px; accent-color: var(--green); cursor: pointer; }
+    .sub-consent a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+    .sub-msg { font-size: 13px; font-weight: 500; color: var(--green); display: none; }
 
-    /* Header */
-    .news-head { max-width: 860px; margin: 0 auto; padding: 72px 32px 8px; }
-    .news-eyebrow {
-      font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--acc);
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
+    /* ── Feed toolbar: heading + filter chips ─────────────────────────── */
+    .feed-bar {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 20px 32px; flex-wrap: wrap;
+      margin-top: 72px; padding-top: 56px; padding-bottom: 28px; border-top: 1px solid var(--rule);
     }
-    .news-head h1 {
-      font-size: clamp(38px, 6vw, 58px);
-      font-weight: 700; letter-spacing: -0.03em; line-height: 1.02;
-      margin: 16px 0 14px; color: var(--ink);
-    }
-    .news-head p { color: var(--subtitle); font-size: 17px; max-width: 560px; }
-
-    /* Filters */
-    .news-filters { max-width: 860px; margin: 0 auto; padding: 26px 32px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .feed-bar h2 { font-size: clamp(26px, 3vw, 34px); }
+    .news-filters { display: flex; gap: 8px; flex-wrap: wrap; }
     .filter-chip {
-      font-size: 13px; font-weight: 500;
-      padding: 7px 15px; border-radius: 100px; cursor: pointer;
-      background: transparent; color: var(--ink-soft);
-      border: 1px solid var(--chip-border);
-      transition: all .15s;
+      font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+      padding: 8px 13px; border-radius: 3px; cursor: pointer;
+      background: transparent; color: var(--ink-2); border: 1px solid var(--rule-2);
+      transition: color .15s, border-color .15s, background .15s, transform .2s var(--ease);
     }
-    .filter-chip { transition: color .15s, border-color .15s, background .15s, transform .2s var(--ease); }
-    .filter-chip:hover { color: var(--ink); border-color: var(--acc); transform: translateY(-1px); }
-    .filter-chip.active { background: var(--acc); color: var(--acc-ink); border-color: var(--acc); }
-
-    /* Feed */
-    main { max-width: 860px; margin: 0 auto; padding: 8px 32px 96px; }
-
-    .ann { border-top: 1px solid var(--hair); }
-    .ann.filter-hide, .ann.pending { display: none; }
+    .filter-chip:hover { color: var(--ink); border-color: var(--ink-2); background: var(--paper-2); transform: translateY(-1px); }
+    .filter-chip.active, .filter-chip.active:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
     .filter-chip[hidden] { display: none; }
 
+    /* ── Feed ────────────────────────────────────────────────────────── */
+    main { padding-bottom: 104px; }
+
+    .ann { border-top: 1px solid var(--rule); }
+    main > .ann:first-of-type { border-top-color: var(--rule-2); }
+    .ann.filter-hide, .ann.pending { display: none; }
+
     .ann-head {
-      width: 100%; display: flex; align-items: baseline; gap: 18px;
+      position: relative;
+      width: 100%; display: grid; gap: 10px var(--head-gap); align-items: start;
+      grid-template-columns: var(--when-w) minmax(0, 1fr) auto;
       background: none; border: none; cursor: pointer; text-align: left;
       padding: 26px 0; color: inherit; font: inherit;
     }
+    /* Date and category stack in a fixed left column so every title starts
+       on the same line, whatever the width of its category label. */
     .ann-when {
-      flex: 0 0 auto; width: 104px;
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 12.5px; color: var(--ink-faint); padding-top: 4px;
+      grid-column: 1; grid-row: 1; padding-top: 5px;
+      font-family: var(--mono); font-size: 12px; color: var(--ink-2); white-space: nowrap;
     }
     .ann-cat {
-      flex: 0 0 auto; align-self: flex-start;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-      padding: 4px 9px; border-radius: 5px; margin-top: 2px; white-space: nowrap;
+      grid-column: 1; grid-row: 2; justify-self: start;
+      font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 3px; white-space: nowrap; border: 1px solid transparent;
     }
-    .ann-cat.release { background: var(--cat-release-bg); color: var(--cat-release-fg); }
-    .ann-cat.update  { background: var(--cat-update-bg);  color: var(--cat-update-fg); }
-    .ann-cat.notice  { background: var(--cat-notice-bg);  color: var(--cat-notice-fg); }
-    .ann-cat.safety  { background: var(--cat-safety-bg);  color: var(--cat-safety-fg); }
+    .ann-cat.release { background: var(--forest); color: var(--marigold); border-color: var(--forest); }  /* 7.6:1 */
+    .ann-cat.update  { background: rgba(26, 92, 53, .1); color: var(--green); border-color: rgba(26, 92, 53, .22); }
+    .ann-cat.safety  { background: rgba(168, 114, 15, .1); color: var(--amber); border-color: rgba(168, 114, 15, .28); }
+    .ann-cat.notice  { background: transparent; color: var(--ink-2); border-color: var(--rule-2); }
     /* Backend rows that carry no category of their own. */
-    .ann-cat.announcement { background: var(--cat-notice-bg); color: var(--cat-notice-fg); }
+    .ann-cat.announcement { background: var(--paper-2); color: var(--ink); border-color: var(--rule-2); }
     .ann-title {
-      flex: 1 1 auto;
-      font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3;
-      color: var(--ink); transition: color .15s;
+      grid-column: 2; grid-row: 1 / span 2; min-width: 0;
+      font-family: var(--disp); font-size: 20px; font-weight: 600; letter-spacing: -.012em; line-height: 1.3;
+      color: var(--ink); transition: color .15s; max-width: 58ch;
     }
-    .ann-head:hover .ann-title { color: var(--acc); }
-    .ann-head { transition: background .2s; border-radius: 6px; }
-    .ann-head:hover { background: color-mix(in srgb, var(--code-bg) 60%, transparent); }
-    .ann-head:hover .ann-chev { color: var(--acc); }
-    .ann.open .ann-head { position: relative; }
-    .ann.open .ann-head::before { content: ''; position: absolute; left: -18px; top: 30px; bottom: 30px; width: 3px; background: var(--acc); border-radius: 2px; }
-    .ann-chev { flex: 0 0 auto; color: var(--ink-faint); margin-top: 8px; transition: transform .3s ease; }
+    .ann-head:hover .ann-title { color: var(--green); }
+    .ann-chev { grid-column: 3; grid-row: 1; color: var(--ink-2); margin-top: 6px; transition: transform .3s var(--ease), color .15s; }
+    .ann-head:hover .ann-chev { color: var(--green); }
     .ann.open .ann-chev { transform: rotate(180deg); }
+    /* An open entry carries the marigold tick used across the shell. */
+    .ann-head::before {
+      content: ''; position: absolute; left: -20px; top: 28px; bottom: 28px; width: 3px;
+      background: var(--marigold); border-radius: 2px; transform: scaleY(0); transform-origin: top;
+      transition: transform .35s var(--ease);
+    }
+    .ann.open .ann-head::before { transform: scaleY(1); }
 
     .ann.lead .ann-head { padding-top: 34px; }
-    .ann.lead .ann-title { font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; line-height: 1.12; }
-    .ann.lead .ann-when { padding-top: 8px; }
+    .ann.lead .ann-title { font-size: clamp(26px, 3.2vw, 34px); font-weight: 700; letter-spacing: -.02em; line-height: 1.12; }
 
-    .ann-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .34s ease; }
+    .ann-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .34s var(--ease); }
     .ann.open .ann-panel { grid-template-rows: 1fr; }
-    .ann-panel-inner { overflow: hidden; }
+    /* Horizontal padding only: vertical padding would leak out of the
+       collapsed 0fr row. The bottom gap is a margin on the last child. */
+    .ann-panel-inner { overflow: hidden; padding-left: calc(var(--when-w) + var(--head-gap)); }
+    .ann-panel-inner > :last-child { margin-bottom: 32px; }
+    .ann.lead .ann-panel-inner > :last-child { margin-bottom: 40px; }
     /* Paragraph rhythm inside an announcement body. Every entry gets the same
        spacing from this one rule — do not reintroduce per-paragraph inline
        margins, which is how the entries drifted apart in the first place. */
     .ann-panel-inner p + p,
     .ann-panel-inner p + ul,
     .ann-panel-inner p + div:not(.ann-footer) { margin-top: 12px; }
-    .ann-body { padding: 0 0 30px 122px; max-width: 680px; }
-    .ann.lead .ann-body { padding-bottom: 36px; }
-    .ann-body p { font-size: 15.5px; color: var(--ink-soft); line-height: 1.72; }
-    .ann-body ul { margin-top: 10px; margin-left: 20px; color: var(--ink-soft); font-size: 15px; line-height: 1.6; }
-    .ann-body li { margin-bottom: 6px; }
-    .ann-body strong { color: var(--strong); font-weight: 600; }
-    .ann-body code {
-      font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px;
-      background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 5px; padding: 1px 6px; color: var(--acc-d);
+    .ann-panel-inner p { font-size: 16px; color: var(--ink-2); line-height: 1.7; max-width: 68ch; }
+    .ann-panel-inner ul { margin-top: 10px; margin-left: 20px; color: var(--ink-2); font-size: 15.5px; line-height: 1.6; max-width: 66ch; }
+    .ann-panel-inner li { margin-bottom: 6px; }
+    .ann-panel-inner strong { color: var(--ink); font-weight: 600; }
+    .ann-panel-inner code {
+      font-family: var(--mono); font-size: 13px;
+      background: var(--paper-2); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 5px; color: var(--ink);
     }
     .ann-footer {
-      margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hair);
-      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); max-width: 68ch;
+      display: flex; align-items: center; gap: 10px 24px; flex-wrap: wrap;
     }
-    .ann-link { font-size: 13px; font-weight: 600; color: var(--acc); text-decoration: none; }
-    .ann-link:hover { text-decoration: underline; }
+    .ann-link { font-size: 14px; font-weight: 500; color: var(--green); }
+    .ann-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-    .news-empty { border-top: 1px solid var(--hair); padding: 32px 0 0; color: var(--ink-faint); font-size: 14px; }
-    .news-empty a { color: var(--acc); }
+    .news-empty { border-top: 1px solid var(--rule); padding: 28px 0 0; color: var(--ink-2); font-family: var(--mono); font-size: 12px; letter-spacing: .04em; }
+    .news-empty a { color: var(--green); }
 
-    footer { background: var(--chrome-bg); color: var(--chrome-mut); text-align: center; padding: 32px; font-size: 13px; }
-    footer a { color: var(--chrome-mut); text-decoration: none; }
-    footer a:hover { color: var(--chrome-strong); }
-
-    @media (max-width: 680px) {
-      nav { padding: 0 16px; gap: 10px; }
-      nav a:not(.brand) { display: none; }
-      .subscribe-bar { padding: 12px 16px; }
-      .news-head { padding: 44px 20px 4px; }
-      .news-filters { padding: 20px 20px 0; }
-      main { padding: 4px 20px 64px; }
-      .ann-head { flex-wrap: wrap; gap: 8px 12px; padding: 22px 0; }
-      .ann-when { width: auto; padding-top: 0; order: 1; }
+    @media (max-width: 1000px) {
+      .news-top { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+      .subscribe-bar { max-width: 520px; }
+    }
+    @media (max-width: 700px) {
+      .news-head h1 { font-size: clamp(34px, 9.4vw, 44px); }
+      .subscribe-bar { padding: 20px 18px 18px; }
+      .subscribe-form button { padding: 11px 16px; }
+      .feed-bar { margin-top: 56px; padding-top: 44px; padding-bottom: 20px; }
+      main { padding-bottom: 72px; }
+      .ann-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 22px 0; }
+      .ann-when { order: 1; padding-top: 0; }
       .ann-cat { order: 2; }
       .ann-title { flex-basis: 100%; order: 4; font-size: 18px; }
-      .ann-chev { order: 3; margin-left: auto; margin-top: 0; }
-      .ann.lead .ann-title { font-size: 23px; }
-      .ann-body { padding-left: 0; }
-      .ann-footer { gap: 12px; }
+      .ann-chev { order: 3; margin: 0 0 0 auto; }
+      .ann-head::before { left: -14px; top: 22px; bottom: 22px; }
+      .ann.lead .ann-head { padding-top: 26px; }
+      .ann.lead .ann-title { font-size: 24px; }
+      .ann-panel-inner { padding-left: 0; }
+      .ann-panel-inner p { font-size: 15.5px; }
+      .ann-footer { gap: 10px 18px; }
     }
   </style>
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/assets/profile.css">
-  <link rel="stylesheet" href="/assets/mobile.css">
-  <script src="/assets/paper-motion.js" defer></script>
 </head>
 <body data-reveal-auto="article.ann">
 
@@ -243,33 +196,41 @@
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
-<div class="subscribe-bar">
-  <span>Get notified about new announcements:</span>
-  <div class="subscribe-form">
-    <input type="email" id="subEmail" placeholder="you@example.com">
-    <button onclick="subscribe()">Subscribe</button>
-  </div>
-  <div class="sub-consent">
-    <input type="checkbox" id="subTos">
-    <label for="subTos">I agree to the <a href="/tos" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a></label>
-  </div>
-  <span class="sub-msg" id="subMsg"></span>
+<div class="wrap" id="top">
+
+<div class="news-top">
+  <header class="page-head news-head">
+    <span class="label kicker">Newsroom</span>
+    <h1>Announcements</h1>
+    <p class="lede">Releases, safety reports, research notes, and news from the Sennoric team, <strong>newest first</strong>.</p>
+  </header>
+
+  <aside class="subscribe-bar" aria-label="Email updates">
+    <span class="label kicker sub-kicker">Email updates</span>
+    <p class="sub-lede">Get notified about new announcements.</p>
+    <div class="subscribe-form">
+      <input type="email" id="subEmail" placeholder="you@example.com" aria-label="Email address" autocomplete="email">
+      <button class="btn btn-solid" onclick="subscribe()">Subscribe</button>
+    </div>
+    <div class="sub-consent">
+      <input type="checkbox" id="subTos">
+      <label for="subTos">I agree to the <a href="/tos" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a></label>
+    </div>
+    <span class="sub-msg" id="subMsg"></span>
+  </aside>
 </div>
 
-<header class="news-head">
-  <div class="news-eyebrow">Sennoric</div>
-  <h1>Announcements</h1>
-  <p>Releases, research notes, and news from the Sennoric team.</p>
-</header>
-
-<nav class="news-filters" aria-label="Filter announcements">
-  <button class="filter-chip active" data-cat="all" onclick="filterAnns('all', this)">All</button>
-  <button class="filter-chip" data-cat="release" onclick="filterAnns('release', this)">Releases</button>
-  <button class="filter-chip" data-cat="update" onclick="filterAnns('update', this)">Updates</button>
-  <button class="filter-chip" data-cat="safety" onclick="filterAnns('safety', this)">Safety</button>
-  <button class="filter-chip" data-cat="notice" onclick="filterAnns('notice', this)">Notices</button>
-  <button class="filter-chip" id="chip-announcement" data-cat="announcement" onclick="filterAnns('announcement', this)">Announcements</button>
-</nav>
+<div class="feed-bar">
+  <div><span class="label kicker">Archive</span><h2>All announcements</h2></div>
+  <div class="news-filters" role="group" aria-label="Filter announcements">
+    <button class="filter-chip active" data-cat="all" onclick="filterAnns('all', this)">All</button>
+    <button class="filter-chip" data-cat="release" onclick="filterAnns('release', this)">Releases</button>
+    <button class="filter-chip" data-cat="update" onclick="filterAnns('update', this)">Updates</button>
+    <button class="filter-chip" data-cat="safety" onclick="filterAnns('safety', this)">Safety</button>
+    <button class="filter-chip" data-cat="notice" onclick="filterAnns('notice', this)">Notices</button>
+    <button class="filter-chip" id="chip-announcement" data-cat="announcement" onclick="filterAnns('announcement', this)">Announcements</button>
+  </div>
+</div>
 
 <main>
   <article class="ann update" data-cat="update" id="fresco-13-evalplus-benchmarks">
@@ -1077,6 +1038,8 @@
   </div>
 </main>
 
+</div>
+
 <footer>
   <div class="wrap">
     <div class="foot-grid">
@@ -1112,6 +1075,10 @@
         <a href="/tos">Terms</a>
         <a href="/privacy">Privacy</a>
       </div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 Sennoric · Independent AI models</span>
+      <a class="to-top" href="#top"><img src="/assets/logo-spiral.svg" alt="">Back to top</a>
     </div>
   </div>
 </footer>
