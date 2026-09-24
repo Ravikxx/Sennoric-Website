@@ -286,7 +286,9 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
     padding: 8px var(--gut) 140px; background: var(--paper); border-top: 1px solid var(--rule);
     overflow-y: auto; z-index: 90;
   }
-  nav.nav-links-visible .nav-links a {
+  /* :not() chain matches the desktop link rule's specificity so the drawer's
+     size and colour win on narrow screens. */
+  nav.nav-links-visible .nav-links a:not(.brand):not(.nav-cta):not(.nav-btn) {
     display: block; font-family: var(--disp); font-weight: 600; font-size: 24px; letter-spacing: -.02em;
     color: var(--ink); padding: 18px 0; border-bottom: 1px solid var(--rule);
   }
