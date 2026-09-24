@@ -1201,7 +1201,9 @@
       const res = await fetch(`${API}/announcements`, { signal: controller.signal })
         .finally(() => clearTimeout(timer))
       const { announcements } = await res.json()
-      const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
+      // Only http(s) and same-site links; anything else (javascript:, data:) is dropped.
+      const safeLink = u => { try { const url = new URL(u, location.origin); return /^https?:$/.test(url.protocol) ? url.href : '' } catch { return '' } }
 
       // Once an announcement gets hand-authored into a permanent, properly
       // categorized <article> below, it stays in the D1 table (needed for the
@@ -1218,6 +1220,7 @@
         const label = ANN_CATS[cat] || 'Announcement'
         if (cat === 'announcement') uncategorized = true
         const body = esc(a.body).replace(/\n/g, '<br>')
+        a.link = a.link ? safeLink(a.link) : ''
         const title = a.link ? `<a href="${esc(a.link)}" style="color:inherit;text-decoration:none">${esc(a.title)}</a>` : esc(a.title)
 
         const article = document.createElement('article')

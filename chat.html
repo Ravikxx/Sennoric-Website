@@ -1844,7 +1844,7 @@
       </div>
       <div class="fresco13-banner" id="fresco13-banner" style="display:none">
         <span class="fresco13-dot" aria-hidden="true"></span>
-        <span class="fresco13-text"><strong>Fresco 1.3</strong> is now the default model.</span>
+        <span class="fresco13-text"><strong>Fresco 1.3</strong> is in final safety testing. <a href="/fresco-13" style="color:inherit;text-decoration:underline">See the benchmarks</a></span>
         <button class="fresco13-close" onclick="dismissFresco13Banner()" aria-label="Dismiss">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
@@ -2014,13 +2014,13 @@
   let currentId = null
 
   function dismissFresco13Banner() {
-    localStorage.setItem('sennoric_fresco13_banner_dismissed', '1')
+    localStorage.setItem('sennoric_fresco13_testing_banner_dismissed', '1')
     const el = document.getElementById('fresco13-banner')
     if (el) el.style.display = 'none'
   }
   function initFresco13Banner() {
     const el = document.getElementById('fresco13-banner')
-    if (el && !localStorage.getItem('sennoric_fresco13_banner_dismissed')) el.style.display = 'flex'
+    if (el && !localStorage.getItem('sennoric_fresco13_testing_banner_dismissed')) el.style.display = 'flex'
   }
 
   // Sitewide Pro promotion popup. Only fires once the signed-in user is
@@ -3507,7 +3507,7 @@
   function escHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;')
   }
 
   // Detect raw JSON that looks like a chart config (model forgot ```chart fence)

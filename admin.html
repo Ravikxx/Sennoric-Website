@@ -1121,12 +1121,12 @@
     const d = await res.json()
     tbody.innerHTML = d.models.map((m) => `
       <tr>
-        <td>${m.label}</td>
+        <td>${esc(m.label)}</td>
         <td><span style="color:${m.up ? 'var(--good, #2a9d5c)' : 'var(--bad, #d94b4b)'}">${m.up ? '● Up' : '● Down'}</span></td>
         <td>${m.disabled ? '<strong style="color:var(--bad, #d94b4b)">Disabled</strong>' : 'Enabled'}</td>
         <td>${m.disabled
-          ? `<button class="btn-outline" onclick="enableModel('${m.id}', '${esc(m.label)}')">Re-enable</button>`
-          : `<button class="btn btn-danger" onclick="disableModel('${m.id}', '${esc(m.label)}')">Disable</button>`}</td>
+          ? `<button class="btn-outline" data-id="${esc(m.id)}" data-label="${esc(m.label)}" onclick="enableModel(this.dataset.id, this.dataset.label)">Re-enable</button>`
+          : `<button class="btn btn-danger" data-id="${esc(m.id)}" data-label="${esc(m.label)}" onclick="disableModel(this.dataset.id, this.dataset.label)">Disable</button>`}</td>
       </tr>
     `).join('')
   }
