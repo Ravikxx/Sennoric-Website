@@ -115,6 +115,14 @@
     /* ── The ledger: a pinned forest panel with torn paper edges ─────────── */
     .ledger { position: relative; height: 400vh; background: var(--forest); margin-top: 24px; overflow-x: clip; }
     .ledger-stage { position: sticky; top: 0; height: var(--vh); overflow: hidden; display: flex; align-items: center; }
+    /* Mobile browsers change the visible height as their toolbar collapses.
+       Size the panel to the large viewport so its paper texture always
+       reaches the bottom edge, and pad by the toolbar's height so the copy
+       and footer stay inside the small (always visible) viewport. */
+    @supports (height: 100lvh) {
+      .ledger-stage { height: 100lvh; padding-bottom: calc(100lvh - 100svh); }
+      .ledger-foot { bottom: calc(64px + 100lvh - 100svh) !important; }
+    }
     .ledger-stage::before {
       /* Real paper fibre, not a generated texture. */
       content: ''; position: absolute; inset: 0;
@@ -125,7 +133,7 @@
     .ledger-idx { font-family: var(--mono); font-size: 12.5px; color: var(--marigold); letter-spacing: .12em; }
     .rail { position: relative; width: 1px; height: 180px; background: rgba(243, 240, 230, .22); margin-top: 18px; }
     .rail-fill { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--marigold); transform-origin: top; transform: scaleY(0); }
-    .rail i { position: absolute; left: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--forest); border: 1px solid rgba(243, 240, 230, .5); transition: background .3s, border-color .3s; }
+    .rail i { position: absolute; left: -3px; top: calc(var(--at, 0) * 100% - 3.5px); width: 7px; height: 7px; border-radius: 50%; background: var(--forest); border: 1px solid rgba(243, 240, 230, .5); transition: background .3s, border-color .3s; }
     .rail i.on { background: var(--marigold); border-color: var(--marigold); }
     /* The rail is also a table of contents: each tick scrolls to its line. */
     .rail i { cursor: pointer; }
@@ -322,7 +330,7 @@
       .ledger-rail { display: flex; align-items: center; gap: 16px; }
       .rail { width: 160px; height: 1px; margin: 0; }
       .rail-fill { transform-origin: left; transform: scaleX(0); }
-      .rail i { top: -3px; left: auto; }
+      .rail i { top: -3px; left: calc(var(--at, 0) * 100% - 3.5px); }
       .sheets { grid-template-columns: minmax(0, 1fr); }
       .fam-row { grid-template-columns: 44px minmax(0, 1fr); }
       .fam-row::before { display: none; }
@@ -360,10 +368,10 @@
       .spiral path { stroke-dashoffset: 0; }
       .progress { display: none; }
       .ledger { height: auto; padding: 96px 0; }
-      .ledger-stage { position: static; height: auto; display: block; }
+      .ledger-stage { position: static; height: auto; display: block; padding-bottom: 0; }
       .ledger-lines { height: auto; min-height: 0; display: flex; flex-direction: column; gap: 28px; }
       .ledger-line { position: static; opacity: 1; transform: none; font-size: clamp(30px, 4vw, 52px); }
-      .ledger-foot { position: static; margin-top: 48px; }
+      .ledger-foot { position: static; margin-top: 48px; bottom: auto !important; }
       .rail-fill { transform: none; }
       .fam-row::after { transform: scaleX(1); }
       .fam-row > *, .code .ln { opacity: 1; transform: none; transition: none; }
@@ -432,7 +440,7 @@
     <div class="wrap ledger-inner">
       <div class="ledger-rail">
         <span class="ledger-idx" id="ledger-idx">01 / 04</span>
-        <div class="rail" aria-hidden="true"><div class="rail-fill" id="rail-fill"></div><i style="top:0"></i><i style="top:33.3%"></i><i style="top:66.6%"></i><i style="top:100%"></i></div>
+        <div class="rail" aria-hidden="true"><div class="rail-fill" id="rail-fill"></div><i style="--at:0"></i><i style="--at:.3333"></i><i style="--at:.6667"></i><i style="--at:1"></i></div>
       </div>
       <div class="ledger-lines" id="ledger-lines">
         <p class="ledger-line is-on"><span>We train <em>our own</em> models.</span></p>
